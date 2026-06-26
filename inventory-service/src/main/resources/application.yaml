@@ -1,0 +1,21 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: inventory-service
+  datasource:
+    url: ${INVENTORY_DB_URL:jdbc:postgresql://localhost:5432/inventory}
+    username: ${INVENTORY_DB_USERNAME:postgres}
+    password: ${INVENTORY_DB_PASSWORD:postgres}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
