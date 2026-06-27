@@ -1,4 +1,4 @@
-package com.example.eventstream.order.dto.respose;
+package com.example.eventstream.order.dto.response;
 
 import com.example.eventstream.order.entity.OrderStatus;
 

@@ -2,7 +2,7 @@ package com.example.eventstream.order.mapper;
 
 
 import com.example.eventstream.order.dto.request.CreateOrderRequest;
-import com.example.eventstream.order.dto.respose.OrderResponse;
+import com.example.eventstream.order.dto.response.OrderResponse;
 import com.example.eventstream.order.entity.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

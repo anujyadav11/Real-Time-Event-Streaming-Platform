@@ -1,0 +1,5 @@
+$kind: http-request
+name: get order by id
+url: http://localhost:8081/api/v1/orders/37ffecb7-b226-44d0-820b-80e9602002cc
+method: GET
+order: 3253674624990762

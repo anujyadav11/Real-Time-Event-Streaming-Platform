@@ -1,0 +1,13 @@
+$kind: http-request
+name: createOrder
+url: http://localhost:8081/api/v1/orders
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "customerName":"Anuj",
+        "restaurantName":"Domino's",
+        "totalAmount":499.99
+    }
+order: 1782573244032
