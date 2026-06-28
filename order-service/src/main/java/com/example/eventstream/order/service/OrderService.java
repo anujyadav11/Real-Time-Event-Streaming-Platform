@@ -1,6 +1,7 @@
 package com.example.eventstream.order.service;
 
 import com.example.eventstream.order.entity.Order;
+import com.example.eventstream.order.exception.OrderNotFoundException;
 import com.example.eventstream.order.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
@@ -23,14 +24,14 @@ public class OrderService {
     }
     public Order getOrder(UUID id) {
         return orderRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found"));
+                .orElseThrow(() -> new OrderNotFoundException(id));
     }
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
     public void deleteOrder(UUID id) {
         if(!orderRepository.existsById(id)) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Order not found");
+            throw new OrderNotFoundException(id);
         }
         orderRepository.deleteById(id);
     }
