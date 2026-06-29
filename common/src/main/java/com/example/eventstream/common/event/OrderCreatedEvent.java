@@ -1,12 +1,15 @@
 package com.example.eventstream.common.event;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-public record OrderCreatedEvent(
-        String orderId,
-        String customerId,
-        String productId,
-        int quantity,
-        BigDecimal amount
-) {
+public record OrderCreatedEvent (
+        UUID orderId,
+        String customerName,
+        String restaurantName,
+        BigDecimal totalAmount,
+        String status,
+        LocalDateTime createdAt
+){
 }

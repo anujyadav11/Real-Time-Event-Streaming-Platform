@@ -1,7 +1,7 @@
 package com.example.eventstream.order.kafka.producer;
 
 
-import com.example.eventstream.order.kafka.event.OrderCreatedEvent;
+import com.example.eventstream.common.event.OrderCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;

@@ -1,6 +1,6 @@
 package com.example.eventstream.inventory.kafka.consumer;
 
-import com.example.eventstream.inventory.kafka.event.OrderCreatedEvent;
+import com.example.eventstream.common.event.OrderCreatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;

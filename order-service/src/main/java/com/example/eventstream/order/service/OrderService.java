@@ -2,7 +2,7 @@ package com.example.eventstream.order.service;
 
 import com.example.eventstream.order.entity.Order;
 import com.example.eventstream.order.exception.OrderNotFoundException;
-import com.example.eventstream.order.kafka.event.OrderCreatedEvent;
+import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.order.kafka.producer.OrderEventProducer;
 import com.example.eventstream.order.repository.OrderRepository;
 import jakarta.transaction.Transactional;
