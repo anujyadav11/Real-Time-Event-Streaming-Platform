@@ -1,6 +1,7 @@
 package com.example.eventstream.order.service;
 
 import com.example.eventstream.order.entity.Order;
+import com.example.eventstream.order.entity.OrderStatus;
 import com.example.eventstream.order.exception.OrderNotFoundException;
 import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.order.kafka.producer.OrderEventProducer;
@@ -62,5 +63,12 @@ public class OrderService {
         }
         orderRepository.deleteById(id);
         log.info("Order deleted successfully with id: {}", id);
+    }
+    public void markInventoryReserved(UUID orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new OrderNotFoundException(orderId));
+        order.setStatus(OrderStatus.INVENTORY_RESERVED);
+        orderRepository.save(order);
+        log.info("Inventory reserved for order : {}", orderId);
     }
 }
