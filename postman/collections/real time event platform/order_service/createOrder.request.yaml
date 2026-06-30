@@ -6,8 +6,8 @@ body:
   type: json
   content: |-
     {
-        "customerName":"Anuj",
-        "restaurantName":"Domino's",
-        "totalAmount":499.99
+        "customerName":"Anuj Jain",
+        "restaurantName":"Pizza hut",
+        "totalAmount":599.00
     }
 order: 1782573244032

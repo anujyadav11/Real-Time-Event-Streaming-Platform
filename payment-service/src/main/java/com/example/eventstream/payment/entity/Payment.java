@@ -19,7 +19,7 @@ public class Payment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private UUID orderId;
 
     @Column(nullable = false)
@@ -30,13 +30,10 @@ public class Payment {
     private PaymentStatus status;
 
     @Column(nullable = false)
-    private String paymentMethod;
-
-    @Column(nullable = false)
     private LocalDateTime paidAt;
 
     @PrePersist
     public void prePersist() {
-        paidAt = LocalDateTime.now();
+        this.paidAt = LocalDateTime.now();
     }
 }

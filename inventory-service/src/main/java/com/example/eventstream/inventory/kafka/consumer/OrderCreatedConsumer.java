@@ -30,6 +30,7 @@ public class OrderCreatedConsumer {
         InventoryReservedEvent inventoryEvent =
                 new InventoryReservedEvent(
                         event.orderId(),
+                        event.totalAmount(),
                         true,
                         LocalDateTime.now()
                 );
