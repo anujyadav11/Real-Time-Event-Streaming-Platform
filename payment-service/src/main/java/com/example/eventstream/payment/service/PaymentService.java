@@ -31,7 +31,6 @@ public class PaymentService {
 
     @Transactional
     public void processPayment(InventoryReservedEvent event) {
-
         log.info("Processing payment for order: {}", event.orderId());
 
         Payment payment = new Payment();
