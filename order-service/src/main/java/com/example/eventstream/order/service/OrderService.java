@@ -1,5 +1,6 @@
 package com.example.eventstream.order.service;
 
+import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.order.entity.Order;
 import com.example.eventstream.order.entity.OrderStatus;
 import com.example.eventstream.order.exception.OrderNotFoundException;
@@ -67,8 +68,23 @@ public class OrderService {
     public void markInventoryReserved(UUID orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderNotFoundException(orderId));
+
         order.setStatus(OrderStatus.INVENTORY_RESERVED);
+
         orderRepository.save(order);
+
         log.info("Inventory reserved for order : {}", orderId);
+    }
+    public void markPaymentCompleted(PaymentCompletedEvent event) {
+        log.info("Updating payment status for order {}", event.orderId());
+
+        Order order = orderRepository.findById(event.orderId())
+                .orElseThrow(() -> new OrderNotFoundException(event.orderId()));
+
+        order.setStatus(OrderStatus.PAYMENT_COMPLETED);
+
+        orderRepository.save(order);
+        
+        log.info("Order {} marked as PAID", order.getId());
     }
 }
