@@ -28,17 +28,20 @@ public class OrderService {
         this.orderEventProducer = orderEventProducer;
     }
     public Order createOrder(Order order) {
+        String correlationId = UUID.randomUUID().toString();
         log.info("Creating new order for customer: {}", order.getCustomerName());
         Order savedOrder = orderRepository.save(order);
         log.info("Order created successfully with id: {}", savedOrder.getId());
         OrderCreatedEvent event =
                 new OrderCreatedEvent(
+                        UUID.randomUUID(),
                         savedOrder.getId(),
                         savedOrder.getCustomerName(),
                         savedOrder.getRestaurantName(),
                         savedOrder.getTotalAmount(),
                         savedOrder.getStatus().name(),
-                        savedOrder.getCreatedAt()
+                        savedOrder.getCreatedAt(),
+                        correlationId
                 );
         orderEventProducer.publish(event);
         return savedOrder;

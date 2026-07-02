@@ -31,7 +31,7 @@ public class PaymentService {
 
     @Transactional
     public void processPayment(InventoryReservedEvent event) {
-        log.info("Processing payment for order: {}", event.orderId());
+        log.info("[{}]Processing payment for order: {}", event.CorrelationId(),event.orderId());
 
         Payment payment = new Payment();
 
@@ -49,10 +49,12 @@ public class PaymentService {
 
         PaymentCompletedEvent paymentCompletedEvent =
                 new PaymentCompletedEvent(
+                        UUID.randomUUID(),
                         payment.getOrderId(),
                         payment.getAmount(),
                         true,
-                        payment.getPaidAt()
+                        payment.getPaidAt(),
+                        event.CorrelationId()
                 );
 
         paymentEventProducer.publish(paymentCompletedEvent);

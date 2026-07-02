@@ -34,12 +34,12 @@ public class PaymentCompletedConsumer {
             groupId = "order-group"
     )
     public void consume(PaymentCompletedEvent event) {
-        if(idempotencyService.isProcessed(event.orderId())) {
+        if(idempotencyService.isProcessed(event.eventId())) {
             log.info("Duplicate event ignored.");
             return;
         }
-        log.info("Received PaymentCompleted event for Order: {}", event.orderId());
         orderService.markPaymentCompleted(event);
-        idempotencyService.markProcessed(event.orderId());
+        idempotencyService.markProcessed(event.eventId());
+        log.info("[{}]Received PaymentCompleted event for Order: {}",event.correlationID(),event.orderId());
     }
 }

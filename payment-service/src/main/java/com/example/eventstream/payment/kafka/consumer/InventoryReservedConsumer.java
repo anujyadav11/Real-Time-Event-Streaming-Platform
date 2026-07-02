@@ -32,12 +32,12 @@ public class InventoryReservedConsumer {
             groupId = "payment-group"
     )
     public void consume(InventoryReservedEvent event){
-        if(idempotencyService.isProcessed(event.orderId())){
+        if(idempotencyService.isProcessed(event.eventId())){
             log.info("Duplicate event Ignored");
             return;
         }
         log.info("Received InventoryReservedEvent for Order : {}",event.orderId());
         paymentService.processPayment(event);
-        idempotencyService.markProcessed(event.orderId());
+        idempotencyService.markProcessed(event.eventId());
     }
 }

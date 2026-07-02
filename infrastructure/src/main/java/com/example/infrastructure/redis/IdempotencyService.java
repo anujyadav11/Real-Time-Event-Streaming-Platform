@@ -17,17 +17,16 @@ public class IdempotencyService {
      * Returns true if this event has already been processed.
      */
     public boolean isProcessed(UUID eventId) {
-        String key = PREFIX + eventId;
         return Boolean.TRUE.equals(
-                redisTemplate.hasKey(key));
+                redisTemplate.hasKey(PREFIX + eventId)
+        );
     }
     /**
      * Marks an event as processed.
      */
     public void markProcessed(UUID eventId) {
-        String key = PREFIX + eventId;
         redisTemplate.opsForValue().set(
-                key,
+                PREFIX + eventId,
                 "processed",
                 Duration.ofHours(24)
         );

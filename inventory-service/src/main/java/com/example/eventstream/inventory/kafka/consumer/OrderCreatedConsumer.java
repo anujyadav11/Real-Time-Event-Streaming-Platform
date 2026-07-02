@@ -12,6 +12,7 @@ import org.springframework.retry.annotation.Backoff;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Component
 public class OrderCreatedConsumer {
@@ -39,19 +40,21 @@ public class OrderCreatedConsumer {
     public void consume(OrderCreatedEvent event){
         log.info("Received OrderCreatedEvent: {}", event.orderId());
         log.info("Checking inventory....");
-        if(idempotencyService.isProcessed(event.orderId())){
+        if(idempotencyService.isProcessed(event.eventId())){
             log.info("Duplicate event ignored");
             return;
         }
         InventoryReservedEvent inventoryEvent =
                 new InventoryReservedEvent(
+                        UUID.randomUUID(),
                         event.orderId(),
                         event.totalAmount(),
                         true,
-                        LocalDateTime.now()
+                        LocalDateTime.now(),
+                        event.correlationId()
                 );
         producer.publish(inventoryEvent);
         log.info("Inventory reserved.");
-        idempotencyService.markProcessed(event.orderId());
+        idempotencyService.markProcessed(event.eventId());
     }
 }
