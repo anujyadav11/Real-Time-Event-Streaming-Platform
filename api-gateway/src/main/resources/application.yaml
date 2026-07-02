@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: api-gateway
+    name: gateway
 
   cloud:
     gateway:
@@ -13,7 +13,7 @@ spring:
             - id: order-service
               uri: ${ORDER_SERVICE_URL:http://localhost:8081}
               predicates:
-                - Path=/api/v1/orders/**
+                - Path=/api/orders/**
             - id: inventory-service
               uri: ${INVENTORY_SERVICE_URL:http://localhost:8082}
               predicates:
