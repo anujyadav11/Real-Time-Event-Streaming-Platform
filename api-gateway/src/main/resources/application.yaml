@@ -13,7 +13,7 @@ spring:
             - id: order-service
               uri: ${ORDER_SERVICE_URL:http://localhost:8081}
               predicates:
-                - Path=/api/orders/**
+                - Path=/api/v1/orders/**
             - id: inventory-service
               uri: ${INVENTORY_SERVICE_URL:http://localhost:8082}
               predicates:
