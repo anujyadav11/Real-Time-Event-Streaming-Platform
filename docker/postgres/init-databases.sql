@@ -1,4 +1,4 @@
 CREATE DATABASE orders;
 CREATE DATABASE inventory;
-CREATE DATABASE payments;
+CREATE DATABASE payment;
 CREATE DATABASE notification;

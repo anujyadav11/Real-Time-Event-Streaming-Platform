@@ -11,7 +11,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>gateway</artifactId>
+    <artifactId>api-gateway</artifactId>
 
     <dependencies>
         <dependency>
