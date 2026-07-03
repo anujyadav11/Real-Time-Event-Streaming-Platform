@@ -29,6 +29,7 @@
         <module>tracking-service</module>
         <module>infrastructure</module>
         <module>config-server</module>
+        <module>discovery-server</module>
     </modules>
 
     <properties>
