@@ -13,8 +13,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentCompletedConsumer {
     private static final Logger log = LoggerFactory.getLogger(PaymentCompletedConsumer.class);
+
     private final NotificationService notificationService;
     private final IdempotencyService idempotencyService;
+
     public PaymentCompletedConsumer(NotificationService notificationService, IdempotencyService idempotencyService) {
         this.notificationService = notificationService;
         this.idempotencyService = idempotencyService;

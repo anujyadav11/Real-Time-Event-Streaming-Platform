@@ -1,4 +1,13 @@
 $kind: http-request
-url: ""
-method: GET
+name: creating order
+url: http://localhost:8080/api/v1/orders
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "customerName": "Anuj",
+        "restaurantName": "Domino's",
+        "totalAmount": 499
+    }
 order: 1783017617923
