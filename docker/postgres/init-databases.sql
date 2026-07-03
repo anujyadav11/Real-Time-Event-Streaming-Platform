@@ -2,3 +2,4 @@ CREATE DATABASE orders;
 CREATE DATABASE inventory;
 CREATE DATABASE payment;
 CREATE DATABASE notification;
+CREATE DATABASE delivery;
