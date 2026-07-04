@@ -29,7 +29,7 @@ spring:
             - id: delivery-service
               uri: ${DELIVERY_SERVICE_URL:lb://DELIVERY-SERVICE}
               predicates:
-                - Path=/api/delivery/**
+                - Path=/api/deliveries/**
 eureka:
   client:
     service-url:

@@ -1,8 +1,10 @@
 package com.example.eventstream.delivery.service;
 
 import com.example.eventstream.common.event.PaymentCompletedEvent;
+import com.example.eventstream.delivery.dto.DeliveryResponse;
 import com.example.eventstream.delivery.entity.Delivery;
 import com.example.eventstream.delivery.entity.DeliveryStatus;
+import com.example.eventstream.delivery.exception.DeliveryNotFoundException;
 import com.example.eventstream.delivery.repository.DeliveryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -10,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class DeliveryService {
@@ -42,5 +45,15 @@ public class DeliveryService {
         };
         int index = (int)(Math.random() * partners.length);
         return partners[index];
+    }
+    public DeliveryResponse getDelivery(UUID orderId){
+        Delivery delivery = deliveryRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new DeliveryNotFoundException(orderId));
+                return new DeliveryResponse(
+                        delivery.getOrderId(),
+                        delivery.getDeliveryPartner(),
+                        delivery.getStatus(),
+                        delivery.getEstimatedDeliveryTime()
+                );
     }
 }
