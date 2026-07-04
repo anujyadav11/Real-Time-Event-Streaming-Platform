@@ -10,6 +10,6 @@ public record InventoryReservedEvent(
         BigDecimal amount,
         boolean reserved,
         LocalDateTime reservedAt,
-        String CorrelationId
+        String correlationId
 ) {
 }

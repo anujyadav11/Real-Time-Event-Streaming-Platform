@@ -10,6 +10,6 @@ public record PaymentCompletedEvent(
         BigDecimal amount,
         boolean successful,
         LocalDateTime paidAt,
-        String correlationID
+        String correlationId
 ) {
 }

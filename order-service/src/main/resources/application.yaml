@@ -39,13 +39,13 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
 
-  eureka:
-    client:
-      service-url:
-        defaultZone: http://localhost:8761/eureka/
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
 
-    instance:
-      prefer-ip-address: true
+  instance:
+    prefer-ip-address: true
 
 logging:
   level:
@@ -57,4 +57,3 @@ management:
     web:
       exposure:
         include: health,info
-

@@ -77,12 +77,6 @@
         </dependency>
         <dependency>
             <groupId>com.anuj</groupId>
-            <artifactId>order-service</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.anuj</groupId>
             <artifactId>infrastructure</artifactId>
             <version>0.0.1-SNAPSHOT</version>
             <scope>compile</scope>

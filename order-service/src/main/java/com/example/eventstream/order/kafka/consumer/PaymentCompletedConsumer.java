@@ -40,6 +40,6 @@ public class PaymentCompletedConsumer {
         }
         orderService.markPaymentCompleted(event);
         idempotencyService.markProcessed(event.eventId());
-        log.info("[{}]Received PaymentCompleted event for Order: {}",event.correlationID(),event.orderId());
+        log.info("[{}] Received PaymentCompleted event for Order: {}", event.correlationId(), event.orderId());
     }
 }
