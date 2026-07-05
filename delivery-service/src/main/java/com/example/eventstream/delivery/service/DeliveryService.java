@@ -1,9 +1,9 @@
 package com.example.eventstream.delivery.service;
 
 import com.example.eventstream.common.event.PaymentCompletedEvent;
+import com.example.eventstream.common.enums.DeliveryStatus;
 import com.example.eventstream.delivery.dto.DeliveryResponse;
 import com.example.eventstream.delivery.entity.Delivery;
-import com.example.eventstream.delivery.entity.DeliveryStatus;
 import com.example.eventstream.delivery.exception.DeliveryNotFoundException;
 import com.example.eventstream.delivery.repository.DeliveryRepository;
 import jakarta.transaction.Transactional;

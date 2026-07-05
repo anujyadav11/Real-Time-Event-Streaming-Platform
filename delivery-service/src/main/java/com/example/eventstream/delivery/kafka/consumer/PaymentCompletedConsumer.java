@@ -1,5 +1,6 @@
 package com.example.eventstream.delivery.kafka.consumer;
 
+import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.delivery.service.DeliveryService;
 import com.example.infrastructure.redis.IdempotencyService;
@@ -29,7 +30,7 @@ public class PaymentCompletedConsumer {
             dltTopicSuffix = "-dlt"
     )
     @KafkaListener(
-            topics = "payment-completed",
+            topics = KafkaTopics.PAYMENT_COMPLETED,
             groupId = "delivery-group"
     )
     public void consume(PaymentCompletedEvent event){

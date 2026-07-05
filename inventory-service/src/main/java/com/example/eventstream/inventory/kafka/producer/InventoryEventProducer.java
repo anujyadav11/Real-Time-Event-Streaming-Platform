@@ -1,5 +1,6 @@
 package com.example.eventstream.inventory.kafka.producer;
 
+import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public class InventoryEventProducer {
         log.info("Publishing InventoryReservedEvent for order {}",
                 event.orderId());
         kafkaTemplate.send(
-                "inventory-reserved",
+                KafkaTopics.INVENTORY_RESERVED,
                 event.orderId().toString(),
                 event
         );

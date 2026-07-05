@@ -1,5 +1,6 @@
 package com.example.eventstream.payment.kafka.consumer;
 
+import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.payment.service.PaymentService;
 import com.example.infrastructure.redis.IdempotencyService;
@@ -28,7 +29,7 @@ public class InventoryReservedConsumer {
             dltTopicSuffix = "-dlt"
     )
     @KafkaListener(
-            topics = "inventory-reserved",
+            topics = KafkaTopics.INVENTORY_RESERVED,
             groupId = "payment-group"
     )
     public void consume(InventoryReservedEvent event){

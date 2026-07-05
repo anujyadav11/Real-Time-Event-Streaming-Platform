@@ -1,6 +1,6 @@
 package com.example.eventstream.delivery.dto;
 
-import com.example.eventstream.delivery.entity.DeliveryStatus;
+import com.example.eventstream.common.enums.DeliveryStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

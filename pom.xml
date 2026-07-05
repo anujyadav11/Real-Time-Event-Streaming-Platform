@@ -30,6 +30,7 @@
         <module>infrastructure</module>
         <module>config-server</module>
         <module>discovery-server</module>
+        <module>websocket-service</module>
     </modules>
 
     <properties>

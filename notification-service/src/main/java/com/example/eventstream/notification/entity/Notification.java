@@ -1,6 +1,8 @@
 package com.example.eventstream.notification.entity;
 
 
+import com.example.eventstream.common.enums.NotificationChannel;
+import com.example.eventstream.common.enums.NotificationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

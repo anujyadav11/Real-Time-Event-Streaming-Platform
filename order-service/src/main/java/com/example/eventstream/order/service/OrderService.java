@@ -2,7 +2,7 @@ package com.example.eventstream.order.service;
 
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.order.entity.Order;
-import com.example.eventstream.order.entity.OrderStatus;
+import com.example.eventstream.common.enums.OrderStatus;
 import com.example.eventstream.order.exception.OrderNotFoundException;
 import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.order.kafka.producer.OrderEventProducer;

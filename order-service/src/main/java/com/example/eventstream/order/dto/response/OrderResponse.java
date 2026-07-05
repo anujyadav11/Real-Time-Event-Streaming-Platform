@@ -1,6 +1,6 @@
 package com.example.eventstream.order.dto.response;
 
-import com.example.eventstream.order.entity.OrderStatus;
+import com.example.eventstream.common.enums.OrderStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

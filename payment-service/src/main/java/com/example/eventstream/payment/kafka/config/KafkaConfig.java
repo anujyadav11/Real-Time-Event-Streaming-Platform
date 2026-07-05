@@ -1,5 +1,6 @@
 package com.example.eventstream.payment.kafka.config;
 
+import com.example.eventstream.common.constants.KafkaTopics;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +13,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic orderCreatedTopic() {
 
-        return TopicBuilder.name("payment-completed")
+        return TopicBuilder.name(KafkaTopics.PAYMENT_COMPLETED)
                 .partitions(3)
                 .replicas(1)
                 .build();

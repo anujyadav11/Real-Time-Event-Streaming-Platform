@@ -1,7 +1,7 @@
 package com.example.eventstream.order.repository;
 
 import com.example.eventstream.order.entity.Order;
-import com.example.eventstream.order.entity.OrderStatus;
+import com.example.eventstream.common.enums.OrderStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

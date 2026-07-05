@@ -1,5 +1,6 @@
 package com.example.eventstream.order.kafka.consumer;
 
+import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.order.service.OrderService;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -12,7 +13,7 @@ public class InventoryReservedConsumer {
         this.orderService = orderService;
     }
     @KafkaListener(
-            topics = "inventory-reserved",
+            topics = KafkaTopics.INVENTORY_RESERVED,
             groupId = "order-group"
     )
     public void consume(InventoryReservedEvent event) {

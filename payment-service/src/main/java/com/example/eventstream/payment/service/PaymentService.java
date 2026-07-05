@@ -3,7 +3,7 @@ package com.example.eventstream.payment.service;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.payment.entity.Payment;
-import com.example.eventstream.payment.entity.PaymentStatus;
+import com.example.eventstream.common.enums.PaymentStatus;
 import com.example.eventstream.payment.kafka.producer.PaymentEventProducer;
 import com.example.eventstream.payment.repository.PaymentRepository;
 import jakarta.transaction.Transactional;

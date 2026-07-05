@@ -1,0 +1,3 @@
+UPDATE deliveries
+SET status = 'DRIVER_ASSIGNED'
+WHERE status = 'DELIVERY_ASSIGNED';

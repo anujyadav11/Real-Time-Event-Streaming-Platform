@@ -1,7 +1,9 @@
 package com.example.eventstream.delivery.scheduler;
 
+import com.example.eventstream.common.event.DeliveryStatusUpdatedEvent;
+import com.example.eventstream.common.enums.DeliveryStatus;
 import com.example.eventstream.delivery.entity.Delivery;
-import com.example.eventstream.delivery.entity.DeliveryStatus;
+import com.example.eventstream.delivery.kafka.producer.DeliveryEventProducer;
 import com.example.eventstream.delivery.repository.DeliveryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -14,29 +16,46 @@ import java.util.List;
 
 @Component
 public class DeliveryStatusScheduler {
-    private static final Logger log = LoggerFactory.getLogger(DeliveryStatusScheduler.class);
-    private final DeliveryRepository deliveryRepository;
 
-    public DeliveryStatusScheduler(DeliveryRepository deliveryRepository){
+    private static final Logger log = LoggerFactory.getLogger(DeliveryStatusScheduler.class);
+
+    private final DeliveryRepository deliveryRepository;
+    private final DeliveryEventProducer producer;
+
+    public DeliveryStatusScheduler(DeliveryRepository deliveryRepository,
+                                   DeliveryEventProducer producer) {
         this.deliveryRepository = deliveryRepository;
+        this.producer = producer;
     }
     @Scheduled(fixedRate = 10000)
     @Transactional
-    public void updateDeliveryStatus(){
-        List<Delivery> deliveries = deliveryRepository.findByStatusNot(DeliveryStatus.DELIVERED);
-        if(deliveries.isEmpty()) return;
-        for(Delivery delivery : deliveries){
+    public void updateDeliveryStatus() {
+        List<Delivery> deliveries =
+                deliveryRepository.findByStatusNot(DeliveryStatus.DELIVERED);
+        if (deliveries.isEmpty()) {
+            return;
+        }
+        for (Delivery delivery : deliveries) {
             DeliveryStatus nextStatus = getNextStatus(delivery.getStatus());
             delivery.setStatus(nextStatus);
-            if(nextStatus == DeliveryStatus.DELIVERED){
+            if (nextStatus == DeliveryStatus.DELIVERED) {
                 delivery.setDeliveredAt(LocalDateTime.now());
             }
             deliveryRepository.save(delivery);
-            log.info("Order {} status changed to {}", delivery.getOrderId(), nextStatus);
+            producer.publish(
+                    new DeliveryStatusUpdatedEvent(
+                            delivery.getOrderId(),
+                            delivery.getStatus(),
+                            LocalDateTime.now()
+                    )
+            );
+            log.info("Order {} status changed to {}",
+                    delivery.getOrderId(),
+                    nextStatus);
         }
     }
-    private DeliveryStatus getNextStatus(DeliveryStatus currentStatus){
-        return switch(currentStatus){
+    private DeliveryStatus getNextStatus(DeliveryStatus currentStatus) {
+        return switch (currentStatus) {
             case CREATED -> DeliveryStatus.DRIVER_ASSIGNED;
             case DRIVER_ASSIGNED -> DeliveryStatus.PICKED_UP;
             case PICKED_UP -> DeliveryStatus.OUT_FOR_DELIVERY;

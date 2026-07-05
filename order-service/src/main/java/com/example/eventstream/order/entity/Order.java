@@ -1,5 +1,6 @@
 package com.example.eventstream.order.entity;
 
+import com.example.eventstream.common.enums.OrderStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

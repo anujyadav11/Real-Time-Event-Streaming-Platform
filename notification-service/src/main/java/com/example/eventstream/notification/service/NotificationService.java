@@ -2,8 +2,8 @@ package com.example.eventstream.notification.service;
 
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.notification.entity.Notification;
-import com.example.eventstream.notification.entity.NotificationChannel;
-import com.example.eventstream.notification.entity.NotificationStatus;
+import com.example.eventstream.common.enums.NotificationChannel;
+import com.example.eventstream.common.enums.NotificationStatus;
 import com.example.eventstream.notification.repository.NotificationRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;

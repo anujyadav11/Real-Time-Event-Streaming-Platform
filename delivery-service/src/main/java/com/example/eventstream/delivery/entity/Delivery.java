@@ -1,5 +1,6 @@
 package com.example.eventstream.delivery.entity;
 
+import com.example.eventstream.common.enums.DeliveryStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

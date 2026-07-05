@@ -1,5 +1,6 @@
 package com.example.eventstream.inventory.kafka.consumer;
 
+import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.inventory.kafka.producer.InventoryEventProducer;
@@ -34,7 +35,7 @@ public class OrderCreatedConsumer {
             dltTopicSuffix = "-dlt"
     )
     @KafkaListener(
-            topics = "order-created",
+            topics = KafkaTopics.ORDER_CREATED,
             groupId = "inventory-group"
     )
     public void consume(OrderCreatedEvent event){

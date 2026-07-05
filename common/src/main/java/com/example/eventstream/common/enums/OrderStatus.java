@@ -1,4 +1,4 @@
-package com.example.eventstream.order.entity;
+package com.example.eventstream.common.enums;
 
 public enum OrderStatus {
     CREATED,
@@ -7,5 +7,5 @@ public enum OrderStatus {
     PAYMENT_COMPLETED,
     OUT_FOR_DELIVERY,
     DELIVERED,
-    CANCELLED,
+    CANCELLED
 }

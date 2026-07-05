@@ -1,5 +1,6 @@
 package com.example.eventstream.payment.kafka.producer;
 
+import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -13,7 +14,7 @@ public class PaymentEventProducer {
     }
     public void publish(PaymentCompletedEvent event){
         kafkaTemplate.send(
-                "payment-completed",
+                KafkaTopics.PAYMENT_COMPLETED,
                 event.orderId().toString(),
                 event
         );

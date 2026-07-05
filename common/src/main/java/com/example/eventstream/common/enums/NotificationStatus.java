@@ -1,4 +1,4 @@
-package com.example.eventstream.notification.entity;
+package com.example.eventstream.common.enums;
 
 public enum NotificationStatus {
     PENDING,

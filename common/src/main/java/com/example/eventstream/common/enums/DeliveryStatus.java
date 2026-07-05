@@ -1,4 +1,4 @@
-package com.example.eventstream.delivery.entity;
+package com.example.eventstream.common.enums;
 
 public enum DeliveryStatus {
     CREATED,

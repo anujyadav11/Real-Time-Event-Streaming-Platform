@@ -2,6 +2,7 @@ package com.example.eventstream.order.kafka.producer;
 
 
 import com.example.eventstream.common.event.OrderCreatedEvent;
+import com.example.eventstream.common.constants.KafkaTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,7 +21,7 @@ public class OrderEventProducer {
     public void publish(OrderCreatedEvent event) {
         log.info("Publishing OrderCreatedEvent for order {}", event.orderId());
         kafkaTemplate.send(
-                "order-created",
+                KafkaTopics.ORDER_CREATED,
                 event.orderId().toString(),
                 event
         );

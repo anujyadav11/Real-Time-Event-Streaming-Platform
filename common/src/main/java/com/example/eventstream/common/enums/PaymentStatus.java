@@ -1,4 +1,4 @@
-package com.example.eventstream.payment.entity;
+package com.example.eventstream.common.enums;
 
 public enum PaymentStatus {
     PENDING,

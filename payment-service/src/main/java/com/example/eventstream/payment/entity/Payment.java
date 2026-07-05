@@ -1,5 +1,6 @@
 package com.example.eventstream.payment.entity;
 
+import com.example.eventstream.common.enums.PaymentStatus;
 import jakarta.persistence.*;
 import lombok.*;
 

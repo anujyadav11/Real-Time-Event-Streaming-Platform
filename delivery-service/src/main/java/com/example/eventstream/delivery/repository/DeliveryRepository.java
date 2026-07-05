@@ -1,7 +1,7 @@
 package com.example.eventstream.delivery.repository;
 
 import com.example.eventstream.delivery.entity.Delivery;
-import com.example.eventstream.delivery.entity.DeliveryStatus;
+import com.example.eventstream.common.enums.DeliveryStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
