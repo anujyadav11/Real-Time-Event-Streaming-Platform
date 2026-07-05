@@ -38,7 +38,7 @@ public class Delivery {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
+    @Column
     private LocalDateTime deliveredAt;
 
     @PrePersist
