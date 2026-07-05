@@ -38,6 +38,9 @@ public class Delivery {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(nullable = false)
+    private LocalDateTime deliveredAt;
+
     @PrePersist
     public void prePersist(){
         createdAt = LocalDateTime.now();
