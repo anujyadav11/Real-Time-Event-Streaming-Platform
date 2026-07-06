@@ -1,8 +1,8 @@
-package com.example.authservice.service;
+package com.example.eventstream.authservice.service;
 
-import com.example.authservice.entity.Role;
-import com.example.authservice.entity.User;
-import com.example.authservice.repository.UserRepository;
+import com.example.eventstream.authservice.entity.Role;
+import com.example.eventstream.authservice.entity.User;
+import com.example.eventstream.authservice.repository.UserRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;

@@ -1,20 +1,22 @@
-package com.example.authservice.security;
+package com.example.eventstream.authservice.security;
 
-import com.example.authservice.entity.User;
-import com.example.authservice.repository.UserRepository;
+import com.example.eventstream.authservice.entity.User;
+import com.example.eventstream.authservice.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
-public class CustomUserDetailService implements UserDetailsService {
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
     private final UserRepository repository;
-    public CustomUserDetailService (UserRepository repository){
+    public CustomUserDetailsService(UserRepository repository){
         this.repository = repository;
     }
     @Override
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException{
-            User user = repository.findByIdUsername(username)
+            User user = repository.findByUsername(username)
                     .orElseThrow(() ->
                             new UsernameNotFoundException("User not found"));
             return org.springframework.security.core.userdetails.User

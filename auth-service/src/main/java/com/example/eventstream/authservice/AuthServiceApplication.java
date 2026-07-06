@@ -1,4 +1,4 @@
-package com.example.eventstream.auth;
+package com.example.eventstream.authservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
