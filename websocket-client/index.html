@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Delivery Tracker</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://unpkg.com/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+    }
+    input {
+      width: 450px;
+      padding: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+    }
+    #messages {
+      margin-top: 30px;
+      border: 1px solid gray;
+      padding: 20px;
+      min-height: 200px;
+    }
+  </style>
+</head>
+<body>
+<h2>Live Delivery Tracking</h2>
+<input id="orderId" placeholder="Enter Order ID">
+<button onclick="connect()">Connect</button>
+<div id="messages"></div>
+<script>
+  let client;
+  function connect() {
+    const orderId = document.getElementById("orderId").value.trim();
+    if (orderId === "") {
+      alert("Please enter an Order ID");
+      return;
+    }
+    client = new StompJs.Client({
+      webSocketFactory: () => new SockJS("http://localhost:8087/ws"),
+      reconnectDelay: 5000,
+      debug: function (str) {
+        console.log(str);
+      },
+      onConnect: function () {
+        append("✅ Connected");
+        client.subscribe("/topic/orders/" + orderId, function (message) {
+          console.log("Received:", message.body);
+          const event = JSON.parse(message.body);
+          append(
+                  "Status: " +
+                  event.status +
+                  " | Updated At: " +
+                  event.updatedAt
+          );
+        });
+      },
+      onStompError: function (frame) {
+        append("❌ STOMP Error");
+        console.error(frame);
+
+      },
+      onWebSocketError: function (error) {
+        append("❌ WebSocket Error");
+        console.error(error);
+      }
+    });
+    client.activate();
+  }
+  function append(message) {
+    const div = document.getElementById("messages");
+    div.innerHTML += "<p>" + message + "</p>";
+  }
+</script>
+</body>
+</html>

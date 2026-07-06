@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class PaymentCompletedConsumer {
+    private static final String CONSUMER_NAME = "order-service";
     private static final Logger log =
             LoggerFactory.getLogger(PaymentCompletedConsumer.class);
     private final OrderService orderService;
@@ -35,12 +36,12 @@ public class PaymentCompletedConsumer {
             groupId = "order-group"
     )
     public void consume(PaymentCompletedEvent event) {
-        if(idempotencyService.isProcessed(event.eventId())) {
+        if(idempotencyService.isProcessed(CONSUMER_NAME, event.eventId())) {
             log.info("Duplicate event ignored.");
             return;
         }
         orderService.markPaymentCompleted(event);
-        idempotencyService.markProcessed(event.eventId());
+        idempotencyService.markProcessed(CONSUMER_NAME, event.eventId());
         log.info("[{}] Received PaymentCompleted event for Order: {}", event.correlationId(), event.orderId());
     }
 }

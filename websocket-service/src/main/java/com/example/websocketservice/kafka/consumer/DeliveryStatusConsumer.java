@@ -1,6 +1,7 @@
 package com.example.websocketservice.kafka.consumer;
 
 import com.example.eventstream.common.event.DeliveryStatusUpdatedEvent;
+import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.websocketservice.websocket.WebSocketPublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +16,7 @@ public class DeliveryStatusConsumer {
         this.webSocketPublisher = webSocketPublisher;
     }
     @KafkaListener(
-            topics = "KafkaTopic.DELIVERY_STATUS_UPDATED",
+            topics = KafkaTopics.DELIVERY_STATUS_UPDATED,
             groupId = "websocket-group"
     )
     public void consume(DeliveryStatusUpdatedEvent event){

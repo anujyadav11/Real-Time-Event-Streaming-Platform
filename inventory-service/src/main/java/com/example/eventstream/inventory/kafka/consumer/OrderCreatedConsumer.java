@@ -17,6 +17,7 @@ import java.util.UUID;
 
 @Component
 public class OrderCreatedConsumer {
+    private static final String CONSUMER_NAME = "inventory-service";
     private final InventoryEventProducer producer;
     private final IdempotencyService idempotencyService;
 
@@ -41,7 +42,7 @@ public class OrderCreatedConsumer {
     public void consume(OrderCreatedEvent event){
         log.info("Received OrderCreatedEvent: {}", event.orderId());
         log.info("Checking inventory....");
-        if(idempotencyService.isProcessed(event.eventId())){
+        if(idempotencyService.isProcessed(CONSUMER_NAME, event.eventId())){
             log.info("Duplicate event ignored");
             return;
         }
@@ -56,6 +57,6 @@ public class OrderCreatedConsumer {
                 );
         producer.publish(inventoryEvent);
         log.info("Inventory reserved.");
-        idempotencyService.markProcessed(event.eventId());
+        idempotencyService.markProcessed(CONSUMER_NAME, event.eventId());
     }
 }
