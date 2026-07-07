@@ -26,6 +26,10 @@ eureka:
   instance:
     prefer-ip-address: true
 
+jwt:
+  secret: mySecretKeyForJwtGenerationShouldBeAtLeast32CharactersLong
+  expiration: 3600000
+
 management:
   endpoints:
     web:
