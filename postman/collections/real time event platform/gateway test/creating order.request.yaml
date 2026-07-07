@@ -6,8 +6,12 @@ body:
   type: json
   content: |-
     {
-        "customerName": "Anuj",
-        "restaurantName": "Domino's",
-        "totalAmount": 499
+        "customerName": "Anuj Yadav",
+        "restaurantName": "Mac Donald's",
+        "totalAmount": 499.99
     }
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc4MzQyMjk4NywiZXhwIjoxNzgzNDI2NTg3fQ.9XyyvUit59qGsUGWhIis5468Rg39VQRF1HgE3lTIZp4
 order: 1783017617923

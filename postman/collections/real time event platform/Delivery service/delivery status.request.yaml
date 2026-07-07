@@ -1,4 +1,5 @@
 $kind: http-request
-url: ""
+name: delivery status
+url: http://localhost:8080/api/deliveries/1116a26d-f226-4e1f-92a0-bd8ae557c80f
 method: GET
 order: 1783157547556

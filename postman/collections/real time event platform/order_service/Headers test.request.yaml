@@ -1,0 +1,9 @@
+$kind: http-request
+name: Headers test
+url: http://localhost:8080/api/v1/orders/headers
+method: GET
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6IjRhN2Y2M2NjLWJlYTEtNDhlOS1iMzc4LWM5MTJlMjJkZTgxNiIsImlhdCI6MTc4MzQ0MzEwMSwiZXhwIjoxNzgzNDQ2NzAxfQ.ahp4rFIHQf9J2nYxR_98xtw-as6JeRHpARy10c0Mano
+order: 4163791034989890

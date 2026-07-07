@@ -1,4 +1,12 @@
 $kind: http-request
-url: ""
-method: GET
+name: JWT verification
+url: http://localhost:8088/auth/login
+method: POST
+body:
+  type: json
+  content: |-
+    {
+        "username":"admin",
+        "password":"admin123"
+    }
 order: 1783411929921

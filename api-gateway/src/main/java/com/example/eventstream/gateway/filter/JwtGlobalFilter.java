@@ -1,11 +1,15 @@
 package com.example.eventstream.gateway.filter;
 
+import com.example.eventstream.common.constants.SecurityHeaders;
 import com.example.eventstream.gateway.service.JwtService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -13,6 +17,7 @@ import reactor.core.publisher.Mono;
 @Component
 public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
+    private static final Logger log = LoggerFactory.getLogger(JwtGlobalFilter.class);
     private final JwtService jwtService;
 
     public JwtGlobalFilter(JwtService jwtService) {
@@ -51,7 +56,26 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
                     .setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
-        return chain.filter(exchange);
+        String userId = jwtService.extractUserId(token);
+        String username = jwtService.extractUsername(token);
+        String role = jwtService.extractRole(token);
+
+        log.info("Authenticated user: {}, role: {}, userId: {}", username, role, userId);
+
+        ServerHttpRequest mutatedRequest =
+                exchange.getRequest()
+                        .mutate()
+                        .header(SecurityHeaders.USER_ID, userId)
+                        .header(SecurityHeaders.USER_NAME, username)
+                        .header(SecurityHeaders.USER_ROLE, role)
+                        .build();
+
+        ServerWebExchange mutatedExchange =
+                exchange.mutate()
+                        .request(mutatedRequest)
+                        .build();
+
+        return chain.filter(mutatedExchange);
     }
     @Override
     public int getOrder() {
