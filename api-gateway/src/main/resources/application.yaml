@@ -38,6 +38,9 @@ eureka:
   instance:
     prefer-ip-address: true
 
+jwt:
+  secret: MyVerySecretKeyForJwtAuthentication123456789
+
 management:
   endpoints:
     web:

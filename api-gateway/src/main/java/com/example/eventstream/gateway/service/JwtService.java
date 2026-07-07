@@ -1,4 +1,4 @@
-package com.example.eventstream.authservice.service;
+package com.example.eventstream.gateway.service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -28,14 +28,15 @@ public class JwtService {
             key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String generateToken(String username){
+    /*public String generateToken(String username){
         return Jwts.builder()
                 .subject(username)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(key)
                 .compact();
-    }
+    }*/
+
     public String extractUsername(String token){
         return getClaims(token).getSubject();
     }

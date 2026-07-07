@@ -27,7 +27,7 @@ eureka:
     prefer-ip-address: true
 
 jwt:
-  secret: mySecretKeyForJwtGenerationShouldBeAtLeast32CharactersLong
+  secret: MyVerySecretKeyForJwtAuthentication123456789
   expiration: 3600000
 
 management:
