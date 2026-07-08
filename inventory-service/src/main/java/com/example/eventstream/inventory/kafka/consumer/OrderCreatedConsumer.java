@@ -50,13 +50,20 @@ public class OrderCreatedConsumer {
                 new InventoryReservedEvent(
                         UUID.randomUUID(),
                         event.orderId(),
+                        event.productId(),
+                        event.quantity(),
                         event.totalAmount(),
                         true,
                         LocalDateTime.now(),
                         event.correlationId()
                 );
         producer.publish(inventoryEvent);
-        log.info("Inventory reserved.");
+        log.info(
+                "Reserving inventory for product {} (quantity {}) for order {}",
+                event.productId(),
+                event.quantity(),
+                event.orderId()
+        );
         idempotencyService.markProcessed(CONSUMER_NAME, event.eventId());
     }
 }

@@ -9,6 +9,8 @@ public record OrderCreatedEvent (
         UUID orderId,
         String customerName,
         String restaurantName,
+        Long productId,
+        Integer quantity,
         BigDecimal totalAmount,
         String status,
         LocalDateTime createdAt,

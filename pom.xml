@@ -32,6 +32,7 @@
         <module>discovery-server</module>
         <module>websocket-service</module>
         <module>auth-service</module>
+        <module>pricing-service</module>
     </modules>
 
     <properties>

@@ -23,6 +23,10 @@ public class Order {
     private String customerName;
     @Column(name = "restaurant_name", nullable = false)
     private String restaurantName;
+    @Column(name = "product_id" , nullable = false)
+    private Long productId;
+    @Column(name = "quantity" , nullable = false)
+    private Integer quantity;
     @Column(name = "total_amount", nullable = false,precision = 10,scale = 2)
     private BigDecimal totalAmount;
     @Enumerated(EnumType.STRING)

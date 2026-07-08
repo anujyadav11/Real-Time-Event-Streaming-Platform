@@ -1,7 +1,8 @@
 package com.example.eventstream.pricingservice.controller;
 
 
-import com.example.eventstream.pricingservice.dto.PriceResponse;
+
+import com.example.eventstream.common.dto.ProductPriceResponse;
 import com.example.eventstream.pricingservice.service.PricingService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +17,7 @@ public class PricingController {
     }
 
     @GetMapping("/products/{productId}")
-    public PriceResponse getPrice(
+    public ProductPriceResponse getPrice(
             @PathVariable Long productId) {
 
         return pricingService.getPrice(productId);

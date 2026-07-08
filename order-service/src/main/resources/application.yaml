@@ -4,21 +4,21 @@ server:
 spring:
   application:
     name: order-service
+
   datasource:
     url: ${ORDER_DB_URL:jdbc:postgresql://localhost:5432/orders}
     username: ${ORDER_DB_USERNAME:postgres}
     password: ${ORDER_DB_PASSWORD:postgres}
+
   jpa:
     open-in-view: false
     hibernate:
       ddl-auto: validate
-
     show-sql: true
-
     properties:
       hibernate:
         format_sql: true
-        
+
   flyway:
     enabled: true
     locations: classpath:db/migration
@@ -29,15 +29,40 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
     consumer:
       group-id: order-group
       auto-offset-reset: earliest
-
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
 
       properties:
         spring.json.trusted.packages: "*"
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      pricingService:
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 15s
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+
+  retry:
+    instances:
+      pricingService:
+        maxAttempts: 3
+        waitDuration: 2s
+
+  timelimiter:
+    instances:
+      pricingService:
+        timeoutDuration: 3s
+
+pricing-service:
+  base-url: http://localhost:8089
 
 eureka:
   client:
@@ -50,10 +75,18 @@ eureka:
 logging:
   level:
     root: INFO
-    com.anuj.order-service: DEBUG
+    com.example.eventstream.order: DEBUG
 
 management:
   endpoints:
     web:
       exposure:
-        include: health,info
+        include: health,info,metrics,circuitbreakers,circuitbreakerevents
+
+  endpoint:
+    health:
+      show-details: always
+
+  health:
+    circuitbreakers:
+      enabled: true

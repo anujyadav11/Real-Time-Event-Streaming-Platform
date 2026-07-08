@@ -37,7 +37,7 @@ public class PaymentService {
 
         payment.setOrderId(event.orderId());
 
-        payment.setAmount(java.math.BigDecimal.valueOf(299));
+        payment.setAmount(event.amount());
 
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setPaidAt(LocalDateTime.now());
