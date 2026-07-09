@@ -1,16 +1,25 @@
 server:
   port: 8089
+
 spring:
   application:
     name: pricing-service
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  cache:
+    type: redis
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
 
-instance:
-  prefer-ip-address: true
+  instance:
+    prefer-ip-address: true
 
 management:
   endpoints:
