@@ -5,6 +5,8 @@ import com.example.eventstream.notification.entity.Notification;
 import com.example.eventstream.common.enums.NotificationChannel;
 import com.example.eventstream.common.enums.NotificationStatus;
 import com.example.eventstream.notification.repository.NotificationRepository;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +16,11 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
     private final NotificationRepository notificationRepository;
+    private final Counter notificationSentTotal;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, MeterRegistry meterRegistry) {
         this.notificationRepository = notificationRepository;
+        this.notificationSentTotal = meterRegistry.counter("notifications.sent.total");
     }
 
     @Transactional
@@ -33,7 +37,7 @@ public class NotificationService {
 
         notificationRepository.save(emailNotification);
         log.info("Email notification sent successfully");
-
+        notificationSentTotal.increment();
         log.info(" Sending SMS notification sent for order {}", event.orderId());
 
         Notification smsNotification = Notification.builder()
