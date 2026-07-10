@@ -30,16 +30,18 @@ public class OrderService {
     private final PricingClient pricingClient;
     private final OrderMapper orderMapper;
     private final MeterRegistry meterRegistry;
+    private final OutboxService outboxService;
 
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
     public OrderService(OrderRepository orderRepository, OrderEventProducer orderEventProducer,
-                        PricingClient pricingClient, OrderMapper orderMapper, MeterRegistry meterRegistry) {
+                        PricingClient pricingClient, OrderMapper orderMapper, MeterRegistry meterRegistry, OutboxService outboxService) {
         this.orderRepository = orderRepository;
         this.orderEventProducer = orderEventProducer;
         this.pricingClient = pricingClient;
         this.orderMapper = orderMapper;
         this.meterRegistry = meterRegistry;
+        this.outboxService = outboxService;
     }
     public Order createOrder(CreateOrderRequest request) {
         Timer.Sample sample = Timer.start(meterRegistry);
@@ -76,7 +78,13 @@ public class OrderService {
                     savedOrder.getCreatedAt(),
                     correlationId
             );
-            orderEventProducer.publish(event);
+            // orderEventProducer.publish(event);
+            outboxService.saveEvent(
+                    savedOrder.getId(),
+                    "ORDER",
+                    "ORDER_CREATED",
+                    event
+            );
             log.info("OrderCreatedEvent published for order {}", savedOrder.getId());
             meterRegistry.counter("orders.creation.success.total").increment();
             return savedOrder;

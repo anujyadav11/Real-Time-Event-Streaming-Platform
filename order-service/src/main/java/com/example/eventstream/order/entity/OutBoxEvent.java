@@ -1,12 +1,18 @@
 package com.example.eventstream.order.entity;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "outbox-events")
+@Table(name = "outbox_events")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OutBoxEvent {
 
     @Id
@@ -14,16 +20,15 @@ public class OutBoxEvent {
     private UUID id;
 
     @Column(nullable = false)
-    private UUID aggregatedId;
+    private UUID aggregateId;
 
     @Column(nullable = false)
     private String aggregateType;
-    
+
     @Column(nullable = false)
     private String eventType;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String payload;
 
     @Column(nullable = false)
