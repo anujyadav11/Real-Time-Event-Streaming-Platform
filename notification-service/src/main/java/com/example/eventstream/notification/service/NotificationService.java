@@ -16,11 +16,14 @@ import org.springframework.stereotype.Service;
 public class NotificationService {
     private static final Logger log = LoggerFactory.getLogger(NotificationService.class);
     private final NotificationRepository notificationRepository;
-    private final Counter notificationSentTotal;
+    private final Counter notificationSentTotalEmail;
+    private final Counter notificationSentTotalSms;
+
 
     public NotificationService(NotificationRepository notificationRepository, MeterRegistry meterRegistry) {
         this.notificationRepository = notificationRepository;
-        this.notificationSentTotal = meterRegistry.counter("notifications.sent.total");
+        this.notificationSentTotalEmail = meterRegistry.counter("notifications.sent.total.email");
+        this.notificationSentTotalSms = meterRegistry.counter("notifications.sent.total.sms");
     }
 
     @Transactional
@@ -36,8 +39,8 @@ public class NotificationService {
                 .build();
 
         notificationRepository.save(emailNotification);
+        notificationSentTotalEmail.increment();
         log.info("Email notification sent successfully");
-        notificationSentTotal.increment();
         log.info(" Sending SMS notification sent for order {}", event.orderId());
 
         Notification smsNotification = Notification.builder()
@@ -49,6 +52,7 @@ public class NotificationService {
                 .build();
 
         notificationRepository.save(smsNotification);
+        notificationSentTotalSms.increment();
         log.info("SMS notification sent successfully");
     }
 }
