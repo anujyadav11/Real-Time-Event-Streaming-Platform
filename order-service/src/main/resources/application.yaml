@@ -78,17 +78,25 @@ logging:
     com.example.eventstream.order: DEBUG
 
 management:
+  tracing:
+    sampling:
+      probability: 1.0
+
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
   endpoints:
     web:
       exposure:
-        include: health,info,prometheus,metrics,circuitbreaker,circuitbreakerevents
+        include: health,info,prometheus,metrics
 
   endpoint:
     health:
       show-details: always
 
   health:
-    circuitbreaker:
+    circuitbreakers:
       enabled: true
 
   metrics:
