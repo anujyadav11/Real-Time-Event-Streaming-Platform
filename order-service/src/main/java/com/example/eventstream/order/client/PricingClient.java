@@ -17,10 +17,12 @@ public class PricingClient {
     private final RestClient restClient;
 
     public PricingClient(
+            RestClient.Builder builder,
             @Value("${pricing-service.base-url}") String baseUrl) {
-        this.restClient = RestClient.builder()
+        this.restClient = builder
                 .baseUrl(baseUrl)
                 .build();
+
     }
     @CircuitBreaker(
             name = "pricingService",
