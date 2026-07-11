@@ -5,6 +5,7 @@ import com.example.eventstream.notification.entity.Notification;
 import com.example.eventstream.common.enums.NotificationChannel;
 import com.example.eventstream.common.enums.NotificationStatus;
 import com.example.eventstream.notification.repository.NotificationRepository;
+import com.example.eventstream.notification.repository.ProcessedEventRepository;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.transaction.Transactional;
@@ -18,12 +19,14 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final Counter notificationSentTotalEmail;
     private final Counter notificationSentTotalSms;
+    private final ProcessedEventRepository processedEventRepository;
 
 
-    public NotificationService(NotificationRepository notificationRepository, MeterRegistry meterRegistry) {
+    public NotificationService(NotificationRepository notificationRepository, MeterRegistry meterRegistry, ProcessedEventRepository processedEventRepository) {
         this.notificationRepository = notificationRepository;
         this.notificationSentTotalEmail = meterRegistry.counter("notifications.sent.total.email");
         this.notificationSentTotalSms = meterRegistry.counter("notifications.sent.total.sms");
+        this.processedEventRepository = processedEventRepository;
     }
 
     @Transactional
