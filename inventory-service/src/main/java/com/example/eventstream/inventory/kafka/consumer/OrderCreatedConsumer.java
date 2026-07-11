@@ -4,6 +4,7 @@ import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.inventory.kafka.producer.InventoryEventProducer;
+import com.example.eventstream.inventory.service.InventoryService;
 import com.example.infrastructure.redis.IdempotencyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +21,14 @@ public class OrderCreatedConsumer {
     private static final String CONSUMER_NAME = "inventory-service";
     private final InventoryEventProducer producer;
     private final IdempotencyService idempotencyService;
+    private final InventoryService inventoryService;
 
-    public OrderCreatedConsumer(InventoryEventProducer producer, IdempotencyService idempotencyService) {
+    public OrderCreatedConsumer(InventoryEventProducer producer,
+                                IdempotencyService idempotencyService,
+                                InventoryService inventoryService) {
         this.producer = producer;
         this.idempotencyService = idempotencyService;
+        this.inventoryService = inventoryService;
     }
     private static final Logger log = LoggerFactory.getLogger(OrderCreatedConsumer.class);
 
@@ -46,6 +51,14 @@ public class OrderCreatedConsumer {
             log.info("Duplicate event ignored");
             return;
         }
+        inventoryService.reserveInventory(event.productId(), event.quantity());
+        log.info(
+                "Reserved inventory for product {} (quantity {}) for order {}",
+                event.productId(),
+                event.quantity(),
+                event.orderId()
+        );
+
         InventoryReservedEvent inventoryEvent =
                 new InventoryReservedEvent(
                         UUID.randomUUID(),
@@ -56,14 +69,8 @@ public class OrderCreatedConsumer {
                         true,
                         LocalDateTime.now(),
                         event.correlationId()
-                );
-        producer.publish(inventoryEvent);
-        log.info(
-                "Reserving inventory for product {} (quantity {}) for order {}",
-                event.productId(),
-                event.quantity(),
-                event.orderId()
         );
+        producer.publish(inventoryEvent);
         idempotencyService.markProcessed(CONSUMER_NAME, event.eventId());
     }
 }
