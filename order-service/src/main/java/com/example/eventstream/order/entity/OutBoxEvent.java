@@ -1,5 +1,6 @@
 package com.example.eventstream.order.entity;
 
+import com.example.eventstream.common.enums.OutBoxStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -31,8 +32,12 @@ public class OutBoxEvent {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String payload;
 
-    @Column(nullable = false)
-    private boolean published = false;
+   @Enumerated(EnumType.STRING)
+   @Column(nullable = false)
+   private OutBoxStatus status =  OutBoxStatus.NEW;
+
+   @Column(nullable = false)
+   private int retryCount = 0;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

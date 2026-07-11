@@ -1,0 +1,5 @@
+ALTER TABLE outbox_events
+ADD COLUMN status VARCHAR(30) NOT NULL DEFAULT 'NEW';
+
+ALTER TABLE outbox_events
+ADD COLUMN retry_count INT NOT NULL DEFAULT 0;

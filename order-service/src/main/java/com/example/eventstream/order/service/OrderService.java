@@ -8,7 +8,6 @@ import com.example.eventstream.order.entity.Order;
 import com.example.eventstream.common.enums.OrderStatus;
 import com.example.eventstream.order.exception.OrderNotFoundException;
 import com.example.eventstream.common.event.OrderCreatedEvent;
-import com.example.eventstream.order.kafka.producer.OrderEventProducer;
 import com.example.eventstream.order.mapper.OrderMapper;
 import com.example.eventstream.order.repository.OrderRepository;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -26,7 +25,6 @@ import java.util.UUID;
 @Transactional
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final OrderEventProducer orderEventProducer;
     private final PricingClient pricingClient;
     private final OrderMapper orderMapper;
     private final MeterRegistry meterRegistry;
@@ -34,10 +32,9 @@ public class OrderService {
 
     private static final Logger log = LoggerFactory.getLogger(OrderService.class);
 
-    public OrderService(OrderRepository orderRepository, OrderEventProducer orderEventProducer,
+    public OrderService(OrderRepository orderRepository,
                         PricingClient pricingClient, OrderMapper orderMapper, MeterRegistry meterRegistry, OutboxService outboxService) {
         this.orderRepository = orderRepository;
-        this.orderEventProducer = orderEventProducer;
         this.pricingClient = pricingClient;
         this.orderMapper = orderMapper;
         this.meterRegistry = meterRegistry;
@@ -78,14 +75,13 @@ public class OrderService {
                     savedOrder.getCreatedAt(),
                     correlationId
             );
-            // orderEventProducer.publish(event);
             outboxService.saveEvent(
                     savedOrder.getId(),
                     "ORDER",
                     "ORDER_CREATED",
                     event
             );
-            log.info("OrderCreatedEvent published for order {}", savedOrder.getId());
+            log.info("OrderCreatedEvent saved to outbox for order {}", savedOrder.getId());
             meterRegistry.counter("orders.creation.success.total").increment();
             return savedOrder;
         } catch (Exception ex) {

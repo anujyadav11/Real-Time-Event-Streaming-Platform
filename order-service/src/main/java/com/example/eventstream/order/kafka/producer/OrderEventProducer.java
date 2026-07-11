@@ -6,7 +6,10 @@ import com.example.eventstream.common.constants.KafkaTopics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
+
+import java.util.concurrent.CompletableFuture;
 
 @Component
 public class OrderEventProducer {
@@ -18,13 +21,16 @@ public class OrderEventProducer {
     public OrderEventProducer(KafkaTemplate<String, OrderCreatedEvent> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
-    public void publish(OrderCreatedEvent event) {
+    public CompletableFuture<SendResult<String, OrderCreatedEvent>> publish(OrderCreatedEvent event) {
         log.info("Publishing OrderCreatedEvent for order {}", event.orderId());
-        kafkaTemplate.send(
+        return kafkaTemplate.send(
                 KafkaTopics.ORDER_CREATED,
                 event.orderId().toString(),
                 event
-        );
-        log.info("OrderCreatedEvent published successfully");
+        ).whenComplete((result, ex) -> {
+            if (ex == null) {
+                log.info("OrderCreatedEvent published successfully for order {}", event.orderId());
+            }
+        });
     }
 }
