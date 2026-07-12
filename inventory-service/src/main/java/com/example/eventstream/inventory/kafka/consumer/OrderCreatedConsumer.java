@@ -1,8 +1,11 @@
 package com.example.eventstream.inventory.kafka.consumer;
 
 import com.example.eventstream.common.constants.KafkaTopics;
+import com.example.eventstream.common.event.InventoryReservationFailedEvent;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.common.event.OrderCreatedEvent;
+import com.example.eventstream.inventory.exception.InsufficientInventoryException;
+import com.example.eventstream.inventory.exception.InventoryNotFoundException;
 import com.example.eventstream.inventory.kafka.producer.InventoryEventProducer;
 import com.example.eventstream.inventory.service.InventoryService;
 import com.example.infrastructure.redis.IdempotencyService;
@@ -18,6 +21,7 @@ import java.util.UUID;
 
 @Component
 public class OrderCreatedConsumer {
+    private static final Logger log = LoggerFactory.getLogger(OrderCreatedConsumer.class);
     private static final String CONSUMER_NAME = "inventory-service";
     private final InventoryEventProducer producer;
     private final IdempotencyService idempotencyService;
@@ -30,7 +34,6 @@ public class OrderCreatedConsumer {
         this.idempotencyService = idempotencyService;
         this.inventoryService = inventoryService;
     }
-    private static final Logger log = LoggerFactory.getLogger(OrderCreatedConsumer.class);
 
     @RetryableTopic(
             attempts = "4",
@@ -48,29 +51,42 @@ public class OrderCreatedConsumer {
         log.info("Received OrderCreatedEvent: {}", event.orderId());
         log.info("Checking inventory....");
         if(idempotencyService.isProcessed(CONSUMER_NAME, event.eventId())){
-            log.info("Duplicate event ignored");
+            log.info("Duplicate OrderCreatedEvent ignored for order {}", event.orderId());
             return;
         }
-        inventoryService.reserveInventory(event.productId(), event.quantity());
-        log.info(
-                "Reserved inventory for product {} (quantity {}) for order {}",
-                event.productId(),
-                event.quantity(),
-                event.orderId()
-        );
+        try{
+            inventoryService.reserveInventory(event.productId(),event.quantity());
+            log.info(
+                    "Reserved inventory for product {} (quantity {}) for order {}",
+                    event.productId(),
+                    event.quantity(),
+                    event.orderId()
+            );
 
-        InventoryReservedEvent inventoryEvent =
-                new InventoryReservedEvent(
-                        UUID.randomUUID(),
-                        event.orderId(),
-                        event.productId(),
-                        event.quantity(),
-                        event.totalAmount(),
-                        true,
-                        LocalDateTime.now(),
-                        event.correlationId()
-        );
-        producer.publish(inventoryEvent);
-        idempotencyService.markProcessed(CONSUMER_NAME, event.eventId());
+            InventoryReservedEvent inventoryEvent =
+                    new InventoryReservedEvent(
+                            UUID.randomUUID(),
+                            event.orderId(),
+                            event.productId(),
+                            event.quantity(),
+                            event.correlationId()
+                    );
+            producer.publishReserved(inventoryEvent).join();
+            idempotencyService.markProcessed(CONSUMER_NAME, event.eventId()
+            );
+            log.info("InventoryReservedEvent published for Order {}", event.orderId());
+        }catch (InventoryNotFoundException | InsufficientInventoryException ex){
+            log.warn("Inventory reservation failed for order {} : {}" , event.orderId(), ex.getMessage());
+            InventoryReservationFailedEvent failedEvent = new InventoryReservationFailedEvent(
+                    UUID.randomUUID(),
+                    event.orderId(),
+                    event.productId(),
+                    event.quantity(),
+                    ex.getMessage(),
+                    event.correlationId()
+            );
+            producer.publishReservationFailed(failedEvent).join();
+            idempotencyService.markProcessed(CONSUMER_NAME, event.eventId());
+        }
     }
 }

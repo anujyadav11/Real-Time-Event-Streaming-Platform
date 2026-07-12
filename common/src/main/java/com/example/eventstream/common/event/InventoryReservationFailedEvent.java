@@ -1,4 +1,15 @@
 package com.example.eventstream.common.event;
 
-public record InventoryReservationFailedEvent() {
+import java.util.UUID;
+
+public record InventoryReservationFailedEvent(
+        UUID eventId,
+        UUID orderId,
+        Long productId,
+        Integer quantity,
+        String reason,
+        String correlationId
+
+) {
+
 }

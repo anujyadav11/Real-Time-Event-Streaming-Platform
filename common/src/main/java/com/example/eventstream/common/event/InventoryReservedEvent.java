@@ -1,7 +1,5 @@
 package com.example.eventstream.common.event;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record InventoryReservedEvent(
@@ -9,9 +7,8 @@ public record InventoryReservedEvent(
         UUID orderId,
         Long productId,
         Integer quantity,
-        BigDecimal amount,
-        boolean reserved,
-        LocalDateTime reservedAt,
         String correlationId
+
 ) {
+
 }
