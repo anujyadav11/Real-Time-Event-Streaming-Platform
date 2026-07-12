@@ -33,6 +33,7 @@
         <module>websocket-service</module>
         <module>auth-service</module>
         <module>pricing-service</module>
+        <module>saga-orchestrator</module>
     </modules>
 
     <properties>

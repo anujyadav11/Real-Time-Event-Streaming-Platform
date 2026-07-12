@@ -17,7 +17,7 @@ spring:
             - id: inventory-service
               uri: ${INVENTORY_SERVICE_URL:lb://INVENTORY-SERVICE}
               predicates:
-                - Path=/api/inventory/**
+                - Path=/api/v1/inventory/**
             - id: payment-service
               uri: ${PAYMENT_SERVICE_URL:lb://PAYMENT-SERVICE}
               predicates:
@@ -29,7 +29,11 @@ spring:
             - id: delivery-service
               uri: ${DELIVERY_SERVICE_URL:lb://DELIVERY-SERVICE}
               predicates:
-                - Path=/api/deliveries/**
+                - Path=/api/v1/deliveries
+            - id: saga-orchestrator
+              uri: ${SAGA_ORCHESTRATOR_URL:lb://SAGA-ORCHESTRATOR}
+              predicates:
+                - Path=/api/orchestrator/**
 eureka:
   client:
     service-url:

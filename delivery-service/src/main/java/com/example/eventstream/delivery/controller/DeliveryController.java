@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/deliveries")
+@RequestMapping("/api/v1/deliveries")
 public class DeliveryController {
     
     private final DeliveryService deliveryService;
