@@ -1,5 +1,6 @@
 package com.example.eventstream.sagaorchestrator.entity;
 
+import com.example.eventstream.sagaorchestrator.state.SagaStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,7 +29,7 @@ public class SagaInstance {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private SagaStatus status;
 
     @CreationTimestamp
     private LocalDateTime createdAt;
