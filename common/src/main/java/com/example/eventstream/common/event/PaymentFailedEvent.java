@@ -1,16 +1,13 @@
 package com.example.eventstream.common.event;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
-public record InventoryReservedEvent(
+public record PaymentFailedEvent(
         UUID eventId,
         UUID orderId,
         Long productId,
         Integer quantity,
-        BigDecimal amount,
+        String reason,
         String correlationId
 
-) {
-
-}
+) {}

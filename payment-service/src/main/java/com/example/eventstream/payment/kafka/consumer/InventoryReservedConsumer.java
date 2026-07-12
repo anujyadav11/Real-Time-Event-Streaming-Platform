@@ -13,11 +13,14 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class InventoryReservedConsumer {
+    private static final Logger log =
+            LoggerFactory.getLogger(InventoryReservedConsumer.class);
     private static final String CONSUMER_NAME = "payment-service";
-    private static final Logger log = LoggerFactory.getLogger(InventoryReservedConsumer.class);
     private final PaymentService paymentService;
     private final IdempotencyService idempotencyService;
-    public InventoryReservedConsumer(PaymentService paymentService,IdempotencyService idempotencyService) {
+    public InventoryReservedConsumer(
+            PaymentService paymentService,
+            IdempotencyService idempotencyService) {
         this.paymentService = paymentService;
         this.idempotencyService = idempotencyService;
     }
@@ -33,13 +36,19 @@ public class InventoryReservedConsumer {
             topics = KafkaTopics.INVENTORY_RESERVED,
             groupId = "payment-group"
     )
-    public void consume(InventoryReservedEvent event){
-        if(idempotencyService.isProcessed(CONSUMER_NAME, event.eventId())){
-            log.info("Duplicate event Ignored");
+    public void consume(InventoryReservedEvent event) {
+        if (idempotencyService.isProcessed(CONSUMER_NAME, event.eventId())) {
+            log.info("Duplicate InventoryReservedEvent ignored for order {}",
+                    event.orderId());
             return;
         }
-        log.info("Received InventoryReservedEvent for Order : {}",event.orderId());
+        log.info("Received InventoryReservedEvent for order {}", event.orderId());
+        log.info("Processing payment for order {}", event.orderId());
         paymentService.processPayment(event);
-        idempotencyService.markProcessed(CONSUMER_NAME, event.eventId());
+        idempotencyService.markProcessed(
+                CONSUMER_NAME,
+                event.eventId()
+        );
+        log.info("Payment processing completed for order {}", event.orderId());
     }
 }

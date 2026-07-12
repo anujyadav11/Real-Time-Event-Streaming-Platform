@@ -69,6 +69,7 @@ public class OrderCreatedConsumer {
                             event.orderId(),
                             event.productId(),
                             event.quantity(),
+                            event.totalAmount(),
                             event.correlationId()
                     );
             producer.publishReserved(inventoryEvent).join();

@@ -2,6 +2,7 @@ package com.example.eventstream.payment.service;
 
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.common.event.PaymentCompletedEvent;
+import com.example.eventstream.common.event.PaymentFailedEvent;
 import com.example.eventstream.payment.entity.Payment;
 import com.example.eventstream.common.enums.PaymentStatus;
 import com.example.eventstream.payment.kafka.producer.PaymentEventProducer;
@@ -32,13 +33,25 @@ public class PaymentService {
     @Transactional
     public void processPayment(InventoryReservedEvent event) {
         log.info("[{}] Processing payment for order: {}", event.correlationId(), event.orderId());
-
+        try{
+            boolean paymentSuccessful = true;
+            if(!paymentSuccessful){
+                PaymentFailedEvent failedEvent = new PaymentFailedEvent(
+                        UUID.randomUUID(),
+                        event.orderId(),
+                        event.productId(),
+                        event.quantity(),
+                        "Payment declined",
+                        event.correlationId()
+                );
+                paymentEventProducer.publishFailed(failedEvent).join();
+                log.warn("Payment failed for order {}", event.orderId());
+                return;
+            }
         Payment payment = new Payment();
 
         payment.setOrderId(event.orderId());
-
         payment.setAmount(event.amount());
-
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setPaidAt(LocalDateTime.now());
 
@@ -57,9 +70,13 @@ public class PaymentService {
                         event.correlationId()
                 );
 
-        paymentEventProducer.publish(paymentCompletedEvent);
+        paymentEventProducer.publishCompleted(paymentCompletedEvent);
 
         log.info("PaymentCompletedEvent published for order: {}",
                 payment.getOrderId());
+        } catch (Exception ex){
+            log.error("Payment Processing failed for order: {}", event.orderId(), ex);
+            throw  ex;
+        }
     }
 }

@@ -15,10 +15,9 @@ public class InventoryReservedDLTConsumer {
     )
     public void consume(InventoryReservedEvent event) {
         log.error(
-                "DLT Message -> OrderId: {}, Amount: {}, Reserved: {}",
+                "DLT Message -> OrderId: {}, Amount: {}",
                 event.orderId(),
-                event.amount(),
-                event.reserved()
+                event.amount()
         );
     }
 }
