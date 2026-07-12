@@ -1,0 +1,25 @@
+package com.example.eventstream.sagaorchestrator.state;
+
+public enum SagaStatus {
+    STARTED,
+
+    INVENTORY_PENDING,
+    INVENTORY_COMPLETED,
+    INVENTORY_FAILED,
+
+    PAYMENT_PENDING,
+    PAYMENT_COMPLETED,
+    PAYMENT_FAILED,
+
+    DELIVERY_PENDING,
+    DELIVERY_COMPLETED,
+    DELIVERY_FAILED,
+
+    NOTIFICATION_PENDING,
+    NOTIFICATION_COMPLETED,
+
+    COMPLETED,
+    COMPENSATING,
+    COMPENSATED,
+    FAILED
+}
