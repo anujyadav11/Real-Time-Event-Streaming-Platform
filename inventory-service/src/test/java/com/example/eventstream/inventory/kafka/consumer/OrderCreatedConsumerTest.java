@@ -9,6 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import java.util.concurrent.CompletableFuture;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
@@ -17,7 +20,6 @@ import java.util.UUID;
 
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class OrderCreatedConsumerTest {
@@ -38,12 +40,14 @@ class OrderCreatedConsumerTest {
     void reservesStockBeforePublishingTheReservationEvent() {
         OrderCreatedEvent event = orderCreatedEvent();
         when(idempotencyService.isProcessed("inventory-service", event.eventId())).thenReturn(false);
+        when(producer.publishReserved(any()))
+                .thenReturn(CompletableFuture.completedFuture(null));
 
         consumer.consume(event);
 
         InOrder order = inOrder(inventoryService, producer, idempotencyService);
         order.verify(inventoryService).reserveInventory(event.productId(), event.quantity());
-        order.verify(producer).publish(org.mockito.ArgumentMatchers.any());
+        order.verify(producer).publishReserved(any());
         order.verify(idempotencyService).markProcessed("inventory-service", event.eventId());
     }
 
