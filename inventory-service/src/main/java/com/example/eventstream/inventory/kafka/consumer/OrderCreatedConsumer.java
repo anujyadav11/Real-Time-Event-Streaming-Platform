@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Component
+//@Component
 public class OrderCreatedConsumer {
     private static final Logger log = LoggerFactory.getLogger(OrderCreatedConsumer.class);
     private static final String CONSUMER_NAME = "inventory-service";
