@@ -1,5 +1,6 @@
 package com.example.eventstream.payment.service;
 
+import com.example.eventstream.common.command.ProcessPaymentCommand;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.common.event.PaymentFailedEvent;
@@ -31,34 +32,34 @@ public class PaymentService {
     }
 
     @Transactional
-    public void processPayment(InventoryReservedEvent event) {
-        log.info("[{}] Processing payment for order: {}", event.correlationId(), event.orderId());
+    public void processPayment(ProcessPaymentCommand command) {
+        log.info("[{}] Processing payment for order: {}", command.correlationId(), command.orderId());
         try{
             boolean paymentSuccessful = true;
             if(!paymentSuccessful){
                 PaymentFailedEvent failedEvent = new PaymentFailedEvent(
                         UUID.randomUUID(),
-                        event.orderId(),
-                        event.productId(),
-                        event.quantity(),
+                        command.orderId(),
+                        command.productId(),
+                        command.quantity(),
                         "Payment declined",
-                        event.correlationId()
+                        command.correlationId()
                 );
                 paymentEventProducer.publishFailed(failedEvent).join();
-                log.warn("Payment failed for order {}", event.orderId());
+                log.warn("Payment failed for order {}", command.orderId());
                 return;
             }
         Payment payment = new Payment();
 
-        payment.setOrderId(event.orderId());
-        payment.setAmount(event.amount());
+        payment.setOrderId(command.orderId());
+        payment.setAmount(command.amount());
         payment.setStatus(PaymentStatus.SUCCESS);
         payment.setPaidAt(LocalDateTime.now());
 
         paymentRepository.save(payment);
 
         log.info("Payment saved successfully for order: {}",
-                event.orderId());
+                command.orderId());
 
         PaymentCompletedEvent paymentCompletedEvent =
                 new PaymentCompletedEvent(
@@ -67,7 +68,7 @@ public class PaymentService {
                         payment.getAmount(),
                         true,
                         payment.getPaidAt(),
-                        event.correlationId()
+                        command.correlationId()
                 );
 
         paymentEventProducer.publishCompleted(paymentCompletedEvent);
@@ -75,7 +76,7 @@ public class PaymentService {
         log.info("PaymentCompletedEvent published for order: {}",
                 payment.getOrderId());
         } catch (Exception ex){
-            log.error("Payment Processing failed for order: {}", event.orderId(), ex);
+            log.error("Payment Processing failed for order: {}", command.orderId(), ex);
             throw  ex;
         }
     }
