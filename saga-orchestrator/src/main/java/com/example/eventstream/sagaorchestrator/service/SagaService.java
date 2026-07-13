@@ -4,6 +4,7 @@ package com.example.eventstream.sagaorchestrator.service;
 import com.example.eventstream.sagaorchestrator.entity.SagaInstance;
 import com.example.eventstream.sagaorchestrator.repository.SagaRepository;
 import com.example.eventstream.sagaorchestrator.state.SagaStatus;
+import com.example.eventstream.sagaorchestrator.state.SagaTransitionValidator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,8 +13,10 @@ import java.util.UUID;
 @Service
 public class SagaService {
     private final SagaRepository sagaRepository;
-    public SagaService(SagaRepository sagaRepository) {
+    private final SagaTransitionValidator transitionValidator;
+    public SagaService(SagaRepository sagaRepository, SagaTransitionValidator transitionValidator) {
         this.sagaRepository = sagaRepository;
+        this.transitionValidator = transitionValidator;
     }
     @Transactional
     public SagaInstance startSaga(
@@ -36,9 +39,16 @@ public class SagaService {
     @Transactional
     public SagaInstance updateStatus(
             UUID orderId,
-            SagaStatus status) {
+            SagaStatus newStatus) {
         SagaInstance saga = getSaga(orderId);
-        saga.setStatus(status);
+        if(!transitionValidator.isValidTransition(
+                saga.getStatus(),
+                newStatus
+        )){
+            throw new IllegalStateException("Invalid Saga transistion from"
+            + saga.getStatus() + "to" + newStatus);
+        }
+        saga.setStatus(newStatus);
         return sagaRepository.save(saga);
     }
     @Transactional
