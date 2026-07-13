@@ -17,6 +17,10 @@ public final class KafkaTopics {
             "create-delivery-command";
     public static final String SEND_NOTIFICATION_COMMAND =
             "send-notification-command";
+    public static final String DELIVERY_ASSIGNED =
+            "delivery-assigned";
+    public static final String DELIVERY_ASSIGNMENT_FAILED =
+            "delivery-assignment-failed";
 
     private KafkaTopics() {
     }

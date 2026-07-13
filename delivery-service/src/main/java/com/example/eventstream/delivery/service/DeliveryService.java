@@ -1,10 +1,12 @@
 package com.example.eventstream.delivery.service;
 
-import com.example.eventstream.common.event.PaymentCompletedEvent;
+import com.example.eventstream.common.command.CreateDeliveryCommand;
+import com.example.eventstream.common.event.DeliveryAssignedEvent;
 import com.example.eventstream.common.enums.DeliveryStatus;
 import com.example.eventstream.delivery.dto.DeliveryResponse;
 import com.example.eventstream.delivery.entity.Delivery;
 import com.example.eventstream.delivery.exception.DeliveryNotFoundException;
+import com.example.eventstream.delivery.kafka.producer.DeliveryEventProducer;
 import com.example.eventstream.delivery.repository.DeliveryRepository;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -18,33 +20,37 @@ import java.util.UUID;
 public class DeliveryService {
     private static final Logger log = LoggerFactory.getLogger(DeliveryService.class);
     private final DeliveryRepository deliveryRepository;
+    private final DeliveryEventProducer deliveryEventProducer;
+    private final DeliveryAssignmentService deliveryAssignmentService;
 
-    public DeliveryService (DeliveryRepository deliveryRepository){
+    public DeliveryService (DeliveryRepository deliveryRepository , DeliveryEventProducer deliveryEventProducer, DeliveryAssignmentService deliveryAssignmentService){
         this.deliveryRepository = deliveryRepository;
+        this.deliveryEventProducer = deliveryEventProducer;
+        this.deliveryAssignmentService = deliveryAssignmentService;
     }
     @Transactional
-    public void createDelivery(PaymentCompletedEvent event){
-        log.info("Creating delivery for order: {}", event.orderId());
-
-        Delivery delivery = Delivery.builder().
-                orderId(event.orderId())
-                .deliveryPartner(assignDeliveryPartner())
+    public void assignDelivery(CreateDeliveryCommand command) {
+        log.info("Assigning delivery for order {}", command.orderId());
+        Delivery delivery = Delivery.builder()
+                .orderId(command.orderId())
+                .deliveryPartner(deliveryAssignmentService.assignPartner())
                 .status(DeliveryStatus.CREATED)
                 .estimatedDeliveryTime(LocalDateTime.now().plusMinutes(30))
                 .build();
         deliveryRepository.save(delivery);
-        log.info("Delivery created successfully for order : {}", event.orderId());
-    }
-    private String assignDeliveryPartner(){
-        String[] partners = {
-                "Rahul Sharma",
-                "Amit Patel",
-                "Neha Singh",
-                "Rohit Verma",
-                "Priya Mehta"
-        };
-        int index = (int)(Math.random() * partners.length);
-        return partners[index];
+        DeliveryAssignedEvent event =
+                new DeliveryAssignedEvent(
+                        UUID.randomUUID(),
+                        command.orderId(),
+                        delivery.getId(),
+                        delivery.getDeliveryPartner(),
+                        command.correlationId()
+                );
+        deliveryEventProducer
+                .publishAssigned(event)
+                .join();
+        log.info("DeliveryAssignedEvent published for order {}",
+                command.orderId());
     }
     public DeliveryResponse getDelivery(UUID orderId){
         Delivery delivery = deliveryRepository.findByOrderId(orderId)

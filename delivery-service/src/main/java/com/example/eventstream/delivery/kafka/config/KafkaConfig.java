@@ -19,9 +19,25 @@ public class KafkaConfig {
                 .build();
     }
     @Bean
-    public NewTopic deliveryStatusTopic(){
+    public NewTopic createDeliveryCommandTopic() {
         return TopicBuilder
-                .name(KafkaTopics.DELIVERY_STATUS_UPDATED)
+                .name(KafkaTopics.CREATE_DELIVERY_COMMAND)
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+    @Bean
+    public NewTopic deliveryAssignedTopic() {
+        return TopicBuilder
+                .name(KafkaTopics.DELIVERY_ASSIGNED)
+                .partitions(3)
+                .replicas(1)
+                .build();
+    }
+    @Bean
+    public NewTopic deliveryAssignmentFailedTopic() {
+        return TopicBuilder
+                .name(KafkaTopics.DELIVERY_ASSIGNMENT_FAILED)
                 .partitions(3)
                 .replicas(1)
                 .build();

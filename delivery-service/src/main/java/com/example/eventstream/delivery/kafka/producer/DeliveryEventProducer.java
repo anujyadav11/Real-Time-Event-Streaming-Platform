@@ -1,25 +1,46 @@
 package com.example.eventstream.delivery.kafka.producer;
 
 import com.example.eventstream.common.constants.KafkaTopics;
-import com.example.eventstream.common.event.DeliveryStatusUpdatedEvent;
+import com.example.eventstream.common.event.DeliveryAssignedEvent;
+import com.example.eventstream.common.event.DeliveryAssignmentFailedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.CompletableFuture;
+
 @Component
 public class DeliveryEventProducer {
-    private static final Logger log = LoggerFactory.getLogger(DeliveryEventProducer.class);
-    private final KafkaTemplate<String, DeliveryStatusUpdatedEvent> kafkaTemplate;
-    public DeliveryEventProducer(KafkaTemplate<String, DeliveryStatusUpdatedEvent> kafkaTemplate){
+    private static final Logger log =
+            LoggerFactory.getLogger(DeliveryEventProducer.class);
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+    public DeliveryEventProducer(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
-    public void publish(DeliveryStatusUpdatedEvent event){
-        kafkaTemplate.send(
-                KafkaTopics.DELIVERY_STATUS_UPDATED,
-                event.orderId().toString(),
-                event
-        );
-        log.info("Published DeliveryStatusUpdatedEvent for order: {}", event.orderId());
+    public CompletableFuture<Void> publishAssigned(
+            DeliveryAssignedEvent event) {
+        log.info("Publishing DeliveryAssignedEvent for order {}",
+                event.orderId());
+        return kafkaTemplate.send(
+                        KafkaTopics.DELIVERY_ASSIGNED,
+                        event.orderId().toString(),
+                        event)
+                .thenAccept(result ->
+                        log.info("DeliveryAssignedEvent published for order {}",
+                                event.orderId()));
+
+    }
+    public CompletableFuture<Void> publishAssignmentFailed(
+            DeliveryAssignmentFailedEvent event) {
+        log.info("Publishing DeliveryAssignmentFailedEvent for order {}",
+                event.orderId());
+        return kafkaTemplate.send(
+                        KafkaTopics.DELIVERY_ASSIGNMENT_FAILED,
+                        event.orderId().toString(),
+                        event)
+                .thenAccept(result ->
+                        log.info("DeliveryAssignmentFailedEvent published for order {}",
+                                event.orderId()));
     }
 }
