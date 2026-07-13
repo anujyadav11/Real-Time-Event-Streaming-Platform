@@ -63,4 +63,12 @@ public class SagaService {
     public void compensateSaga(UUID orderId) {
         updateStatus(orderId, SagaStatus.COMPENSATED);
     }
+    @Transactional
+    public void transition(
+            UUID orderId,
+            SagaStatus... statuses) {
+        for (SagaStatus status : statuses) {
+            updateStatus(orderId, status);
+        }
+    }
 }
