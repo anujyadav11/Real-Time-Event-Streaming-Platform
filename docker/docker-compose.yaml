@@ -154,6 +154,30 @@ services:
     networks:
       - event-platform-network
 
+  config-server:
+    build:
+      context: ..
+      dockerfile: docker/config-server/Dockerfile
+
+    image: config-server:1.0
+    container_name: config-server
+
+    restart: unless-stopped
+
+    ports:
+      - "8888:8888"
+
+    environment:
+      JAVA_OPTS: "-Xms256m -Xmx512m"
+      EUREKA_SERVER_URL: http://discovery-server:8761/eureka/
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    networks:
+      - event-platform-network
+
 volumes:
   postgres-data:
   redis-data:
