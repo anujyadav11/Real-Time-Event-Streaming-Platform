@@ -1,6 +1,7 @@
 package com.example.eventstream.inventory.kafka.producer;
 
 import com.example.eventstream.common.constants.KafkaTopics;
+import com.example.eventstream.common.event.InventoryReleasedEvent;
 import com.example.eventstream.common.event.InventoryReservationFailedEvent;
 import com.example.eventstream.common.event.InventoryReservedEvent;
 import org.slf4j.Logger;
@@ -40,5 +41,17 @@ public class InventoryEventProducer {
                         event)
                 .thenAccept(result ->
                         log.info("InventoryReservationFailedEvent published successfully"));
+    }
+    public CompletableFuture<Void> publishReleased(
+            InventoryReleasedEvent event) {
+        log.info("Publishing InventoryReleasedEvent for order {}",
+                event.orderId());
+        return kafkaTemplate.send(
+                        KafkaTopics.INVENTORY_RELEASED,
+                        event.orderId().toString(),
+                        event)
+                .thenAccept(result ->
+                        log.info(
+                                "InventoryReleasedEvent published"));
     }
 }

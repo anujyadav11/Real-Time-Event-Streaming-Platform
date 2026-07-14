@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(
         scanBasePackages = {
-                "com.example.eventstream.saga",
+                "com.example.eventstream.sagaorchestrator",
                 "com.example.infrastructure"
         }
 )

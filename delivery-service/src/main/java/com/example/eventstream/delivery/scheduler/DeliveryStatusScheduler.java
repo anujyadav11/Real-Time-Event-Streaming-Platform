@@ -42,13 +42,11 @@ public class DeliveryStatusScheduler {
                 delivery.setDeliveredAt(LocalDateTime.now());
             }
             deliveryRepository.save(delivery);
-            producer.publish(
-                    new DeliveryStatusUpdatedEvent(
-                            delivery.getOrderId(),
-                            delivery.getStatus(),
-                            LocalDateTime.now()
-                    )
-            );
+            producer.publishStatusUpdated(new DeliveryStatusUpdatedEvent(
+                    delivery.getOrderId(),
+                    nextStatus,
+                    LocalDateTime.now()
+            )).join();
             log.info("Order {} status changed to {}",
                     delivery.getOrderId(),
                     nextStatus);

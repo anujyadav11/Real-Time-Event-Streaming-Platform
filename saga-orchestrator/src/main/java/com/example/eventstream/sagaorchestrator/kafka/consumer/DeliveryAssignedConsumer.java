@@ -1,6 +1,5 @@
 package com.example.eventstream.sagaorchestrator.kafka.consumer;
 
-
 import com.example.eventstream.common.command.SendNotificationCommand;
 import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.DeliveryAssignedEvent;
@@ -55,9 +54,10 @@ public class DeliveryAssignedConsumer {
             return;
         }
         log.info("Delivery assigned for order {}", event.orderId());
-        sagaService.updateStatus(
+        sagaService.transition(
                 event.orderId(),
-                SagaStatus.DELIVERY_COMPLETED
+                SagaStatus.DELIVERY_COMPLETED,
+                SagaStatus.NOTIFICATION_PENDING
         );
         SendNotificationCommand command =
                 new SendNotificationCommand(

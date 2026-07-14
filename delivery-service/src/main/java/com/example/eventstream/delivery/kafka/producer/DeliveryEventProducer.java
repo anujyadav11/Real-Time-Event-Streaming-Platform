@@ -3,6 +3,7 @@ package com.example.eventstream.delivery.kafka.producer;
 import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.DeliveryAssignedEvent;
 import com.example.eventstream.common.event.DeliveryAssignmentFailedEvent;
+import com.example.eventstream.common.event.DeliveryStatusUpdatedEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,5 +43,16 @@ public class DeliveryEventProducer {
                 .thenAccept(result ->
                         log.info("DeliveryAssignmentFailedEvent published for order {}",
                                 event.orderId()));
+    }
+
+    public CompletableFuture<Void> publishStatusUpdated(
+            DeliveryStatusUpdatedEvent event) {
+        log.info("Publishing DeliveryStatusUpdatedEvent for order {}", event.orderId());
+        return kafkaTemplate.send(
+                        KafkaTopics.DELIVERY_STATUS_UPDATED,
+                        event.orderId().toString(),
+                        event)
+                .thenAccept(result -> log.info(
+                        "DeliveryStatusUpdatedEvent published for order {}", event.orderId()));
     }
 }

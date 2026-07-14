@@ -72,6 +72,16 @@ public class SagaCommandProducer {
                         command)
                 .thenAccept(result ->
                         log.info("SendNotificationCommand published"));
-
+    }
+    public CompletableFuture<Void> publishCancelOrderCommand(
+            CancelOrderCommand command) {
+        log.info("Publishing CancelOrderCommand for order {}",
+                command.orderId());
+        return kafkaTemplate.send(
+                        KafkaTopics.CANCEL_ORDER_COMMAND,
+                        command.orderId().toString(),
+                        command)
+                .thenAccept(result ->
+                        log.info("CancelOrderCommand published"));
     }
 }

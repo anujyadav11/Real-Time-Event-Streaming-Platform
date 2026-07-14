@@ -1,8 +1,9 @@
 package com.example.eventstream.sagaorchestrator.kafka.consumer;
 
-import com.example.eventstream.common.command.CreateDeliveryCommand;
+
+import com.example.eventstream.common.command.ReleaseInventoryCommand;
 import com.example.eventstream.common.constants.KafkaTopics;
-import com.example.eventstream.common.event.PaymentCompletedEvent;
+import com.example.eventstream.common.event.PaymentFailedEvent;
 import com.example.eventstream.sagaorchestrator.kafka.producer.SagaCommandProducer;
 import com.example.eventstream.sagaorchestrator.service.SagaService;
 import com.example.eventstream.sagaorchestrator.state.SagaStatus;
@@ -17,15 +18,15 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 @Component
-public class PaymentCompletedConsumer {
+public class PaymentFailedConsumer {
     private static final Logger log =
-            LoggerFactory.getLogger(PaymentCompletedConsumer.class);
-    private static final String CONSUMER_NAME = "saga-payment";
+            LoggerFactory.getLogger(PaymentFailedConsumer.class);
+    private static final String CONSUMER_NAME =
+            "saga-payment-failed";
     private final SagaService sagaService;
     private final SagaCommandProducer commandProducer;
     private final IdempotencyService idempotencyService;
-
-    public PaymentCompletedConsumer(
+    public PaymentFailedConsumer(
             SagaService sagaService,
             SagaCommandProducer commandProducer,
             IdempotencyService idempotencyService) {
@@ -42,41 +43,44 @@ public class PaymentCompletedConsumer {
             dltTopicSuffix = "-dlt"
     )
     @KafkaListener(
-            topics = KafkaTopics.PAYMENT_COMPLETED,
+            topics = KafkaTopics.PAYMENT_FAILED,
             groupId = "saga-group"
     )
-    public void consume(PaymentCompletedEvent event) {
+    public void consume(PaymentFailedEvent event) {
         if (idempotencyService.isProcessed(
                 CONSUMER_NAME,
                 event.eventId())) {
             log.info(
-                    "Duplicate PaymentCompletedEvent ignored for order {}",
+                    "Duplicate PaymentFailedEvent ignored for order {}",
                     event.orderId());
             return;
         }
-        log.info(
-                "Payment completed for order {}",
+        log.warn(
+                "Payment failed for order {}. Starting compensation.",
                 event.orderId());
 
-        sagaService.transition(
+        sagaService.updateStatus(
                 event.orderId(),
-                SagaStatus.PAYMENT_COMPLETED,
-                SagaStatus.DELIVERY_PENDING);
-        
-        CreateDeliveryCommand command =
-                new CreateDeliveryCommand(
+                SagaStatus.PAYMENT_FAILED);
+        sagaService.updateStatus(
+                event.orderId(),
+                SagaStatus.COMPENSATING);
+        ReleaseInventoryCommand command =
+                new ReleaseInventoryCommand(
                         UUID.randomUUID(),
                         event.orderId(),
+                        event.productId(),
+                        event.quantity(),
                         event.correlationId()
                 );
         commandProducer
-                .publishCreateDeliveryCommand(command)
+                .publishReleaseInventoryCommand(command)
                 .join();
         idempotencyService.markProcessed(
                 CONSUMER_NAME,
                 event.eventId());
         log.info(
-                "CreateDeliveryCommand published for order {}",
+                "ReleaseInventoryCommand published for order {}",
                 event.orderId());
     }
 }

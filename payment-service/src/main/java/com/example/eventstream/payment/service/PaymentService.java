@@ -42,6 +42,7 @@ public class PaymentService {
                         command.orderId(),
                         command.productId(),
                         command.quantity(),
+                        command.amount(),
                         "Payment declined",
                         command.correlationId()
                 );

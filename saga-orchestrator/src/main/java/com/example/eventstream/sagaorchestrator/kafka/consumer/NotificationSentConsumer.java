@@ -22,6 +22,6 @@ public class NotificationSentConsumer {
                 event.orderId(),
                 SagaStatus.NOTIFICATION_COMPLETED
         );
-        sagaService.compensateSaga(event.orderId());
+        sagaService.completeSaga(event.orderId());
     }
 }
