@@ -15,13 +15,16 @@ public final class KafkaTopics {
             "release-inventory-command";
     public static final String CREATE_DELIVERY_COMMAND =
             "create-delivery-command";
-    public static final String SEND_NOTIFICATION_COMMAND =
-            "send-notification-command";
     public static final String DELIVERY_ASSIGNED =
             "delivery-assigned";
     public static final String DELIVERY_ASSIGNMENT_FAILED =
             "delivery-assignment-failed";
-
+    public static final String SEND_NOTIFICATION_COMMAND =
+            "send-notification-command";
+    public static final String NOTIFICATION_SENT =
+            "notification-sent";
+    public static final String NOTIFICATION_FAILED =
+            "notification-failed";
     private KafkaTopics() {
     }
 }
