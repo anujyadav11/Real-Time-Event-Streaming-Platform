@@ -1,44 +1,6 @@
-server:
-  port: 8089
-
 spring:
   application:
     name: pricing-service
 
-  data:
-    redis:
-      host: localhost
-      port: 6379
-
-  cache:
-    type: redis
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
-  instance:
-    prefer-ip-address: true
-
-management:
-  tracing:
-    sampling:
-      probability: 1.0
-
-  zipkin:
-    tracing:
-      endpoint: http://localhost:9411/api/v2/spans
-
-  endpoints:
-    web:
-      exposure:
-        include: health,info,prometheus,metrics
-
-  endpoint:
-    health:
-      show-details: always
-
-  metrics:
-    tags:
-      application: ${spring.application.name}
+  config:
+    import: "optional:configserver:http://localhost:8888"
