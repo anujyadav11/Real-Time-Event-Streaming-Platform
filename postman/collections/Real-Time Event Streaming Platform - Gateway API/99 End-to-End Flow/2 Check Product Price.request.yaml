@@ -1,0 +1,18 @@
+$kind: http-request
+name: '2. Check Product Price'
+method: GET
+url: '{{base_url}}/api/pricing/products/:productId'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+pathVariables:
+  - key: productId
+    value: '{{product_id}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Price lookup succeeded', function () {
+        pm.expect(pm.response.code).to.be.within(200, 299);
+      });

@@ -1,0 +1,29 @@
+$kind: http-request
+name: '6. Inventory - Reserve For Release'
+method: POST
+url: '{{base_url}}/api/v1/inventory/reserve'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+body:
+  type: json
+  content: |-
+    {
+      "productId": {{product_id}},
+      "quantity": {{service_test_quantity}}
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Inventory reserve setup for release succeeds', function () {
+        pm.expect(pm.response.code).to.be.within(200, 299);
+      });
+
+      const json = pm.response.json();
+      pm.test('Reserve setup response matches product', function () {
+        pm.expect(String(json.productId)).to.eql(String(pm.variables.get('product_id')));
+      });

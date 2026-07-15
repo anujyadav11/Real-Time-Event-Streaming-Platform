@@ -1,0 +1,47 @@
+$kind: http-request
+name: '11. Payment - Wait For Completed Event'
+method: GET
+url: '{{base_url}}/api/v1/orders/:id'
+order: 11000
+headers:
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+pathVariables:
+  - key: id
+    value: '{{service_test_order_id}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Order endpoint responds while checking payment completion', function () {
+        pm.expect(pm.response.code).to.be.within(200, 299);
+      });
+
+      const json = pm.response.json();
+      const currentAttempt = Number(pm.collectionVariables.get('service_payment_poll_attempt') || 0);
+      const maxAttempts = Number(pm.variables.get('service_payment_max_attempts') || 10);
+      const paymentPassedStates = ['PAYMENT_COMPLETED', 'OUT_FOR_DELIVERY', 'DELIVERED'];
+
+      pm.test('Payment check is for the created service-test order', function () {
+        pm.expect(json).to.have.property('id', pm.collectionVariables.get('service_test_order_id'));
+      });
+
+      pm.test('Order has not been cancelled before payment completion', function () {
+        pm.expect(json.status).to.not.eql('CANCELLED');
+      });
+
+      if (paymentPassedStates.includes(json.status)) {
+        pm.collectionVariables.unset('service_payment_poll_attempt');
+        pm.collectionVariables.set('service_payment_status', json.status);
+        pm.test('Payment service completed payment and order service consumed PaymentCompletedEvent', function () {
+          pm.expect(json.status).to.be.oneOf(paymentPassedStates);
+        });
+      } else if (currentAttempt < maxAttempts) {
+        pm.collectionVariables.set('service_payment_poll_attempt', currentAttempt + 1);
+        postman.setNextRequest('11. Payment - Wait For Completed Event');
+      } else {
+        pm.collectionVariables.unset('service_payment_poll_attempt');
+        pm.test('Payment service reaches completed state through async command/event flow', function () {
+          pm.expect(json.status, `last observed order status after ${maxAttempts} retries`).to.be.oneOf(paymentPassedStates);
+        });
+      }

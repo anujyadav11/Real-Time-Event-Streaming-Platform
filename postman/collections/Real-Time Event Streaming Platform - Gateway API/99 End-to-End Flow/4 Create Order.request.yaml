@@ -1,0 +1,42 @@
+$kind: http-request
+name: 4. Create Order and Save ID
+method: POST
+url: "{{base_url}}/api/v1/orders"
+auth:
+  type: bearer
+order: 4000
+headers:
+  Content-Type: application/json
+  Authorization: Bearer {{access_token}}
+body:
+  type: json
+  content: |-
+    {
+      "customerName": "Flow Test Customer",
+      "restaurantName": "Flow Test Restaurant",
+      "productId": {{product_id}},
+      "quantity": {{quantity}}
+    }
+scripts:
+  - type: afterResponse
+    code: |-
+      pm.test('Order creation command accepted', function () {
+        pm.expect(pm.response.code).to.be.within(200, 299);
+      });
+
+      const json = pm.response.json();
+
+      pm.test('Order service created order in CREATED state', function () {
+        pm.expect(json).to.have.property('id');
+        pm.expect(json).to.have.property('status', 'CREATED');
+      });
+
+      pm.test('Order has expected product pricing total', function () {
+        pm.expect(Number(json.totalAmount)).to.be.above(0);
+      });
+
+      if (json.id) {
+        pm.collectionVariables.set('order_id', json.id);
+        pm.environment.set('order_id', json.id);
+      }
+    language: text/javascript

@@ -1,0 +1,18 @@
+$kind: http-request
+name: 'Get Order By Id'
+method: GET
+url: '{{base_url}}/api/v1/orders/:id'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+pathVariables:
+  - key: id
+    value: '{{order_id}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Get order returned 2xx', function () {
+        pm.expect(pm.response.code).to.be.within(200, 299);
+      });

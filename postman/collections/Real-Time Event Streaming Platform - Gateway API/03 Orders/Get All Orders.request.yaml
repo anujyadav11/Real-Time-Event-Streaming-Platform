@@ -1,0 +1,15 @@
+$kind: http-request
+name: 'Get All Orders'
+method: GET
+url: '{{base_url}}/api/v1/orders'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Bearer {{access_token}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Get all orders returned 2xx', function () {
+        pm.expect(pm.response.code).to.be.within(200, 299);
+      });

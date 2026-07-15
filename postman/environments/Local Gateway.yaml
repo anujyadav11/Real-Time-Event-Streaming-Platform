@@ -1,0 +1,28 @@
+name: 'Local Gateway'
+values:
+  - key: base_url
+    value: 'http://localhost:8080'
+  - key: username
+    value: 'admin'
+  - key: password
+    value: 'admin123'
+  - key: product_id
+    value: '1'
+  - key: quantity
+    value: '1'
+  - key: access_token
+    value: ''
+  - key: order_id
+    value: '00000000-0000-0000-0000-000000000000'
+  - key: payment_completed_max_attempts
+    value: '10'
+  - key: final_flow_max_attempts
+    value: '10'
+  - key: service_test_quantity
+    value: '1'
+  - key: service_test_order_id
+    value: '00000000-0000-0000-0000-000000000000'
+  - key: service_payment_max_attempts
+    value: '10'
+  - key: service_notification_max_attempts
+    value: '10'

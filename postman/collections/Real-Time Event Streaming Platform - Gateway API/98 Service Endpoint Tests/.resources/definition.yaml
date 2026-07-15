@@ -1,0 +1,3 @@
+$kind: collection
+name: '98 Service Endpoint Tests'
+description: 'Gateway-based endpoint tests for every REST-accessible service plus async payment, delivery, and notification verification.'

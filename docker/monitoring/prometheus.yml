@@ -40,6 +40,18 @@ scrape_configs:
       - targets:
           - host.docker.internal:8083
 
+  - job_name: "saga-orchestrator"
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - host.docker.internal:8090
+
+  - job_name: "websocket-service"
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - host.docker.internal:8088
+
   - job_name: "config-server"
     metrics_path: /actuator/prometheus
     static_configs:

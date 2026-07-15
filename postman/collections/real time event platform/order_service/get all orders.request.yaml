@@ -1,7 +1,0 @@
-$kind: http-request
-name: get all orders
-url: http://localhost:8081/api/v1/orders
-method: GET
-auth:
-  type: bearer
-order: 2109973063449592

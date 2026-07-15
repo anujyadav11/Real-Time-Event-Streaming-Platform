@@ -40,7 +40,7 @@
       return;
     }
     client = new StompJs.Client({
-      webSocketFactory: () => new SockJS("http://localhost:8087/ws"),
+      webSocketFactory: () => new SockJS("http://localhost:8088/ws"),
       reconnectDelay: 5000,
       debug: function (str) {
         console.log(str);

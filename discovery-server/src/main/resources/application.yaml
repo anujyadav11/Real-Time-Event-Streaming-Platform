@@ -1,6 +1,24 @@
 spring:
   application:
     name: discovery-server
-
   config:
-    import: "optional:configserver:http://localhost:8888"
+    import: ${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888}
+
+server:
+  port: ${SERVER_PORT:8761}
+
+eureka:
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+    health:
+      show-details: always
+    metrics:
+      tags:
+        application: ${spring.application.name}
