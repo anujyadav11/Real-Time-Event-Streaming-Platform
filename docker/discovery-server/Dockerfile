@@ -7,6 +7,8 @@ RUN apt-get update \
 LABEL maintainer="Anuj Yadav"
 LABEL project="Real-Time-Event-Streaming-Platform"
 LABEL service="discovery-server"
+LABEL version="1.0.0"
+LABEL description="Discovery server"
 
 WORKDIR /app
 
@@ -14,6 +16,6 @@ COPY discovery-server/target/discovery-server-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8761
 
-ENV JAVA_OPTS=""
+ENV JAVA_OPTS="-XX:+UseContainerSupport"
 
 ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -jar app.jar"]

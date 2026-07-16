@@ -1,8 +1,14 @@
 FROM eclipse-temurin:25-jre
 
+LABEL maintainer="Anuj Yadav"
+LABEL project="Real-Time-Event-Streaming-Platform"
+LABEL service="saga-orchestrator"
+LABEL version="1.0.0"
+LABEL description="Saga Orchestrator"
+
 WORKDIR /app
 COPY saga-orchestrator/target/saga-orchestrator-0.0.1-SNAPSHOT.jar app.jar
 
 EXPOSE 8085
-ENV JAVA_OPTS=""
+ENV JAVA_OPTS="-XX:+UseContainerSupport"
 ENTRYPOINT ["sh", "-c", "exec java $JAVA_OPTS -jar app.jar"]
