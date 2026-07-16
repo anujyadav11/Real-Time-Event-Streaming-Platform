@@ -1,4 +1,16 @@
 $kind: http-request
-url: ""
+name: Get Inventory
+url: http://localhost:8080/api/v1/inventory/1
 method: GET
+body:
+  type: json
+  content: |-
+    {
+      "productId": 1,
+      "availableQuantity": 100
+    }
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6ImFiMTY4Mzk5LWUyZmMtNDI4ZS05ODI2LWI5N2JmZDc0NTgyNyIsImlhdCI6MTc4NDE5NDAxMiwiZXhwIjoxNzg0MTk3NjEyfQ.exxIiIr5UuvQbHbesAcbF4rLhrVj5RIh2N-DtMLOEnk
 order: 3253866541418843

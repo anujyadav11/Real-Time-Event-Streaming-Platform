@@ -1,4 +1,18 @@
 $kind: http-request
-url: ""
-method: GET
+name: creating order
+url: http://localhost:8080/api/v1/orders
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "customerName": "Pragti Gohil",
+      "restaurantName": "Mac Donald's",
+      "productId": 3,
+      "quantity": 4
+    }
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6Ijk5Yjk0MmYzLWNhZDYtNDk2Yi1iMGYzLTJjY2EyNTQzZDlmNyIsImlhdCI6MTc4NDIyNTExNywiZXhwIjoxNzg0MjI4NzE3fQ.MyutNnWn7VBYxMiEDaSyHUOQmEdwqz6hXkhMlnacvh4
 order: 1784194308544

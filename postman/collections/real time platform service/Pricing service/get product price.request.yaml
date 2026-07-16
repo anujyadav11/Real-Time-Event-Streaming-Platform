@@ -1,16 +1,9 @@
 $kind: http-request
-name: Release Inventory
-url: http://localhost:8080/api/v1/inventory/release
-method: POST
-body:
-  type: json
-  content: |-
-    {
-      "productId": 1,
-      "quantity": 2
-    }
+name: get product price
+url: http://localhost:8080/api/pricing/products/3
+method: GET
 auth:
   type: bearer
   credentials:
     token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6ImFiMTY4Mzk5LWUyZmMtNDI4ZS05ODI2LWI5N2JmZDc0NTgyNyIsImlhdCI6MTc4NDE5NDAxMiwiZXhwIjoxNzg0MTk3NjEyfQ.exxIiIr5UuvQbHbesAcbF4rLhrVj5RIh2N-DtMLOEnk
-order: 3061892075244161
+order: 1784194959799

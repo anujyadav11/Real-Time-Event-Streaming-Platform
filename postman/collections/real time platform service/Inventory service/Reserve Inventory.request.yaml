@@ -1,4 +1,16 @@
 $kind: http-request
-url: ""
-method: GET
+name: Reserve Inventory
+url: http://localhost:8080/api/v1/inventory/reserve
+method: POST
+body:
+  type: json
+  content: |-
+    {
+      "productId": 1,
+      "quantity": 2
+    }
+auth:
+  type: bearer
+  credentials:
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6ImFiMTY4Mzk5LWUyZmMtNDI4ZS05ODI2LWI5N2JmZDc0NTgyNyIsImlhdCI6MTc4NDE5NDAxMiwiZXhwIjoxNzg0MTk3NjEyfQ.exxIiIr5UuvQbHbesAcbF4rLhrVj5RIh2N-DtMLOEnk
 order: 1784194481298
