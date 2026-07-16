@@ -34,7 +34,8 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
 
         // Public endpoints
         if (path.startsWith("/auth/")
-                || path.startsWith("/actuator")) {
+                || path.startsWith("/actuator")
+                || path.startsWith("/ws/")) {
 
             return chain.filter(exchange);
         }
@@ -59,6 +60,8 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
         String userId = jwtService.extractUserId(token);
         String username = jwtService.extractUsername(token);
         String role = jwtService.extractRole(token);
+
+        exchange.getAttributes().put("username", username);
 
         log.info("Authenticated user: {}, role: {}, userId: {}", username, role, userId);
 
