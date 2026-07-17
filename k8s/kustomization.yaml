@@ -26,3 +26,13 @@ resources:
   # Zipkin
   - zipkin/deployment.yaml
   - zipkin/service.yaml
+
+  # Prometheus
+  - prometheus/configmap.yaml
+  - prometheus/deployment.yaml
+  - prometheus/service.yaml
+
+  # Grafana
+  - grafana/datasource-configmap.yaml
+  - grafana/deployment.yaml
+  - grafana/service.yaml
