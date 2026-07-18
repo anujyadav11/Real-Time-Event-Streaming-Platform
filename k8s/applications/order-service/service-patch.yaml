@@ -1,0 +1,15 @@
+- op: replace
+  path: /metadata/name
+  value: order-service-spring-boot-app
+
+- op: replace
+  path: /spec/selector/app
+  value: order-service
+
+- op: replace
+  path: /spec/ports/0/port
+  value: 8082
+
+- op: replace
+  path: /spec/ports/0/targetPort
+  value: 8082

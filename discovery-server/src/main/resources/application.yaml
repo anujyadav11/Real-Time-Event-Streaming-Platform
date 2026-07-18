@@ -1,6 +1,7 @@
 spring:
   application:
     name: discovery-server
+
   config:
     import: ${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888}
 
@@ -17,8 +18,21 @@ management:
     web:
       exposure:
         include: health,info,prometheus
+
+  endpoint:
     health:
-      show-details: always
-    metrics:
-      tags:
-        application: ${spring.application.name}
+      probes:
+        enabled: true
+
+  health:
+    show-details: always
+
+    readinessstate:
+      enabled: true
+
+    livenessstate:
+      enabled: true
+
+  metrics:
+    tags:
+      application: ${spring.application.name}

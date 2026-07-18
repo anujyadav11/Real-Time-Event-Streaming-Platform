@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: postgres-init-db
+  namespace: event-platform
+
+data:
+  init-databases.sql: |
+    CREATE DATABASE auth;
+    CREATE DATABASE orders;
+    CREATE DATABASE inventory;
+    CREATE DATABASE payment;
+    CREATE DATABASE notification;
+    CREATE DATABASE delivery;
+    CREATE DATABASE saga;

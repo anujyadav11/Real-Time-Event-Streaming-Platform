@@ -4,35 +4,18 @@ kind: Kustomization
 resources:
   - namespace.yaml
 
-  # PostgreSQL
-  - postgres/secret.yaml
-  - postgres/pvc.yaml
-  - postgres/deployment.yaml
-  - postgres/service.yaml
+  #shared config
+  - shared
 
-  # Redis
-  - redis/deployment.yaml
-  - redis/service.yaml
+  #Infrastructure
+  - infrastructure/postgres
+  - infrastructure/redis
+  - infrastructure/kafka
+  - infrastructure/kafka-ui
+  - infrastructure/zipkin
+  - infrastructure/prometheus
+  - infrastructure/grafana
 
-  # Kafka
-  - kafka/pvc.yaml
-  - kafka/deployment.yaml
-  - kafka/service.yaml
-
-  # Kafka UI
-  - kafka-ui/deployment.yaml
-  - kafka-ui/service.yaml
-
-  # Zipkin
-  - zipkin/deployment.yaml
-  - zipkin/service.yaml
-
-  # Prometheus
-  - prometheus/configmap.yaml
-  - prometheus/deployment.yaml
-  - prometheus/service.yaml
-
-  # Grafana
-  - grafana/datasource-configmap.yaml
-  - grafana/deployment.yaml
-  - grafana/service.yaml
+  # Applications
+  - applications/config-server
+  - applications/discovery-server

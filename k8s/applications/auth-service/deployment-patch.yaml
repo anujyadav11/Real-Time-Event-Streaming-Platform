@@ -1,0 +1,21 @@
+- op: replace
+  path: /spec/selector/matchLabels/app
+  value: auth-service
+
+- op: replace
+  path: /spec/template/metadata/labels/app
+  value: auth-service
+
+- op: replace
+  path: /spec/template/spec/containers/0/image
+  value: auth-service:1.0
+
+- op: replace
+  path: /spec/template/spec/containers/0/ports/0/containerPort
+  value: 8081
+
+- op: add
+  path: /spec/template/spec/containers/0/envFrom/1
+  value:
+    configMapRef:
+      name: auth-service-config

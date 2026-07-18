@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: platform-config
+  namespace: event-platform
+
+data:
+  SPRING_PROFILES_ACTIVE: "kubernetes"
+
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+
+  REDIS_HOST: "redis"
+
+  REDIS_PORT: "6379"
+
+  MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: "http://zipkin:9411/api/v2/spans"

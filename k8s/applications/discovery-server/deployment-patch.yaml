@@ -1,0 +1,21 @@
+- op: replace
+  path: /spec/selector/matchLabels/app
+  value: discovery-server
+
+- op: replace
+  path: /spec/template/metadata/labels/app
+  value: discovery-server
+
+- op: replace
+  path: /spec/template/spec/containers/0/image
+  value: discovery-server:1.0
+
+- op: replace
+  path: /spec/template/spec/containers/0/ports/0/containerPort
+  value: 8761
+
+- op: add
+  path: /spec/template/spec/containers/0/envFrom/1
+  value:
+    configMapRef:
+      name: discovery-server-config

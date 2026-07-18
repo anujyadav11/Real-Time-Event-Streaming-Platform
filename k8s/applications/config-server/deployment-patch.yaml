@@ -1,0 +1,21 @@
+- op: replace
+  path: /spec/selector/matchLabels/app
+  value: config-server
+
+- op: replace
+  path: /spec/template/metadata/labels/app
+  value: config-server
+
+- op: replace
+  path: /spec/template/spec/containers/0/image
+  value: config-server:1.0
+
+- op: replace
+  path: /spec/template/spec/containers/0/ports/0/containerPort
+  value: 8888
+
+- op: add
+  path: /spec/template/spec/containers/0/envFrom/1
+  value:
+    configMapRef:
+      name: config-server-config
