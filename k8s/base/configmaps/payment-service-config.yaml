@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: payment-service-config
+  namespace: event-platform
+
+data:
+  SERVER_PORT: "8085"
+
+  CONFIG_SERVER_URL: "http://config-server:8888"
+
+  PAYMENT_DB_URL: "jdbc:postgresql://postgres:5432/payment"
+  PAYMENT_DB_USERNAME: "postgres"
+  PAYMENT_DB_PASSWORD: "postgres"

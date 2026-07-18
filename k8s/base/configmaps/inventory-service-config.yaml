@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: inventory-service-config
+  namespace: event-platform
+
+data:
+  SERVER_PORT: "8084"
+
+  CONFIG_SERVER_URL: "http://config-server:8888"
+
+  INVENTORY_DB_URL: "jdbc:postgresql://postgres:5432/inventory"
+  INVENTORY_DB_USERNAME: "postgres"
+  INVENTORY_DB_PASSWORD: "postgres"

@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - platform-config.yaml
+  - config-server-config.yaml
+  - discovery-server-config.yaml
+  - api-gateway-config.yaml
+
+  - auth-service-config.yaml
+  - order-service-config.yaml
+  - inventory-service-config.yaml
+  - pricing-service-config.yaml
+  - payment-service-config.yaml
+  - notification-service-config.yaml
+  - delivery-service-config.yaml
+  - saga-orchestrator-config.yaml
+  - websocket-service-config.yaml

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: delivery-service-config
+  namespace: event-platform
+
+data:
+  SERVER_PORT: "8087"
+
+  CONFIG_SERVER_URL: "http://config-server:8888"
+
+  DELIVERY_DB_URL: "jdbc:postgresql://postgres:5432/delivery"
+  DELIVERY_DB_USERNAME: "postgres"
+  DELIVERY_DB_PASSWORD: "postgres"

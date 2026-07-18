@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: order-service-config
+  namespace: event-platform
+
+data:
+  SERVER_PORT: "8081"
+
+  CONFIG_SERVER_URL: "http://config-server:8888"
+
+  ORDER_DB_URL: "jdbc:postgresql://postgres:5432/orders"
+  ORDER_DB_USERNAME: "postgres"
+  ORDER_DB_PASSWORD: "postgres"
+
+  PRICING_SERVICE_BASE_URL: "http://pricing-service:8089"

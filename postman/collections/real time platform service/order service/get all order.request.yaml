@@ -5,5 +5,5 @@ method: GET
 auth:
   type: bearer
   credentials:
-    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6ImFiMTY4Mzk5LWUyZmMtNDI4ZS05ODI2LWI5N2JmZDc0NTgyNyIsImlhdCI6MTc4NDE5NzY4MSwiZXhwIjoxNzg0MjAxMjgxfQ.RJc18xAYauhVoeJKs-rX__4OUupknkf7gqurVvqTdpc
+    token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6IjE3ZmMxN2QxLTdhYWItNGYzNS05Y2FmLWJlMTJjNzg4YWY4YiIsImlhdCI6MTc4NDM4OTcxOSwiZXhwIjoxNzg0MzkzMzE5fQ.LdCBaluTOy5TKog0L6bpHgwj-r8kdaSkK7pddUcEUw0
 order: 3430449414133216

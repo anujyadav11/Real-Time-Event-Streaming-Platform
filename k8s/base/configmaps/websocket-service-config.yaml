@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: websocket-service-config
+  namespace: event-platform
+
+data:
+  SERVER_PORT: "8092"
+
+  CONFIG_SERVER_URL: "http://config-server:8888"

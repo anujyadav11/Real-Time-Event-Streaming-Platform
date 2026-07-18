@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: app
+
+spec:
+  selector:
+    matchLabels:
+      app: config-server
+
+  template:
+    metadata:
+      labels:
+        app: config-server
+
+    spec:
+      containers:
+        - name: app
+          image: config-server:1.0
+
+          ports:
+            - containerPort: 8888
+
+          envFrom:
+            - configMapRef:
+                name: platform-config
+            - configMapRef:
+                name: config-server-config
+            - secretRef:
+                name: platform-secret
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8888
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8888

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+
+metadata:
+  name: pricing-service-config
+  namespace: event-platform
+
+data:
+  SERVER_PORT: "8089"
+
+  CONFIG_SERVER_URL: "http://config-server:8888"
+
+  PRICING_DB_URL: "jdbc:postgresql://postgres:5432/pricing"
+  PRICING_DB_USERNAME: "postgres"
+  PRICING_DB_PASSWORD: "postgres"
