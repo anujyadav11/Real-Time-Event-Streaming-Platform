@@ -1,9 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-
-metadata:
-  name: discovery-server-config
-  namespace: event-platform
-
-data:
-  SERVER_PORT: "8761"
