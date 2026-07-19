@@ -6,6 +6,10 @@ metadata:
 
 spec:
   selector:
-    app: app
+    app: pricing-service
+
+  ports:
+    - port: 8089
+      targetPort: 8089
 
   type: ClusterIP

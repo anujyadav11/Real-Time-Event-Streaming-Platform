@@ -30,19 +30,19 @@ spec:
             - configMapRef:
                 name: platform-config
 
-          readinessProbe:
-            httpGet:
-              path: /actuator/health/readiness
-              port: 8080
-            initialDelaySeconds: 20
-            periodSeconds: 10
+         # readinessProbe:
+            #httpGet:
+             # path: /actuator/health/readiness
+              #port: 8080
+            #initialDelaySeconds: 20
+            #periodSeconds: 10
 
-          livenessProbe:
-            httpGet:
-              path: /actuator/health/liveness
-              port: 8080
-            initialDelaySeconds: 40
-            periodSeconds: 15
+          #livenessProbe:
+            #httpGet:
+             # path: /actuator/health/liveness
+              #port: 8080
+            #initialDelaySeconds: 40
+            #kubectl kustomize k8s/base/services/discovery-serverperiodSeconds: 15
 
           resources:
             requests:

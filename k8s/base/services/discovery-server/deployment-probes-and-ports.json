@@ -1,0 +1,35 @@
+[
+  {
+    "op": "replace",
+    "path": "/spec/template/spec/containers/0/ports",
+    "value": [
+      {
+        "containerPort": 8761
+      }
+    ]
+  },
+  {
+    "op": "replace",
+    "path": "/spec/template/spec/containers/0/readinessProbe",
+    "value": {
+      "httpGet": {
+        "path": "/actuator/health/readiness",
+        "port": 8761
+      },
+      "initialDelaySeconds": 20,
+      "periodSeconds": 10
+    }
+  },
+  {
+    "op": "replace",
+    "path": "/spec/template/spec/containers/0/livenessProbe",
+    "value": {
+      "httpGet": {
+        "path": "/actuator/health/liveness",
+        "port": 8761
+      },
+      "initialDelaySeconds": 40,
+      "periodSeconds": 15
+    }
+  }
+]

@@ -1,17 +1,15 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
-nameSuffix: -config-server
+namespace: event-platform
+
+nameSuffix: -order-service
 
 resources:
   - ../../common/deployment
   - ../../common/service
+  - configmap.yaml
 
 patches:
   - path: deployment-patch.yaml
-  - target:
-      group: ""
-      version: v1
-      kind: Service
-      name: app
-    path: service-patch.json
+  - path: service-patch.yaml

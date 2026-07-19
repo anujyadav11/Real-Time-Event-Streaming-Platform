@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: app
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: pricing-service
+
+  template:
+    metadata:
+      labels:
+        app: pricing-service
+
+    spec:
+      containers:
+        - name: app
+
+          image: pricing-service:1.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8089
+
+          envFrom:
+            - configMapRef:
+                name: platform-config
+            - configMapRef:
+                name: pricing-service-config
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8089
+            initialDelaySeconds: 30
+            periodSeconds: 10
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8089
+            initialDelaySeconds: 60
+            periodSeconds: 20
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"

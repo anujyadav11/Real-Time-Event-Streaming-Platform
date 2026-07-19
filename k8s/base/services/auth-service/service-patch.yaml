@@ -6,6 +6,10 @@ metadata:
 
 spec:
   selector:
-    app: app
+    app: auth-service
+
+  ports:
+    - port: 8087
+      targetPort: 8087
 
   type: ClusterIP

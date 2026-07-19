@@ -17,19 +17,23 @@ spec:
     spec:
       containers:
         - name: app
-
           image: discovery-server:1.0
           imagePullPolicy: IfNotPresent
-
-          ports:
-            - containerPort: 8761
 
           envFrom:
             - configMapRef:
                 name: platform-config
-
             - configMapRef:
                 name: discovery-server-config
-
             - secretRef:
                 name: platform-secret
+
+        # readinessProbe:
+        #   httpGet:
+        #     path: /actuator/health/readiness
+        #     port: 8761
+
+        # livenessProbe:
+        #   httpGet:
+        #     path: /actuator/health/liveness
+        #     port: 8761

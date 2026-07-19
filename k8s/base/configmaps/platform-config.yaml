@@ -6,24 +6,49 @@ metadata:
   namespace: event-platform
 
 data:
-  SPRING_PROFILES_ACTIVE: kubernetes
+  SPRING_PROFILES_ACTIVE: "kubernetes"
 
-  # 👇 Add this
-  SPRING_CONFIG_IMPORT: optional:configserver:http://app-config-server:8888
+  CONFIG_SERVER_URL: "http://app-config-server:8888"
 
-  KAFKA_BOOTSTRAP_SERVERS: kafka:9092
-  SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+  EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://app-discovery-server:8761/eureka/"
 
-  REDIS_HOST: redis
+  PRICING_SERVICE_URL: "http://PRICING-SERVICE"
+
+  KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+
+  REDIS_HOST: "redis"
   REDIS_PORT: "6379"
 
-  SPRING_DATA_REDIS_HOST: redis
+  SPRING_DATA_REDIS_HOST: "redis"
   SPRING_DATA_REDIS_PORT: "6379"
-
-  EUREKA_SERVER_URL: http://app-discovery-server:8761/eureka/
 
   MANAGEMENT_ENDPOINT_HEALTH_PROBES_ENABLED: "true"
   MANAGEMENT_HEALTH_LIVENESSSTATE_ENABLED: "true"
   MANAGEMENT_HEALTH_READINESSSTATE_ENABLED: "true"
 
-  MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://zipkin:9411/api/v2/spans
+  MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: "http://zipkin:9411/api/v2/spans"
+
+  ORDER_DB_URL: "jdbc:postgresql://postgres:5432/orders"
+  ORDER_DB_USERNAME: "postgres"
+  ORDER_DB_PASSWORD: "postgres"
+
+  INVENTORY_DB_URL: "jdbc:postgresql://postgres:5432/inventory"
+  INVENTORY_DB_USERNAME: "postgres"
+  INVENTORY_DB_PASSWORD: "postgres"
+
+  NOTIFICATION_DB_URL: "jdbc:postgresql://postgres:5432/notification"
+  NOTIFICATION_DB_USERNAME: "postgres"
+  NOTIFICATION_DB_PASSWORD: "postgres"
+
+  DELIVERY_DB_URL: "jdbc:postgresql://postgres:5432/delivery"
+  DELIVERY_DB_USERNAME: "postgres"
+  DELIVERY_DB_PASSWORD: "postgres"
+
+  PAYMENT_DB_URL: "jdbc:postgresql://postgres:5432/payment"
+  PAYMENT_DB_USERNAME: "postgres"
+  PAYMENT_DB_PASSWORD: "postgres"
+
+  SAGA_DB_URL: "jdbc:postgresql://postgres:5432/saga"
+  SAGA_DB_USERNAME: "postgres"
+  SAGA_DB_PASSWORD: "postgres"

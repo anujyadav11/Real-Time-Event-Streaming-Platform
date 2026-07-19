@@ -14,3 +14,5 @@ data:
     CREATE DATABASE payment;
     CREATE DATABASE notification;
     CREATE DATABASE delivery;
+    CREATE DATABASE saga;
+

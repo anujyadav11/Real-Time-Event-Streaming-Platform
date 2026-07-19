@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: app
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: saga-orchestrator
+
+  template:
+    metadata:
+      labels:
+        app: saga-orchestrator
+
+    spec:
+      containers:
+        - name: app
+
+          image: saga-orchestrator:1.0
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 8095
+
+          envFrom:
+            - configMapRef:
+                name: platform-config
+            - configMapRef:
+                name: saga-orchestrator-config
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8095
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 5
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8095
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 5
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+
+            limits:
+              cpu: "1000m"
+              memory: "1Gi"

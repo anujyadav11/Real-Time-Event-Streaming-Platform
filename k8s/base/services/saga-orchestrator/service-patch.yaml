@@ -6,6 +6,10 @@ metadata:
 
 spec:
   selector:
-    app: app
+    app: saga-orchestrator
+
+  ports:
+    - port: 8095
+      targetPort: 8095
 
   type: ClusterIP
