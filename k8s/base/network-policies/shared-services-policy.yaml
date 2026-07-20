@@ -1,0 +1,70 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: shared-services-policy
+
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - api-gateway
+          - auth-service
+          - order-service
+          - inventory-service
+          - pricing-service
+          - payment-service
+          - notification-service
+          - delivery-service
+          - saga-orchestrator
+          - websocket-service
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: config-server
+      ports:
+        - protocol: TCP
+          port: 8888
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: discovery-server
+      ports:
+        - protocol: TCP
+          port: 8761
+
+    - to:
+        - podSelector:
+            matchLabels:
+              app: zipkin
+      ports:
+        - protocol: TCP
+          port: 9411

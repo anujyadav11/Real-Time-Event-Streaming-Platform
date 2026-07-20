@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: event-platform
+
+resources:
+  - default-deny.yaml
+  - shared-services-policy.yaml
+  - platform-services-policy.yaml
+  - gateway-policy.yaml
+  - auth-policy.yaml
+  - order-policy.yaml
+  - inventory-policy.yaml
+  - pricing-policy.yaml
+  - payment-policy.yaml
+  - notification-policy.yaml
+  - delivery-policy.yaml
+  - saga-policy.yaml
+  - websocket-policy.yaml
+  - kafka-policy.yaml
+  - postgres-policy.yaml
+  - redis-policy.yaml

@@ -1,0 +1,272 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: platform-dns-policy
+
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - config-server
+          - prometheus
+          - grafana
+          - kafka-ui
+
+  policyTypes:
+    - Egress
+
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - protocol: UDP
+          port: 53
+        - protocol: TCP
+          port: 53
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: config-server-policy
+
+spec:
+  podSelector:
+    matchLabels:
+      app: config-server
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - api-gateway
+                  - auth-service
+                  - order-service
+                  - inventory-service
+                  - pricing-service
+                  - payment-service
+                  - notification-service
+                  - delivery-service
+                  - saga-orchestrator
+                  - websocket-service
+                  - prometheus
+      ports:
+        - protocol: TCP
+          port: 8888
+
+  egress:
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+      ports:
+        - protocol: TCP
+          port: 443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: discovery-server-policy
+
+spec:
+  podSelector:
+    matchLabels:
+      app: discovery-server
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - api-gateway
+                  - auth-service
+                  - order-service
+                  - inventory-service
+                  - pricing-service
+                  - payment-service
+                  - notification-service
+                  - delivery-service
+                  - saga-orchestrator
+                  - websocket-service
+                  - prometheus
+      ports:
+        - protocol: TCP
+          port: 8761
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: zipkin-policy
+
+spec:
+  podSelector:
+    matchLabels:
+      app: zipkin
+
+  policyTypes:
+    - Ingress
+
+  ingress:
+    - from:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - api-gateway
+                  - auth-service
+                  - order-service
+                  - inventory-service
+                  - pricing-service
+                  - payment-service
+                  - notification-service
+                  - delivery-service
+                  - saga-orchestrator
+                  - websocket-service
+      ports:
+        - protocol: TCP
+          port: 9411
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: prometheus-policy
+
+spec:
+  podSelector:
+    matchLabels:
+      app: prometheus
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 9090
+
+  egress:
+    - to:
+        - podSelector:
+            matchExpressions:
+              - key: app
+                operator: In
+                values:
+                  - api-gateway
+                  - auth-service
+                  - order-service
+                  - inventory-service
+                  - pricing-service
+                  - payment-service
+                  - notification-service
+                  - delivery-service
+                  - saga-orchestrator
+                  - websocket-service
+                  - config-server
+                  - discovery-server
+      ports:
+        - protocol: TCP
+          port: 8080
+        - protocol: TCP
+          port: 8081
+        - protocol: TCP
+          port: 8082
+        - protocol: TCP
+          port: 8083
+        - protocol: TCP
+          port: 8084
+        - protocol: TCP
+          port: 8086
+        - protocol: TCP
+          port: 8087
+        - protocol: TCP
+          port: 8088
+        - protocol: TCP
+          port: 8089
+        - protocol: TCP
+          port: 8095
+        - protocol: TCP
+          port: 8761
+        - protocol: TCP
+          port: 8888
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: grafana-policy
+
+spec:
+  podSelector:
+    matchLabels:
+      app: grafana
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 3000
+
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: prometheus
+      ports:
+        - protocol: TCP
+          port: 9090
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+
+metadata:
+  name: kafka-ui-policy
+
+spec:
+  podSelector:
+    matchLabels:
+      app: kafka-ui
+
+  policyTypes:
+    - Ingress
+    - Egress
+
+  ingress:
+    - ports:
+        - protocol: TCP
+          port: 8080
+
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: kafka
+      ports:
+        - protocol: TCP
+          port: 9092
