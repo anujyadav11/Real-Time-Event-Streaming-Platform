@@ -1,6 +1,7 @@
 package com.example.eventstream.pricingservice.service;
 
 import com.example.eventstream.common.dto.ProductPriceResponse;
+import com.example.eventstream.pricingservice.exception.ProductNotFoundException;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Counter;
 import org.slf4j.Logger;
@@ -40,8 +41,7 @@ public class PricingService {
         cacheMissCounter.increment();
         if (unitPrice == null) {
             productNotFoundCounter.increment();
-            throw new IllegalArgumentException(
-                    "Product not found: " + productId);
+            throw new ProductNotFoundException(productId);
         }
         return new ProductPriceResponse(
                 productId,

@@ -7,3 +7,5 @@ metadata:
 
 data:
   SERVER_PORT: "8081"
+  SPRING_CONFIG_IMPORT: "configserver:http://app-config-server:8888"
+  PRICING_SERVICE_BASE_URL: "http://app-pricing-service:8089"

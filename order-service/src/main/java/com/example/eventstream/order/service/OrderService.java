@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -116,25 +117,42 @@ public class OrderService {
         log.info("Order deleted successfully with id: {}", id);
     }
     public void markInventoryReserved(UUID orderId) {
-        Order order = orderRepository.findById(orderId)
-                .orElseThrow(() -> new OrderNotFoundException(orderId));
+        int updated = orderRepository.updateStatusIfCurrentIn(
+                orderId,
+                OrderStatus.INVENTORY_RESERVED,
+                Set.of(OrderStatus.CREATED));
 
-        order.setStatus(OrderStatus.INVENTORY_RESERVED);
-
-        orderRepository.save(order);
+        if (updated == 0) {
+            Order order = getOrder(orderId);
+            log.info(
+                    "Ignoring stale inventory-reserved event for order {} because its status is already {}",
+                    orderId,
+                    order.getStatus());
+            return;
+        }
 
         log.info("Inventory reserved for order : {}", orderId);
     }
     public void markPaymentCompleted(PaymentCompletedEvent event) {
         log.info("Updating payment status for order {}", event.orderId());
 
-        Order order = orderRepository.findById(event.orderId())
-                .orElseThrow(() -> new OrderNotFoundException(event.orderId()));
+        int updated = orderRepository.updateStatusIfCurrentIn(
+                event.orderId(),
+                OrderStatus.PAYMENT_COMPLETED,
+                Set.of(
+                        OrderStatus.CREATED,
+                        OrderStatus.INVENTORY_RESERVED,
+                        OrderStatus.PAYMENT_PENDING));
 
-        order.setStatus(OrderStatus.PAYMENT_COMPLETED);
+        if (updated == 0) {
+            Order order = getOrder(event.orderId());
+            log.info(
+                    "Ignoring duplicate or stale payment-completed event for order {} because its status is already {}",
+                    event.orderId(),
+                    order.getStatus());
+            return;
+        }
 
-        orderRepository.save(order);
-        
-        log.info("Order {} marked as PAID", order.getId());
+        log.info("Order {} marked as PAID", event.orderId());
     }
 }

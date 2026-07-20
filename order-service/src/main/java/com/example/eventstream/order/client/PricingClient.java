@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
-import java.math.BigDecimal;
-
 @Component
 public class PricingClient {
     private static final Logger log = LoggerFactory.getLogger(PricingClient.class);
@@ -18,12 +16,12 @@ public class PricingClient {
 
     public PricingClient(
             RestClient.Builder builder,
-            @Value("${pricing-service.base-url}") String baseUrl) {
+            @Value("${pricing-service.base-url:http://PRICING-SERVICE}") String baseUrl) {
         this.restClient = builder
                 .baseUrl(baseUrl)
                 .build();
-
     }
+
     @CircuitBreaker(
             name = "pricingService",
             fallbackMethod = "fallbackPrice"
@@ -36,9 +34,10 @@ public class PricingClient {
                 .retrieve()
                 .body(ProductPriceResponse.class);
     }
+
     public ProductPriceResponse fallbackPrice(Long productId, Exception ex) {
         log.error("Pricing Service is unavailable for product {}", productId, ex);
         throw new PricingServiceUnavailableException(
-                "Pricing Service is currently unavailable. Please try again later.",ex );
+                "Pricing Service is currently unavailable. Please try again later.", ex);
     }
 }

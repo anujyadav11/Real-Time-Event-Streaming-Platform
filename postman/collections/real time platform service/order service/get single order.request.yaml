@@ -1,9 +1,9 @@
 $kind: http-request
-name: Get Delivery status
-url: http://localhost:8080/api/v1/deliveries/4567c266-0d15-4540-bd69-f06ddafa62d9
+name: get single order
+url: http://localhost:8080/api/v1/orders/4567c266-0d15-4540-bd69-f06ddafa62d9
 method: GET
 auth:
   type: bearer
   credentials:
     token: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsInJvbGUiOiJBRE1JTiIsInVzZXJJZCI6IjAzMDdlYzVhLWQ5YzYtNDc5MS1hOGQ0LWI4NmFkOGI5MWZmMSIsImlhdCI6MTc4NDU0NTExMywiZXhwIjoxNzg0NTQ4NzEzfQ.yPyTLXx8XvtznfrhZMz6Xcp6-PoWSAZEu1u0Xi8qs8k
-order: 1784194802894
+order: 4434908858506435

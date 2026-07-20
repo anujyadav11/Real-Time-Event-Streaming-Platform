@@ -34,9 +34,11 @@ public class OutBoxEvent {
 
    @Enumerated(EnumType.STRING)
    @Column(nullable = false)
+   @Builder.Default
    private OutBoxStatus status =  OutBoxStatus.NEW;
 
    @Column(nullable = false)
+   @Builder.Default
    private int retryCount = 0;
 
     @Column(nullable = false)

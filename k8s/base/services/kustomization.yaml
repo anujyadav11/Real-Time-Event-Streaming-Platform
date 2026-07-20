@@ -5,3 +5,12 @@ resources:
   - config-server
   - discovery-server
   - api-gateway
+  - auth-service
+  - order-service
+  - pricing-service
+  - inventory-service
+  - payment-service
+  - saga-orchestrator
+  - delivery-service
+  - notification-service
+  - websocket-service

@@ -12,10 +12,12 @@ data:
 
   EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: "http://app-discovery-server:8761/eureka/"
 
-  PRICING_SERVICE_URL: "http://PRICING-SERVICE"
+  PRICING_SERVICE_URL: "http://app-pricing-service:8089"
+  PRICING_SERVICE_BASE_URL: "http://app-pricing-service:8089"
 
   KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
   SPRING_KAFKA_BOOTSTRAP_SERVERS: "kafka:9092"
+  SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES: "com.example.eventstream.common.*"
 
   REDIS_HOST: "redis"
   REDIS_PORT: "6379"

@@ -7,3 +7,4 @@ metadata:
 
 data:
   SERVER_PORT: "8095"
+  SPRING_CONFIG_IMPORT: "configserver:http://app-config-server:8888"

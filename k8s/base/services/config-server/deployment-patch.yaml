@@ -15,9 +15,19 @@ spec:
         app: config-server
 
     spec:
+      terminationGracePeriodSeconds: 30
+
       containers:
         - name: app
           image: config-server:1.0
+
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 15
 
           ports:
             - containerPort: 8888

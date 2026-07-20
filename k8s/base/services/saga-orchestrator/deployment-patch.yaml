@@ -17,11 +17,21 @@ spec:
         app: saga-orchestrator
 
     spec:
+      terminationGracePeriodSeconds: 30
+
       containers:
         - name: app
 
           image: saga-orchestrator:1.0
           imagePullPolicy: IfNotPresent
+
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - sleep 15
 
           ports:
             - containerPort: 8095
