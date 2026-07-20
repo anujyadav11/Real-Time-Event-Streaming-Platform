@@ -38,12 +38,19 @@ spec:
             - secretRef:
                 name: platform-secret
 
-        # readinessProbe:
-        #   httpGet:
-        #     path: /actuator/health/readiness
-        #     port: 8761
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8761
+            periodSeconds: 10
+            failureThreshold: 30
 
-        # livenessProbe:
-        #   httpGet:
-        #     path: /actuator/health/liveness
-        #     port: 8761
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8761
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8761

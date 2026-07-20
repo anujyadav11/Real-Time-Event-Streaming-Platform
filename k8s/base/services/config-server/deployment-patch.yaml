@@ -40,6 +40,13 @@ spec:
             - secretRef:
                 name: platform-secret
 
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8888
+            periodSeconds: 10
+            failureThreshold: 30
+
           readinessProbe:
             httpGet:
               path: /actuator/health/readiness

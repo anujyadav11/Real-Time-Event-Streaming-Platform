@@ -5,7 +5,13 @@ metadata:
   name: app
 
 spec:
-  replicas: 1
+  replicas: 2
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
 
   selector:
     matchLabels:
@@ -41,6 +47,13 @@ spec:
                 name: platform-config
             - configMapRef:
                 name: websocket-service-config
+
+          startupProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8088
+            periodSeconds: 10
+            failureThreshold: 30
 
           readinessProbe:
             httpGet:
