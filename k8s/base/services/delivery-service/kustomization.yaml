@@ -9,6 +9,7 @@ resources:
   - ../../common/deployment
   - ../../common/service
   - configmap.yaml
+  - pdb.yaml
 
 patches:
   - path: deployment-patch.yaml
