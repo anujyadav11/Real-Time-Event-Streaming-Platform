@@ -9,6 +9,7 @@ resources:
   - ../../common/deployment
   - ../../common/service
   - configmap.yaml
+  - hpa.yaml
 
 patches:
   - path: deployment-patch.yaml
