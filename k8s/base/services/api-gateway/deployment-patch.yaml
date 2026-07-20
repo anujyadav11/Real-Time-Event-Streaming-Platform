@@ -43,10 +43,23 @@ spec:
             matchLabels:
               app: api-gateway
 
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+
       terminationGracePeriodSeconds: 30
 
       containers:
         - name: app
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
 
           image: api-gateway:1.0
           imagePullPolicy: IfNotPresent
