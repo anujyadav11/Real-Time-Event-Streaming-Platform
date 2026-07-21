@@ -8,3 +8,9 @@ metadata:
 data:
   SERVER_PORT: "8080"
   SPRING_CONFIG_IMPORT: "configserver:http://app-config-server:8888"
+  AUTH_SERVICE_URL: "http://app-auth-service:8087"
+  ORDER_SERVICE_URL: "http://app-order-service:8081"
+  INVENTORY_SERVICE_URL: "http://app-inventory-service:8082"
+  PRICING_SERVICE_URL: "http://app-pricing-service:8089"
+  DELIVERY_SERVICE_URL: "http://app-delivery-service:8086"
+  WEBSOCKET_SERVICE_URL: "http://app-websocket-service:8088"

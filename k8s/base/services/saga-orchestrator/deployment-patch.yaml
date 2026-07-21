@@ -23,6 +23,7 @@ spec:
         app: saga-orchestrator
 
     spec:
+      serviceAccountName: saga-orchestrator-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

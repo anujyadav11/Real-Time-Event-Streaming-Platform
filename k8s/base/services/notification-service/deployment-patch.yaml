@@ -23,6 +23,7 @@ spec:
         app: notification-service
 
     spec:
+      serviceAccountName: notification-service-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

@@ -8,3 +8,5 @@ resources:
   - infrastructure
   - services
   - network-policies
+  - service-accounts
+  - ingress

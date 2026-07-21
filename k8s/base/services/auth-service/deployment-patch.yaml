@@ -23,6 +23,7 @@ spec:
         app: auth-service
 
     spec:
+      serviceAccountName: auth-service-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

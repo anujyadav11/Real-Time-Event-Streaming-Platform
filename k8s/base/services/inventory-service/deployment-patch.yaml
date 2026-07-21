@@ -23,6 +23,7 @@ spec:
         app: inventory-service
 
     spec:
+      serviceAccountName: inventory-service-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

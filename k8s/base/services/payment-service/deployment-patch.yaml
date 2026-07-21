@@ -23,6 +23,7 @@ spec:
         app: payment-service
 
     spec:
+      serviceAccountName: payment-service-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

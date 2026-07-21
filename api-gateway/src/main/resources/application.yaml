@@ -4,3 +4,25 @@ spring:
 
   config:
     import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+
+springdoc:
+  api-docs:
+    enabled: true
+
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    persist-authorization: true
+    operations-sorter: method
+    tags-sorter: alpha
+    urls:
+      - name: Auth Service
+        url: /auth-service/v3/api-docs
+      - name: Order Service
+        url: /order-service/v3/api-docs
+      - name: Inventory Service
+        url: /inventory-service/v3/api-docs
+      - name: Pricing Service
+        url: /pricing-service/v3/api-docs
+      - name: Delivery Service
+        url: /delivery-service/v3/api-docs

@@ -23,6 +23,7 @@ spec:
         app: api-gateway
 
     spec:
+      serviceAccountName: api-gateway-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

@@ -23,6 +23,7 @@ spec:
         app: delivery-service
 
     spec:
+      serviceAccountName: delivery-service-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

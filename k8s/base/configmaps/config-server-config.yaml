@@ -8,5 +8,5 @@ metadata:
 data:
   SERVER_PORT: "8888"
 
-  GIT_REPO_URI: "https://github.com/anujyadav11/event-platform-config.git"
-  GIT_DEFAULT_BRANCH: "main"
+  CONFIG_REPO_URI: "https://github.com/anujyadav11/event-platform-config.git"
+  CONFIG_REPO_LABEL: "main"

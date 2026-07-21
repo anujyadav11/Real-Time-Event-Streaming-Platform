@@ -23,6 +23,7 @@ spec:
         app: pricing-service
 
     spec:
+      serviceAccountName: pricing-service-sa
       affinity:
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:

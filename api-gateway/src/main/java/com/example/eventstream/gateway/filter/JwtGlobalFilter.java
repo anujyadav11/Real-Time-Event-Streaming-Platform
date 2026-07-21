@@ -35,7 +35,11 @@ public class JwtGlobalFilter implements GlobalFilter, Ordered {
         // Public endpoints
         if (path.startsWith("/auth/")
                 || path.startsWith("/actuator")
-                || path.startsWith("/ws/")) {
+                || path.startsWith("/ws/")
+                || path.equals("/swagger-ui.html")
+                || path.startsWith("/swagger-ui/")
+                || path.startsWith("/v3/api-docs")
+                || path.matches("^/(auth|order|inventory|pricing|delivery)-service/v3/api-docs(?:/.*)?$")) {
 
             return chain.filter(exchange);
         }

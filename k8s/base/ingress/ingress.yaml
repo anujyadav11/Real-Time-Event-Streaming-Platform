@@ -1,0 +1,24 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+
+metadata:
+  name: event-platform-ingress
+  namespace: event-platform
+
+spec:
+  ingressClassName: nginx
+
+  rules:
+    - host: event-platform.local
+
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+
+            backend:
+              service:
+                name: app-api-gateway
+
+                port:
+                  number: 8080
