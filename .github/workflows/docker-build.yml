@@ -1,22 +1,28 @@
 name: Docker Image Build
 
+on:
+  workflow_run:
+    workflows:
+      - Event Platform CI
+    types:
+      - completed
+
+  workflow_dispatch:
+
 permissions:
   contents: read
   packages: write
 
-on:
-  workflow_dispatch:
-
-  push:
-    branches:
-      - main
-
 jobs:
   docker-build:
+
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
 
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
+
       matrix:
         service:
           - api-gateway
@@ -47,11 +53,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract Docker Metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}
+          tags: |
+            type=raw,value=latest
+            type=sha
+            type=ref,event=branch
+
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v6
         with:
-          context: ./${{ matrix.service }}
+          context: .
+          file: ./${{ matrix.service }}/Dockerfile
           push: true
-          tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:latest
-            ghcr.io/${{ github.repository_owner }}/${{ matrix.service }}:${{ github.sha }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
