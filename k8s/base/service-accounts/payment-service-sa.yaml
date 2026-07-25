@@ -4,6 +4,3 @@ kind: ServiceAccount
 metadata:
   name: payment-service-sa
   namespace: event-platform
-
-imagePullSecrets:
-  - name: ghcr-pull-secret
