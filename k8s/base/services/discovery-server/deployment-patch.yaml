@@ -20,7 +20,7 @@ spec:
       containers:
         - name: app
           image: discovery-server:1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
           lifecycle:
             preStop:

@@ -63,7 +63,7 @@ spec:
                 - ALL
 
           image: order-service:1.0
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
 
           lifecycle:
             preStop:

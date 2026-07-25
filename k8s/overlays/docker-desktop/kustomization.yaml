@@ -35,20 +35,38 @@ patches:
 
 images:
   - name: api-gateway
-    newName: event-platform/api-gateway
-    newTag: swagger-test
+    newName: ghcr.io/anujyadav11/api-gateway
+    newTag: latest
   - name: auth-service
-    newName: event-platform/auth-service
-    newTag: swagger-test
+    newName: ghcr.io/anujyadav11/auth-service
+    newTag: latest
+  - name: config-server
+    newName: ghcr.io/anujyadav11/config-server
+    newTag: latest
+  - name: discovery-server
+    newName: ghcr.io/anujyadav11/discovery-server
+    newTag: latest
   - name: order-service
-    newName: event-platform/order-service
-    newTag: swagger-test
+    newName: ghcr.io/anujyadav11/order-service
+    newTag: latest
   - name: inventory-service
-    newName: event-platform/inventory-service
-    newTag: swagger-test
+    newName: ghcr.io/anujyadav11/inventory-service
+    newTag: latest
   - name: pricing-service
-    newName: event-platform/pricing-service
-    newTag: swagger-test
+    newName: ghcr.io/anujyadav11/pricing-service
+    newTag: latest
+  - name: payment-service
+    newName: ghcr.io/anujyadav11/payment-service
+    newTag: latest
+  - name: notification-service
+    newName: ghcr.io/anujyadav11/notification-service
+    newTag: latest
   - name: delivery-service
-    newName: event-platform/delivery-service
-    newTag: swagger-test
+    newName: ghcr.io/anujyadav11/delivery-service
+    newTag: latest
+  - name: websocket-service
+    newName: ghcr.io/anujyadav11/websocket-service
+    newTag: latest
+  - name: saga-orchestrator
+    newName: ghcr.io/anujyadav11/saga-orchestrator
+    newTag: latest
