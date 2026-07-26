@@ -1,872 +1,569 @@
-# 🚀 Real-Time Event Streaming Platform
-![Java](https://img.shields.io/badge/Java-21-orange) ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5-green) ![Kafka](https://img.shields.io/badge/Kafka-Event--Driven-black) ![Kubernetes](https://img.shields.io/badge/Kubernetes-Cloud_Native-blue) ![License](https://img.shields.io/badge/License-MIT-yellow)
-> A production-inspired event-driven microservices platform that simulates the backend architecture of modern food delivery and e-commerce systems using **Java**, **Spring Boot**, **Apache Kafka**, **PostgreSQL**, **Redis**, **Docker**, and **Kubernetes**.
+# Real-Time Event Streaming Platform
 
-This project demonstrates how modern distributed backend systems are designed using asynchronous messaging, distributed transactions, cloud-native deployment, and production-grade engineering practices.
+![Java](https://img.shields.io/badge/Java-21-orange)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.5.16-6DB33F)
+![Spring Cloud](https://img.shields.io/badge/Spring_Cloud-2025.0.0-0A7B83)
+![Kafka](https://img.shields.io/badge/Kafka-Event_Driven-black)
+![Docker](https://img.shields.io/badge/Docker-Containerized-2496ED)
+![Kubernetes](https://img.shields.io/badge/Kubernetes-Cloud_Native-326CE5)
+![CI](https://github.com/anujyadav11/Real-Time-Event-Streaming-Platform/actions/workflows/ci.yml/badge.svg)
+![CodeQL](https://github.com/anujyadav11/Real-Time-Event-Streaming-Platform/actions/workflows/codeql.yml/badge.svg)
 
-It simulates the backend architecture of large-scale applications such as food delivery, ride-sharing, and e-commerce platforms where multiple independent services collaborate to process business workflows reliably.
+A production-inspired, event-driven microservices platform that simulates the backend architecture of modern ordering, delivery, and e-commerce systems.
 
----
-# 📖 Project Overview
+Built with Java 21, Spring Boot, Kafka, PostgreSQL, Redis, Docker, and Kubernetes, this project shows how independent services can collaborate through APIs and events to process business workflows reliably.
 
-The Real-Time Event Streaming Platform is a distributed event-driven microservices application that processes customer orders through multiple independent services.
+## Highlights
 
-Instead of relying on a single monolithic application, each business capability is implemented as an independent microservice communicating through REST APIs and Apache Kafka events.
+- Event-driven order lifecycle
+- JWT-secured API gateway
+- Kafka-based async communication
+- Saga and transactional outbox patterns
+- Centralized config and service discovery
+- Dockerized local environment
+- Kubernetes-ready deployment manifests
+- Observability with Prometheus, Grafana, Zipkin, and Actuator
+- GitHub Actions based CI/CD
 
-The platform demonstrates production-inspired backend patterns including:
+## Table of contents
 
-- Event-Driven Architecture
-- Saga Pattern
-- Transactional Outbox Pattern
-- Idempotent Consumers
-- Distributed Configuration
-- Service Discovery
-- API Gateway
-- Resilience Patterns
-- Distributed Tracing
-- Kubernetes Deployment
+- [Overview](#overview)
+- [Architecture](#architecture)
+- [Platform services](#platform-services)
+- [Engineering patterns](#engineering-patterns)
+- [Tech stack](#tech-stack)
+- [Repository structure](#repository-structure)
+- [Order workflow](#order-workflow)
+- [Screenshots](#screenshots)
+- [Getting started](#getting-started)
+- [Run with Docker Compose](#run-with-docker-compose)
+- [Run with Kubernetes](#run-with-kubernetes)
+- [API docs and Postman](#api-docs-and-postman)
+- [Observability](#observability)
+- [CI/CD](#cicd)
+- [Next version roadmap](#next-version-roadmap)
+- [Support and connect](#support-and-connect)
+- [Contribution](#contribution)
+- [License](#license)
 
-The objective of this project is to showcase how modern backend systems achieve scalability, resiliency, maintainability, and fault tolerance using industry-standard technologies.
+## Overview
 
----
-# 🎯 Why This Project?
+The Real-Time Event Streaming Platform is a distributed microservices application that processes orders across multiple backend services.
 
-Modern distributed applications rarely consist of a single backend service.
+Instead of a monolith, the platform separates business capabilities into focused services that communicate through REST and Apache Kafka. This makes the system easier to scale, maintain, evolve, and observe.
 
-Large-scale platforms such as Uber, Swiggy, Zomato, Amazon, and Netflix operate hundreds of independent services that communicate through synchronous APIs and asynchronous event streams.
+This repository is designed to showcase production-style backend ideas such as:
 
-Building reliable distributed systems introduces challenges including:
+- event-driven architecture
+- eventual consistency
+- saga-based workflow coordination
+- idempotent event consumption
+- fault tolerance and retries
+- centralized configuration
+- service discovery
+- containerized deployment
+- cloud-native operations
 
-- Service-to-service communication
-- Distributed transactions
-- Event consistency
-- Fault tolerance
-- Service discovery
-- Configuration management
-- Observability
-- Deployment automation
-
-This project was built to explore and implement these production-inspired architectural patterns using the Spring ecosystem and Kubernetes.
-
----
-# ✨ Key Features
-
-## Authentication & Security
-
-- JWT Authentication
-- Spring Security
-- API Gateway Authentication
-
-## Event-Driven Architecture
-
-- Apache Kafka
-- Event Publishing
-- Event Consumption
-- Saga Pattern
-- Transactional Outbox
-- Idempotent Consumers
-
-## Reliability
-
-- Resilience4j
-- Circuit Breaker
-- Retry
-- Dead Letter Topics (DLT)
-- Retry Topics
-
-## Data Layer
-
-- PostgreSQL
-- Redis Cache
-- Spring Data JPA
-
-## Observability
-
-- Spring Boot Actuator
-- Prometheus
-- Grafana
-- Zipkin Distributed Tracing
-
-## Cloud Native
-
-- Docker
-- Kubernetes
-- ConfigMaps
-- Secrets
-- Health Probes
-- Horizontal Pod Autoscaler
-- Ingress
-- Network Policies
-
-## DevOps
-
-- GitHub Actions
-- Multi-Architecture Docker Images
-- GHCR
-- Automated CI Pipeline
-
----
-# 🏛️ Design Goals
-
-The platform was designed with the following engineering goals:
-
-- Build an event-driven microservices architecture.
-- Demonstrate distributed transaction management using the Saga Pattern.
-- Ensure reliable event delivery using the Transactional Outbox Pattern.
-- Prevent duplicate event processing through idempotent consumers.
-- Improve fault tolerance using Resilience4j.
-- Support cloud-native deployment using Kubernetes.
-- Provide observability through metrics, tracing, and health monitoring.
-- Automate build and deployment using GitHub Actions.
-
----
-# 🛠️ Technology Stack
-
-| Category | Technologies                                      |
-|-----------|---------------------------------------------------|
-| **Language** | Java 21                                           |
-| **Framework** | Spring Boot 3.5.16                                |
-| **Microservices** | Spring Cloud 2025.0.0                             |
-| **Security** | Spring Security, JWT                              |
-| **API Gateway** | Spring Cloud Gateway                              |
-| **Service Discovery** | Eureka Server                                     |
-| **Configuration** | Spring Cloud Config Server                        |
-| **Messaging** | Apache Kafka                                      |
-| **Database** | PostgreSQL                                        |
-| **Caching** | Redis                                             |
-| **Persistence** | Spring Data JPA, Hibernate                        |
-| **Resilience** | Resilience4j                                      |
-| **Observability** | Spring Boot Actuator, Prometheus, Grafana, Zipkin |
-| **Containerization** | Docker                                            |
-| **Orchestration** | Kubernetes                                        |
-| **CI/CD** | GitHub Actions                                    |
-| **Build Tool** | Maven                                             |
-
----
-
-# 🏗️ High-Level Architecture
+## Architecture
 
 ```mermaid
 flowchart LR
+    C[Client / Frontend] --> G[API Gateway]
+    G --> A[Auth Service]
+    G --> O[Order Service]
+    O --> P[Pricing Service]
+    O --> I[Inventory Service]
+    O --> Pay[Payment Service]
+    O --> S[Saga Orchestrator]
+    Pay --> K[(Kafka)]
+    S --> K
+    K --> N[Notification Service]
+    K --> D[Delivery Service]
+    K --> W[WebSocket Service]
 
-Client[Client]
+    A --> PG[(PostgreSQL)]
+    O --> PG
+    P --> PG
+    I --> PG
+    Pay --> PG
+    N --> PG
+    D --> PG
 
-Gateway[API Gateway]
+    A --> R[(Redis)]
 
-Auth[Auth Service]
+    G --> E[Eureka Server]
+    O --> E
+    P --> E
+    I --> E
+    Pay --> E
+    N --> E
+    D --> E
+    W --> E
+    A --> E
+    S --> E
 
-Order[Order Service]
+    G --> CS[Config Server]
+    O --> CS
+    P --> CS
+    I --> CS
+    Pay --> CS
+    N --> CS
+    D --> CS
+    W --> CS
+    A --> CS
+    S --> CS
 
-Pricing[Pricing Service]
+    O --> PR[Prometheus]
+    P --> PR
+    I --> PR
+    Pay --> PR
+    N --> PR
+    D --> PR
+    PR --> GR[Grafana]
 
-Inventory[Inventory Service]
-
-Payment[Payment Service]
-
-Notification[Notification Service]
-
-Delivery[Delivery Service]
-
-Kafka[(Apache Kafka)]
-
-Redis[(Redis)]
-
-Postgres[(PostgreSQL)]
-
-Eureka[Eureka Server]
-
-Config[Config Server]
-
-Prometheus[Prometheus]
-
-Grafana[Grafana]
-
-Zipkin[Zipkin]
-
-Client --> Gateway
-
-Gateway --> Auth
-Gateway --> Order
-
-Order --> Pricing
-Order --> Inventory
-Order --> Payment
-
-Payment --> Kafka
-
-Kafka --> Notification
-Kafka --> Delivery
-
-Auth --> Redis
-
-Auth --> Postgres
-Order --> Postgres
-Pricing --> Postgres
-Inventory --> Postgres
-Payment --> Postgres
-Notification --> Postgres
-Delivery --> Postgres
-
-Gateway --> Eureka
-Order --> Eureka
-Pricing --> Eureka
-Inventory --> Eureka
-Payment --> Eureka
-Notification --> Eureka
-Delivery --> Eureka
-
-Gateway --> Config
-Order --> Config
-Pricing --> Config
-Inventory --> Config
-Payment --> Config
-Notification --> Config
-Delivery --> Config
-
-Order --> Prometheus
-Pricing --> Prometheus
-Inventory --> Prometheus
-Payment --> Prometheus
-Notification --> Prometheus
-Delivery --> Prometheus
-
-Prometheus --> Grafana
-
-Order --> Zipkin
-Pricing --> Zipkin
-Inventory --> Zipkin
-Payment --> Zipkin
-Notification --> Zipkin
-Delivery --> Zipkin
+    O --> Z[Zipkin]
+    P --> Z
+    I --> Z
+    Pay --> Z
+    D --> Z
 ```
----
-# 🧩 Microservices Overview
 
-| Service | Responsibility |
-|----------|----------------|
-| **API Gateway** | Entry point for all client requests, JWT validation, and request routing. |
-| **Auth Service** | User authentication, JWT generation, and user management. |
-| **Order Service** | Creates and manages customer orders. Coordinates the order workflow. |
-| **Pricing Service** | Calculates pricing based on products and quantities. |
-| **Inventory Service** | Reserves and releases inventory during order processing. |
-| **Payment Service** | Simulates payment processing and publishes payment events. |
-| **Notification Service** | Consumes Kafka events and sends order notifications. |
-| **Delivery Service** | Manages delivery creation and status updates. |
-| **Config Server** | Centralized configuration for all services. |
-| **Discovery Server** | Eureka-based service registry and discovery. |
+## Platform services
 
----
+| Service | Purpose | Default port |
+|---|---|---:|
+| API Gateway | Single entry point, JWT validation, routing, aggregated Swagger UI | 8080 |
+| Auth Service | Authentication, token generation, security, user management | 8087 |
+| Order Service | Creates and manages orders, drives the order workflow | 8081 |
+| Pricing Service | Calculates or returns pricing data | 8089 |
+| Inventory Service | Reserves and releases stock | 8082 |
+| Payment Service | Processes payments and emits payment events | 8083 |
+| Saga Orchestrator | Coordinates distributed workflow transitions | 8095 |
+| Delivery Service | Creates deliveries and tracks delivery state | 8086 |
+| Notification Service | Consumes events and emits user notifications | 8084 |
+| WebSocket Service | Pushes real-time updates to clients | 8088 |
+| Config Server | Centralized configuration server | 8888 |
+| Discovery Server | Eureka service registry | 8761 |
 
-# 📡 Service Communication
+## Engineering patterns
 
-The platform uses both synchronous REST communication and asynchronous event streaming.
+This project demonstrates several useful backend and distributed-systems patterns:
 
-| Communication Type | Technology | Purpose |
-|--------------------|------------|---------|
-| Client → Gateway | HTTP | External API access |
-| Gateway → Services | HTTP | Request routing |
-| Service → Service | REST | Synchronous operations |
-| Service → Service | Apache Kafka | Asynchronous event publishing |
-| Service Discovery | Eureka | Dynamic service lookup |
-| Configuration | Config Server | Centralized configuration |
+- Event-driven architecture
+- Saga pattern
+- Transactional outbox
+- Idempotent consumers
+- Dead-letter and retry handling
+- API gateway pattern
+- Service discovery
+- Centralized configuration
+- Health/readiness/liveness checks
+- Horizontal Pod Autoscaler support
+- Kubernetes network policies and service accounts
 
----
-# 🧠 Architectural Patterns
+## Tech stack
 
-The platform incorporates several commonly used distributed system patterns:
+| Category | Technologies |
+|---|---|
+| Language | Java 21 |
+| Framework | Spring Boot 3.5.16 |
+| Cloud stack | Spring Cloud 2025.0.0 |
+| Security | Spring Security, JWT |
+| Messaging | Apache Kafka |
+| Persistence | PostgreSQL, Spring Data JPA, Hibernate |
+| Cache | Redis |
+| Mapping | MapStruct |
+| Observability | Spring Boot Actuator, Prometheus, Grafana, Zipkin |
+| Docs | Springdoc OpenAPI / Swagger UI, Postman collections |
+| Build | Maven |
+| Containers | Docker |
+| Orchestration | Kubernetes, Kustomize |
+| Automation | GitHub Actions, CodeQL |
 
-| Pattern | Purpose |
-|----------|---------|
-| **Microservices Architecture** | Independent deployment and scaling of business capabilities. |
-| **API Gateway** | Single entry point for clients. |
-| **Service Discovery** | Dynamic service registration and lookup using Eureka. |
-| **Centralized Configuration** | Externalized configuration using Spring Cloud Config. |
-| **Event-Driven Architecture** | Loose coupling through Kafka-based messaging. |
-| **Saga Pattern** | Coordination of distributed transactions across services. |
-| **Transactional Outbox** | Reliable event publication alongside database transactions. |
-| **Idempotent Consumers** | Safe handling of duplicate Kafka messages. |
-| **Circuit Breaker** | Failure isolation with Resilience4j. |
-| **Distributed Tracing** | End-to-end request visibility using Zipkin. |
-| **Caching** | Improved read performance using Redis. |
-
----
-
-# 📂 Repository Structure
+## Repository structure
 
 ```text
-Real-Time-Event-Streaming-Platform/
-│
-├── .github/                    # GitHub Actions workflows
-├── .mvn/                       # Maven Wrapper files
-│
-├── api-gateway/                # Spring Cloud Gateway
-├── auth-service/               # Authentication & JWT Service
-├── common/                     # Shared DTOs, events, utilities
-├── config-server/              # Spring Cloud Config Server
-├── delivery-service/           # Delivery Management Service
-├── discovery-server/           # Eureka Service Registry
-├── infrastructure/             # Shared infrastructure components
-├── inventory-service/          # Inventory Management Service
-├── notification-service/       # Notification Service
-├── order-service/              # Order Management Service
-├── payment-service/            # Payment Processing Service
-├── pricing-service/            # Pricing Service
-├── saga-orchestrator/          # Saga Orchestration Service
-├── websocket-service/          # Real-time WebSocket Service
-├── websocket-client/           # WebSocket Test Client
-│
-├── docker/                     # Docker configurations
-├── k8s/                        # Kubernetes manifests
-├── scripts/                    # Utility & deployment scripts
-├── docs/                       # Project documentation
-├── postman/                    # Postman collections
-│
-├── pom.xml                     # Root Maven multi-module project
-├── mvnw
-├── mvnw.cmd
-├── kubeconfig.yaml             # Local Kubernetes config (development)
-├── .gitignore
-├── .dockerignore
-└── README.md
+.
+├── api-gateway/
+├── auth-service/
+├── common/
+├── config-server/
+├── delivery-service/
+├── discovery-server/
+├── infrastructure/
+├── inventory-service/
+├── notification-service/
+├── order-service/
+├── payment-service/
+├── pricing-service/
+├── saga-orchestrator/
+├── websocket-service/
+├── docker/
+│   ├── docker-compose.yaml
+│   └── <service Dockerfiles>
+├── k8s/
+│   ├── base/
+│   └── overlays/docker-desktop/
+├── docs/
+│   └── screenshots/
+├── postman/
+└── .github/workflows/
 ```
----
 
-# 🧩 Service Responsibilities
+## Order workflow
 
-## API Gateway
-
-Acts as the single entry point for all client requests.
-
-Responsibilities:
-
-- Request routing
-- JWT validation
-- Authentication
-- Load balancing
-- Cross-cutting concerns
-
----
-
-## Auth Service
-
-Responsible for user identity.
-
-Responsibilities:
-
-- User registration
-- Login
-- JWT generation
-- JWT validation
-- User management
-
----
-
-## Order Service
-
-Coordinates the order lifecycle.
-
-Responsibilities:
-
-- Create orders
-- Validate requests
-- Invoke Pricing Service
-- Start Saga workflow
-- Publish domain events
-
----
-
-## Pricing Service
-
-Calculates order pricing.
-
-Responsibilities:
-
-- Product pricing
-- Discount calculation
-- Final amount computation
-
----
-
-## Inventory Service
-
-Maintains stock consistency.
-
-Responsibilities:
-
-- Reserve inventory
-- Release inventory
-- Update stock levels
-
----
-
-## Payment Service
-
-Processes customer payments.
-
-Responsibilities:
-
-- Payment authorization
-- Payment status updates
-- Publish payment events
-
----
-
-## Notification Service
-
-Handles customer notifications.
-
-Responsibilities:
-
-- Consume Kafka events
-- Send email/SMS notifications
-- Persist notification history
-
----
-
-## Delivery Service
-
-Creates delivery requests.
-
-Responsibilities:
-
-- Create deliveries
-- Track delivery status
-- Consume order events
-
----
-# 🔄 Order Processing Flow
-
-The platform processes customer orders using a combination of synchronous REST communication and asynchronous Kafka events.
+The platform combines synchronous API calls with asynchronous event propagation.
 
 ```mermaid
 sequenceDiagram
+    participant Client
+    participant Gateway as API Gateway
+    participant Auth as Auth Service
+    participant Order as Order Service
+    participant Pricing as Pricing Service
+    participant Inventory as Inventory Service
+    participant Payment as Payment Service
+    participant Kafka as Kafka
+    participant Delivery as Delivery Service
+    participant Notify as Notification Service
 
-participant Client
-participant Gateway
-participant Order
-participant Pricing
-participant Inventory
-participant Payment
-participant Kafka
-participant Notification
-participant Delivery
-
-Client->>Gateway: Create Order
-
-Gateway->>Order: Forward Request
-
-Order->>Pricing: Calculate Price
-
-Pricing-->>Order: Price Response
-
-Order->>Inventory: Reserve Inventory
-
-Inventory-->>Order: Inventory Reserved
-
-Order->>Payment: Process Payment
-
-Payment->>Kafka: PaymentCompletedEvent
-
-Kafka->>Notification: Consume Event
-
-Kafka->>Delivery: Consume Event
-
-Notification-->>Client: Notification Sent
+    Client->>Gateway: Authenticated request
+    Gateway->>Auth: Validate JWT / auth rules
+    Gateway->>Order: Create order
+    Order->>Pricing: Fetch price
+    Order->>Inventory: Reserve stock
+    Order->>Payment: Process payment
+    Payment-->>Kafka: Payment event
+    Kafka-->>Delivery: Create delivery
+    Kafka-->>Notify: Send notification
 ```
----
 
-# 📨 Kafka Topics
+## Screenshots
 
-| Topic | Producer | Consumer |
-|---------|----------|-----------|
-| pricing-calculated | Pricing Service | Order Service |
-| inventory-reserved | Inventory Service | Order Service |
-| inventory-released | Inventory Service | Order Service |
-| payment-completed | Payment Service | Notification Service, Delivery Service |
-| payment-failed | Payment Service | Order Service |
-| notification-sent | Notification Service | Monitoring |
+The repo now includes a screenshot folder structure under [docs/screenshots](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/docs/screenshots/README.md).
 
----
-# 🗄️ Database Ownership
+Replace the placeholder files with real screenshots when ready.
 
-Each microservice owns its database and does not directly access another service's data.
+### Swagger UI
 
-| Service | Database |
-|-----------|-----------|
-| Auth Service | auth |
-| Order Service | orders |
-| Pricing Service | pricing |
-| Inventory Service | inventory |
-| Payment Service | payment |
-| Notification Service | notification |
-| Delivery Service | delivery |
-| Saga Service | saga |
+![Swagger UI](docs/screenshots/swagger-ui.png)
 
----
+### Eureka Dashboard
 
-# 🌐 Request Lifecycle
+![Eureka Dashboard](docs/screenshots/eureka-dashboard.png)
 
-1. Client sends a request to the API Gateway.
-2. Gateway authenticates the request using JWT.
-3. Gateway forwards the request to the appropriate microservice.
-4. Services communicate synchronously using REST where immediate responses are required.
-5. Business events are published asynchronously to Apache Kafka.
-6. Consumer services process events independently.
-7. Each service updates only its own database.
-8. Metrics, traces, and health information are exported to the observability stack.
+### Kafka UI
 
----
-# 📋 Prerequisites
+![Kafka UI](docs/screenshots/kafka-ui.png)
 
-Before running the project, ensure the following tools are installed:
+### Grafana Dashboard
 
-| Tool | Version |
-|------|---------|
-| Java | 21 |
-| Maven | 3.9+ |
-| Docker | Latest |
-| Kubernetes | 1.30+ |
-| kubectl | Latest |
-| Git | Latest |
+![Grafana Dashboard](docs/screenshots/grafana-dashboard.png)
 
-The platform also requires the following infrastructure services:
+### Zipkin Trace
+
+![Zipkin Trace](docs/screenshots/zipkin-trace.png)
+
+### Kubernetes View
+
+![Kubernetes Pods](docs/screenshots/kubernetes-pods.png)
+
+## Getting started
+
+### Prerequisites
+
+- Java 21
+- Maven 3.9+
+- Docker Desktop or Docker Engine
+- `kubectl` for Kubernetes usage
+- A Kubernetes cluster if you want to test the manifests
+
+### Build the whole project
+
+```bash
+./mvnw clean verify
+```
+
+If you only want packaged jars without running tests:
+
+```bash
+./mvnw clean package -DskipTests
+```
+
+## Run with Docker Compose
+
+The repository includes a full local stack in [docker/docker-compose.yaml](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/docker/docker-compose.yaml).
+
+### Start the platform
+
+```bash
+docker compose -f docker/docker-compose.yaml up --build
+```
+
+### Services started by Compose
+
+Infrastructure:
 
 - PostgreSQL
-- Apache Kafka
 - Redis
-- Zipkin
+- Kafka
+- Kafka UI
 - Prometheus
 - Grafana
----
-# 💻 Running Locally
+- Zipkin
 
-## Clone the repository
+Application services:
 
-```bash
-git clone https://github.com/anujyadav11/Real-Time-Event-Streaming-Platform.git
+- config-server
+- discovery-server
+- api-gateway
+- auth-service
+- order-service
+- pricing-service
+- inventory-service
+- payment-service
+- saga-orchestrator
+- delivery-service
+- notification-service
+- websocket-service
 
-cd Real-Time-Event-Streaming-Platform
-```
+## Run with Kubernetes
 
-## Build the project
+Kubernetes manifests are organized under [k8s](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/k8s).
 
-```bash
-./mvnw clean install
-```
+### Base resources include
 
-## Start infrastructure
+- Namespace
+- ConfigMaps
+- Secrets
+- Infrastructure components
+- Application Deployments and Services
+- HPAs and PodDisruptionBudgets for selected services
+- NetworkPolicies
+- ServiceAccounts
+- Ingress
 
-```bash
-docker compose up -d
-```
+### Docker Desktop overlay
 
-## Start the services
+The project ships with a local overlay for Docker Desktop Kubernetes:
 
-Run the services in the following order:
+- [k8s/overlays/docker-desktop/kustomization.yaml](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/k8s/overlays/docker-desktop/kustomization.yaml)
+- [k8s/overlays/docker-desktop/README.md](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/k8s/overlays/docker-desktop/README.md)
 
-1. Discovery Server
-2. Config Server
-3. API Gateway
-4. Auth Service
-5. Pricing Service
-6. Inventory Service
-7. Payment Service
-8. Notification Service
-9. Delivery Service
-10. Saga Orchestrator
-11. Order Service
-12. WebSocket Service
-
----
-# 🐳 Docker Deployment
-
-Build all Docker images:
+Build the jars and local images first:
 
 ```bash
-./mvnw clean package
+./mvnw clean package -DskipTests
 
-docker build -t service-name .
+docker build -f docker/api-gateway/Dockerfile -t event-platform/api-gateway:swagger-test .
+docker build -f docker/auth-service/Dockerfile -t event-platform/auth-service:swagger-test .
+docker build -f docker/order-service/Dockerfile -t event-platform/order-service:swagger-test .
+docker build -f docker/inventory-service/Dockerfile -t event-platform/inventory-service:swagger-test .
+docker build -f docker/pricing-service/Dockerfile -t event-platform/pricing-service:swagger-test .
+docker build -f docker/delivery-service/Dockerfile -t event-platform/delivery-service:swagger-test .
 ```
 
-Or pull pre-built images from GitHub Container Registry.
-
-Start the local infrastructure using:
-
-```bash
-docker compose up -d
-```
-
-Verify running containers:
-
-```bash
-docker ps
-```
----
-# ☸️ Kubernetes Deployment
-
-The project includes Kubernetes manifests for deploying the complete platform.
-
-## Deploy
+Apply the overlay:
 
 ```bash
 kubectl apply -k k8s/overlays/docker-desktop
+kubectl rollout status deployment/app-api-gateway -n event-platform --timeout=10m
+kubectl port-forward -n event-platform service/app-api-gateway 8080:8080
 ```
 
-## Verify Pods
+Then open:
+
+- Swagger UI: <http://localhost:8080/swagger-ui.html>
+
+## API docs and Postman
+
+### Swagger / OpenAPI
+
+The API Gateway exposes aggregated Swagger UI.
+
+After the stack is running, open:
+
+- `http://localhost:8080/swagger-ui.html`
+
+Configured downstream docs include:
+
+- Auth Service
+- Order Service
+- Inventory Service
+- Pricing Service
+- Delivery Service
+
+### Postman collection
+
+The repository already includes a Postman workspace under [postman](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/postman).
+
+Available request groups include:
+
+- Authentication
+- Order Service
+- Inventory Service
+- Pricing Service
+- Payment Service
+- Delivery Service
+
+## Observability
+
+The platform includes a full observability toolchain.
+
+### Components
+
+- Spring Boot Actuator for health and metrics
+- Prometheus for scraping metrics
+- Grafana for dashboards
+- Zipkin for distributed tracing
+- Kafka UI for topic inspection
+
+### Typical local URLs
+
+When running through Docker Compose, these are the usual entry points:
+
+- API Gateway: `http://localhost:8080`
+- Eureka Dashboard: `http://localhost:8761`
+- Config Server: `http://localhost:8888`
+- Swagger UI: `http://localhost:8080/swagger-ui.html`
+- Kafka UI: `http://localhost:8085`
+- Prometheus: `http://localhost:9090`
+- Grafana: `http://localhost:3000`
+- Zipkin: `http://localhost:9411`
+
+## CI/CD
+
+GitHub Actions workflows live in [.github/workflows](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/.github/workflows).
+
+### Current automation
+
+- `ci.yml`
+  - builds and tests the Maven multi-module project
+  - builds and pushes Docker images for the services on pushes to `main`
+  - publishes images to GitHub Container Registry
+- `codeql.yml`
+  - performs static analysis for Java and Kotlin code
+- `dependabot.yml`
+  - keeps Maven and GitHub Actions dependencies updated
+
+### Container publishing
+
+The CI workflow publishes these service images through a matrix build:
+
+- api-gateway
+- auth-service
+- config-server
+- discovery-server
+- order-service
+- inventory-service
+- pricing-service
+- payment-service
+- notification-service
+- delivery-service
+- websocket-service
+- saga-orchestrator
+
+## Next version roadmap
+
+The next version of this project is focused on pushing it from strong engineering demo to production-grade platform.
+
+### Phase 1 — Production hardening
+
+- distributed tracing improvements
+- centralized structured JSON logging with correlation IDs
+- Micrometer custom business metrics
+- Kafka consumer lag metrics
+- custom Grafana dashboards
+- Prometheus alerting rules and Alertmanager
+- gateway rate limiting
+- distributed locking with Redis
+- feature flags
+- audit logging
+
+### Phase 2 — Security
+
+- refresh tokens
+- token rotation
+- RBAC
+- method-level authorization
+- API key support for internal services
+- secret rotation
+- HTTPS/TLS
+- mTLS between services
+
+### Phase 3 — Reliability
+
+- inbox pattern
+- exactly-once processing improvements
+- Kafka transactions
+- poison message handling
+- dead-letter replay endpoint
+- compensation monitoring
+- retry dashboard
+
+### Phase 4 — Scalability
+
+- Redis cluster
+- Kafka partition tuning
+- horizontal scaling tests
+- load testing with k6 or JMeter
+- autoscaling based on custom metrics
+
+### Phase 5 — Cloud
+
+- AWS EKS
+- RDS
+- ElastiCache
+- MSK
+- ALB Ingress Controller
+- Route53
+- ACM
+- ECR
+
+### Phase 6 — GitOps
+
+- Helm charts
+- ArgoCD
+- progressive delivery
+- blue/green deployments
+- canary deployments
+
+## Support and connect
+
+If you found this project useful, consider supporting it and connecting with the author.
+
+- Give the project a star: [Star this repository](https://github.com/anujyadav11/Real-Time-Event-Streaming-Platform)
+- GitHub: [github.com/anujyadav11/Real-Time-Event-Streaming-Platform](https://github.com/anujyadav11/Real-Time-Event-Streaming-Platform)
+- LinkedIn: [Add your LinkedIn profile URL here](https://www.linkedin.com/)
+
+## Contribution
+
+Contributions are welcome.
+
+If you want to improve the project:
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run the build and tests locally
+5. Open a pull request with a clear description
+
+Recommended before submitting:
 
 ```bash
-kubectl get pods -n event-platform
+./mvnw clean verify
 ```
 
-## Verify Services
+Good contribution areas:
 
-```bash
-kubectl get svc -n event-platform
-```
+- new business workflows
+- improved resiliency and observability
+- better dashboards and docs
+- more automated tests
+- improved Kubernetes manifests
 
-## Verify Ingress
+## License
 
-```bash
-kubectl get ingress -n event-platform
-```
+This project is currently presented as MIT-licensed in earlier README styling, but the repository does not yet include a standalone `LICENSE` file.
 
-## Delete Deployment
-
-```bash
-kubectl delete -k k8s/overlays/docker-desktop
-```
-
-The Kubernetes deployment includes:
-
-- Deployments
-- Services
-- ConfigMaps
-- Secrets
-- Ingress
-- Horizontal Pod Autoscaler
-- Network Policies
-- Service Accounts
-- Resource Requests & Limits
-- Health Probes
-- Rolling Updates
-
----
-# 🔄 CI/CD Pipeline
-
-The project uses GitHub Actions to automate build, test, containerization, and deployment workflows.
-
-## Pipeline Overview
-
-```text
-Developer
-      │
-      ▼
-Git Push
-      │
-      ▼
-GitHub Actions
-      │
-      ├── Build
-      ├── Run Tests
-      ├── Package
-      ├── Build Docker Images
-      ├── Push Images to GHCR
-      └── Deploy to Kubernetes
-```
-
-Current pipeline stages:
-
-- Checkout Source
-- Setup Java
-- Cache Maven Dependencies
-- Build Project
-- Run Unit Tests
-- Package Services
-- Build Multi-Architecture Docker Images
-- Push Images to GitHub Container Registry
-- Deploy to Kubernetes
----
-# 🏛️ Engineering Decisions
-
-| Decision | Reason |
-|----------|--------|
-| Spring Boot | Mature ecosystem for Java microservices. |
-| Spring Cloud Gateway | Centralized routing and authentication. |
-| Eureka | Dynamic service registration and discovery. |
-| Kafka | Asynchronous communication between services. |
-| Saga Pattern | Coordinate distributed transactions without two-phase commit. |
-| Transactional Outbox | Ensure reliable event publication. |
-| PostgreSQL | Reliable relational database for transactional data. |
-| Redis | Low-latency caching and idempotency support. |
-| Kubernetes | Cloud-native deployment and orchestration. |
-| GitHub Actions | Automated CI/CD pipeline. |
-| Zipkin | End-to-end distributed request tracing. |
-| Prometheus & Grafana | Metrics collection and visualization. |
-
----
-# 📚 What This Project Demonstrates
-
-This project showcases practical experience with:
-
-- Designing and building distributed microservices
-- Event-driven architectures with Apache Kafka
-- Distributed transactions using the Saga Pattern
-- Reliable messaging with the Transactional Outbox Pattern
-- JWT-based authentication and API Gateway routing
-- Service discovery and centralized configuration
-- Redis caching and idempotent event processing
-- Observability with Prometheus, Grafana, and Zipkin
-- Docker containerization and Kubernetes deployment
-- CI/CD automation using GitHub Actions
----
-# 📸 Project Screenshots
-
-## API Gateway
-
-> _Gateway routing and request handling_
-
-![Gateway](docs/images/gateway.png)
-
----
-
-## Eureka Dashboard
-
-> _Service registration and discovery_
-
-![Eureka](docs/images/eureka.png)
-
----
-
-## Kafka UI
-
-> _Kafka topics, producers, and consumers_
-
-![Kafka](docs/images/kafka-ui.png)
-
----
-
-## Prometheus
-
-> _Metrics collection_
-
-![Prometheus](docs/images/prometheus.png)
-
----
-
-## Grafana
-
-> _Application dashboards_
-
-![Grafana](docs/images/grafana.png)
-
----
-
-## Zipkin
-
-> _Distributed tracing_
-
-![Zipkin](docs/images/zipkin.png)
-
----
-
-## Kubernetes
-
-> _Running pods and services_
-
-![Kubernetes](docs/images/kubernetes.png)
-
----
-
-## GitHub Actions
-
-> _Successful CI/CD pipeline_
-
-![CI](docs/images/github-actions.png)
-
----
-## Swagger UI
-
-> Interactive API documentation generated using OpenAPI.
-
-![Swagger](docs/images/swagger-ui.png)
-
----
-## API Documentation
-
-Interactive API documentation is available through the API Gateway.
-
-| Environment | URL |
-|-------------|-----|
-| Local | http://localhost:8080/swagger-ui/index.html |
-| Kubernetes | http://event-platform.local/swagger-ui/index.html |
-
-# 🎥 Demo
-
-The following demonstrates the complete order workflow:
-
-1. User Login
-2. JWT Generation
-3. Create Order
-4. Pricing Calculation
-5. Inventory Reservation
-6. Payment Processing
-7. Kafka Event Publication
-8. Notification Delivery
-9. Delivery Creation
-
-A demonstration video will be available here.
-
-> **Coming Soon**
----
-# 🚀 Future Roadmap
-
-The current implementation focuses on the core architecture of an event-driven microservices platform.
-
-Future enhancements include:
-
-- Helm Charts
-- ArgoCD (GitOps)
-- AWS EKS Deployment
-- OpenTelemetry
-- Centralized Logging (ELK/Loki)
-- API Rate Limiting
-- Role-Based Access Control (RBAC)
-- Distributed Locking
-- Chaos Testing
-- Performance Testing (k6)
-- Canary Deployments
-- Blue-Green Deployments
-
----
-# 🤝 Contributing
-
-Contributions, suggestions, and feedback are welcome.
-
-If you would like to contribute:
-
-1. Fork the repository.
-2. Create a feature branch.
-3. Commit your changes.
-4. Open a Pull Request.
-
-Please ensure all tests pass before submitting changes.
-
----
-# 📄 License
-
-This project is licensed under the MIT License.
-
-See the LICENSE file for details.
-
----
-# 👨‍💻 Author
-
-**Anuj Yadav**
-
-Backend Engineer | Java | Spring Boot | Distributed Systems
-
-GitHub: https://github.com/anujyadav11
-
-LinkedIn: <your-linkedin>
-
-If you found this project useful, consider giving it a ⭐.
+If you want, the next step should be to add an actual `LICENSE` file so the licensing is explicit and unambiguous.
