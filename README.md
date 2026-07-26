@@ -297,7 +297,7 @@ The platform incorporates several commonly used distributed system patterns:
 Real-Time-Event-Streaming-Platform/
 │
 ├── .github/                    # GitHub Actions workflows
-├── .mvn/                       # Maven Wrapper filesgit tag -a v1.0.0 -m "Initial stable release"
+├── .mvn/                       # Maven Wrapper files
 │
 ├── api-gateway/                # Spring Cloud Gateway
 ├── auth-service/               # Authentication & JWT Service
@@ -784,6 +784,22 @@ This project showcases practical experience with:
 ![CI](docs/images/github-actions.png)
 
 ---
+## Swagger UI
+
+> Interactive API documentation generated using OpenAPI.
+
+![Swagger](docs/images/swagger-ui.png)
+
+---
+## API Documentation
+
+Interactive API documentation is available through the API Gateway.
+
+| Environment | URL |
+|-------------|-----|
+| Local | http://localhost:8080/swagger-ui/index.html |
+| Kubernetes | http://event-platform.local/swagger-ui/index.html |
+
 # 🎥 Demo
 
 The following demonstrates the complete order workflow:
