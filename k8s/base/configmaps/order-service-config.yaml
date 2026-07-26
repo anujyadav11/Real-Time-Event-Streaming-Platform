@@ -14,4 +14,4 @@ data:
   ORDER_DB_USERNAME: "postgres"
   ORDER_DB_PASSWORD: "postgres"
 
-  PRICING_SERVICE_BASE_URL: "http://pricing-service:8089"
+  PRICING_SERVICE_BASE_URL: "http://PRICING-SERVICE"

@@ -1,22 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -euo pipefail
+set -Eeuo pipefail
 
 NAMESPACE="event-platform"
-OVERLAY="k8s/overlays/dev"
-
-echo "🚀 Deploying Event Platform..."
-
-kubectl apply -k "$OVERLAY"
-
-echo ""
-echo "⏳ Waiting for deployments..."
+OVERLAY="k8s/overlays/docker-desktop"
 
 SERVICES=(
-  api-gateway
-  auth-service
   config-server
   discovery-server
+  auth-service
+  api-gateway
   order-service
   inventory-service
   pricing-service
@@ -27,12 +20,29 @@ SERVICES=(
   saga-orchestrator
 )
 
+echo "🚀 Deploying Event Platform..."
+
+kubectl apply -k "$OVERLAY"
+
+echo ""
+echo "⏳ Waiting for deployments..."
+
 for service in "${SERVICES[@]}"; do
-  echo "Waiting for $service..."
-  kubectl rollout status deployment/app-"$service" \
-    -n "$NAMESPACE" \
-    --timeout=5m
+    echo "▶ Waiting for app-$service..."
+
+    kubectl rollout status \
+        deployment/app-"$service" \
+        -n "$NAMESPACE" \
+        --timeout=5m
 done
 
 echo ""
-echo "✅ Deployment completed successfully."
+echo "📦 Current Pods"
+kubectl get pods -n "$NAMESPACE"
+
+echo ""
+echo "📦 Current Services"
+kubectl get svc -n "$NAMESPACE"
+
+echo ""
+echo "🎉 Event Platform deployed successfully."
