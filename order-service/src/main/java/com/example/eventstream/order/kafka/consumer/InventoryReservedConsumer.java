@@ -17,6 +17,7 @@ public class InventoryReservedConsumer {
             groupId = "order-group"
     )
     public void consume(InventoryReservedEvent event) {
+
         orderService.markInventoryReserved(event.orderId());
     }
 }
