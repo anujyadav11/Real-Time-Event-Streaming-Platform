@@ -410,6 +410,18 @@ Available request groups include:
 
 The platform includes a full observability toolchain.
 
+### Correlation ID propagation
+
+Every HTTP request receives or preserves an `X-Correlation-Id` header at the
+API Gateway. Servlet-based services add it to their logging context and echo it
+in the response. Outbound `RestClient` requests and every Kafka producer carry
+the same value forward. Kafka listener containers restore the ID from message
+headers before handling a record and clear it afterwards, preventing consumer
+thread context leakage.
+
+The embedded-Kafka integration test verifies the complete producer-to-consumer
+path: correlation context, Kafka header, and listener context.
+
 ### Components
 
 - Spring Boot Actuator for health and metrics

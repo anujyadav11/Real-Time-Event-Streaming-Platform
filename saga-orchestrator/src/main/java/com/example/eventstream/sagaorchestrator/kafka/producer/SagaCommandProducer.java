@@ -2,9 +2,9 @@ package com.example.eventstream.sagaorchestrator.kafka.producer;
 
 import com.example.eventstream.common.command.*;
 import com.example.eventstream.common.constants.KafkaTopics;
+import com.example.infrastructure.kafka.CorrelationAwareKafkaTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
@@ -13,8 +13,8 @@ import java.util.concurrent.CompletableFuture;
 public class SagaCommandProducer {
     private static final Logger log =
             LoggerFactory.getLogger(SagaCommandProducer.class);
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-    public SagaCommandProducer(KafkaTemplate<String, Object> kafkaTemplate) {
+    private final CorrelationAwareKafkaTemplate<String, Object> kafkaTemplate;
+    public SagaCommandProducer(CorrelationAwareKafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
     public CompletableFuture<Void> publishReserveInventoryCommand(

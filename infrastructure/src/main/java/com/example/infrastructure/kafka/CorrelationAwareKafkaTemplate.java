@@ -1,11 +1,9 @@
 package com.example.infrastructure.kafka;
 
-import com.example.infrastructure.observability.correlation.CorrelationIdConstants;
 import com.example.infrastructure.observability.correlation.CorrelationIdHolder;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
-import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
@@ -15,7 +13,6 @@ import java.util.concurrent.CompletableFuture;
  * Automatically propagates the current Correlation ID
  * into Kafka record headers.
  */
-@Component
 public class CorrelationAwareKafkaTemplate<K, V> {
     private final KafkaTemplate<K, V> kafkaTemplate;
     public CorrelationAwareKafkaTemplate(

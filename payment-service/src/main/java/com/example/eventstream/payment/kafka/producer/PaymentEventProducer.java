@@ -3,9 +3,9 @@ package com.example.eventstream.payment.kafka.producer;
 import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.common.event.PaymentFailedEvent;
+import com.example.infrastructure.kafka.CorrelationAwareKafkaTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,9 +16,9 @@ public class PaymentEventProducer {
     private static final Logger log =
             LoggerFactory.getLogger(PaymentEventProducer.class);
 
-    private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final CorrelationAwareKafkaTemplate<String, Object> kafkaTemplate;
 
-    public PaymentEventProducer(KafkaTemplate<String, Object> kafkaTemplate) {
+    public PaymentEventProducer(CorrelationAwareKafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 

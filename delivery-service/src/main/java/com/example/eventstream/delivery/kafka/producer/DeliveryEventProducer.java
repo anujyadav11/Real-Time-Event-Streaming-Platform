@@ -4,9 +4,9 @@ import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.DeliveryAssignedEvent;
 import com.example.eventstream.common.event.DeliveryAssignmentFailedEvent;
 import com.example.eventstream.common.event.DeliveryStatusUpdatedEvent;
+import com.example.infrastructure.kafka.CorrelationAwareKafkaTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
@@ -15,8 +15,8 @@ import java.util.concurrent.CompletableFuture;
 public class DeliveryEventProducer {
     private static final Logger log =
             LoggerFactory.getLogger(DeliveryEventProducer.class);
-    private final KafkaTemplate<String, Object> kafkaTemplate;
-    public DeliveryEventProducer(KafkaTemplate<String, Object> kafkaTemplate) {
+    private final CorrelationAwareKafkaTemplate<String, Object> kafkaTemplate;
+    public DeliveryEventProducer(CorrelationAwareKafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
     public CompletableFuture<Void> publishAssigned(
