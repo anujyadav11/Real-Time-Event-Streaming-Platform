@@ -3,7 +3,7 @@ package com.example.eventstream.notification.kafka.producer;
 import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.NotificationFailedEvent;
 import com.example.eventstream.common.event.NotificationSentEvent;
-import com.example.infrastructure.kafka.CorrelationAwareKafkaTemplate;
+import com.example.infrastructure.messaging.kafka.CorrelationAwareKafkaTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

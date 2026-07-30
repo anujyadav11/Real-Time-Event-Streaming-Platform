@@ -1,6 +1,8 @@
 package com.example.infrastructure.kafka;
 
 import com.example.infrastructure.autoconfigure.ObservabilityAutoConfiguration;
+import com.example.infrastructure.messaging.kafka.CorrelationAwareKafkaTemplate;
+import com.example.infrastructure.messaging.headers.KafkaHeaderUtils;
 import com.example.infrastructure.observability.correlation.CorrelationIdHolder;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.junit.jupiter.api.AfterEach;

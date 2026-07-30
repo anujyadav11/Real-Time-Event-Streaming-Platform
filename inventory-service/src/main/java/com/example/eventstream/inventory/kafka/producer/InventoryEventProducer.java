@@ -4,7 +4,7 @@ import com.example.eventstream.common.constants.KafkaTopics;
 import com.example.eventstream.common.event.InventoryReleasedEvent;
 import com.example.eventstream.common.event.InventoryReservationFailedEvent;
 import com.example.eventstream.common.event.InventoryReservedEvent;
-import com.example.infrastructure.kafka.CorrelationAwareKafkaTemplate;
+import com.example.infrastructure.messaging.kafka.CorrelationAwareKafkaTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;

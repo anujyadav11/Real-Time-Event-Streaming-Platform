@@ -1,4 +1,4 @@
-package com.example.infrastructure.kafka;
+package com.example.infrastructure.messaging.headers;
 
 import com.example.infrastructure.observability.correlation.CorrelationIdConstants;
 import org.apache.kafka.clients.consumer.ConsumerRecord;

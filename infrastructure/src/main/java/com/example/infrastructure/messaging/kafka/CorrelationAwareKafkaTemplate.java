@@ -1,11 +1,11 @@
-package com.example.infrastructure.kafka;
+package com.example.infrastructure.messaging.kafka;
 
+import com.example.infrastructure.messaging.headers.KafkaHeaderUtils;
 import com.example.infrastructure.observability.correlation.CorrelationIdHolder;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
 /**

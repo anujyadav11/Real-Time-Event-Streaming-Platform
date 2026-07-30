@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty
+            scope="context"
+            name="SERVICE_NAME"
+            source="spring.application.name"
+            defaultValue="unknown-service"/>
+    <springProperty
+            scope="context"
+            name="ENVIRONMENT"
+            source="spring.profiles.active"
+            defaultValue="local"/>
+    <appender
+            name="JSON"
+            class="ch.qos.logback.core.ConsoleAppender">
+        <encoder
+                class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+            <providers>
+                <timestamp/>
+                <pattern>
+                    <pattern>
+                        {
+                        "service":"${SERVICE_NAME}",
+                        "environment":"${ENVIRONMENT}"
+                        }
+                    </pattern>
+                </pattern>
+                <logLevel/>
+                <threadName/>
+                <loggerName/>
+                <message/>
+                <mdc/>
+                <stackTrace/>
+            </providers>
+        </encoder>
+    </appender>
+    <root level="INFO">
+        <appender-ref ref="JSON"/>
+    </root>
+</configuration>

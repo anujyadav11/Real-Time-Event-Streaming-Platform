@@ -1,7 +1,7 @@
 package com.example.infrastructure.autoconfigure;
 
-import com.example.infrastructure.kafka.CorrelationAwareKafkaTemplate;
-import com.example.infrastructure.kafka.CorrelationContextRecordInterceptor;
+import com.example.infrastructure.messaging.kafka.CorrelationAwareKafkaTemplate;
+import com.example.infrastructure.messaging.kafka.CorrelationContextRecordInterceptor;
 import com.example.infrastructure.observability.correlation.CorrelationIdFilter;
 import com.example.infrastructure.observability.correlation.CorrelationIdRestClientInterceptor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
