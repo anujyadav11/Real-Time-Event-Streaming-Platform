@@ -260,6 +260,9 @@ Replace the placeholder files with real screenshots when ready.
 
 ![Grafana Dashboard](docs/screenshots/grafana-dashboard.png)
 
+The importable, version-controlled API Gateway rate-limiting dashboard is in
+[docs/grafana](/Users/anujyadav/Desktop/Real-Time-Event-Streaming-Platform/docs/grafana).
+
 ### Zipkin Trace
 
 ![Zipkin Trace](docs/screenshots/zipkin-trace.png)

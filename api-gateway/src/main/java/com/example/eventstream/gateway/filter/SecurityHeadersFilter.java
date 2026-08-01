@@ -11,15 +11,16 @@ public class SecurityHeadersFilter implements GlobalFilter, Ordered {
     @Override
     public Mono<Void> filter(org.springframework.web.server.ServerWebExchange exchange,
                              org.springframework.cloud.gateway.filter.GatewayFilterChain chain) {
-        return chain.filter(exchange)
-                .then(Mono.fromRunnable(() -> {
+        exchange.getResponse().beforeCommit(() -> {
                     HttpHeaders headers = exchange.getResponse().getHeaders();
                     headers.set("X-Content-Type-Options", "nosniff");
                     headers.set("X-Frame-Options", "DENY");
                     headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
                     headers.set("Permissions-Policy",
                             "camera=(), microphone=(), geolocation=()");
-                }));
+                    return Mono.empty();
+                });
+        return chain.filter(exchange);
     }
     @Override
     public int getOrder() {

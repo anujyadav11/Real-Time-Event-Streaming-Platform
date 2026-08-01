@@ -1,7 +1,6 @@
 package com.example.eventstream.gateway.config;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
 import org.springframework.cloud.gateway.filter.ratelimit.RedisRateLimiter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,9 +15,5 @@ public class RateLimitConfiguration {
                 rateLimitProperties.getBurstCapacity(),
                 rateLimitProperties.getRequestedTokens()
         );
-    }
-    @Bean
-    public KeyResolver keyResolver(JwtKeyResolver jwtKeyResolver) {
-        return jwtKeyResolver;
     }
 }

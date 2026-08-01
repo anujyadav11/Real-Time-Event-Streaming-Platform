@@ -1,8 +1,6 @@
 package com.example.eventstream.gateway.config;
 
 import org.springframework.cloud.gateway.filter.ratelimit.KeyResolver;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -10,13 +8,11 @@ import reactor.core.publisher.Mono;
 public class JwtKeyResolver implements KeyResolver {
     @Override
     public Mono<String> resolve(org.springframework.web.server.ServerWebExchange exchange) {
-        return ReactiveSecurityContextHolder.getContext()
-                .map(securityContext -> securityContext.getAuthentication())
-                .filter(Authentication::isAuthenticated)
-                .map(Authentication::getName)
-                .switchIfEmpty(
-                        Mono.just(getClientIp(exchange))
-                );
+        String username = exchange.getAttribute("username");
+        if (username != null && !username.isBlank()) {
+            return Mono.just("user:" + username);
+        }
+        return Mono.just("ip:" + getClientIp(exchange));
     }
     private String getClientIp(org.springframework.web.server.ServerWebExchange exchange) {
         String forwarded =
