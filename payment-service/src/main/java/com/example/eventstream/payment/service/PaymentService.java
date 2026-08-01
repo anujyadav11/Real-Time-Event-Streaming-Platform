@@ -1,13 +1,14 @@
 package com.example.eventstream.payment.service;
 
 import com.example.eventstream.common.command.ProcessPaymentCommand;
-import com.example.eventstream.common.event.InventoryReservedEvent;
 import com.example.eventstream.common.event.PaymentCompletedEvent;
 import com.example.eventstream.common.event.PaymentFailedEvent;
 import com.example.eventstream.payment.entity.Payment;
 import com.example.eventstream.common.enums.PaymentStatus;
 import com.example.eventstream.payment.kafka.producer.PaymentEventProducer;
 import com.example.eventstream.payment.repository.PaymentRepository;
+import com.example.infrastructure.featureflag.metrics.FeatureFlagMetrics;
+import com.example.infrastructure.featureflag.service.FeatureFlagService;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,15 +25,32 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepository;
     private final PaymentEventProducer paymentEventProducer;
-
+    private final FeatureFlagService featureFlagService;
+    private final FeatureFlagMetrics featureFlagMetrics;
     public PaymentService(PaymentRepository paymentRepository,
-                          PaymentEventProducer paymentEventProducer) {
+                          PaymentEventProducer paymentEventProducer,
+                            FeatureFlagService featureFlagService,
+                          FeatureFlagMetrics featureFlagMetrics) {
         this.paymentRepository = paymentRepository;
         this.paymentEventProducer = paymentEventProducer;
+        this.featureFlagService = featureFlagService;
+        this.featureFlagMetrics = featureFlagMetrics;
     }
 
     @Transactional
     public void processPayment(ProcessPaymentCommand command) {
+        if (featureFlagService.isEnabled("payment-v2")) {
+            featureFlagMetrics.recordEnabled("payment-v2");
+            log.info("Feature Flag [payment-v2] ENABLED. Using Payment V2.");
+            processPaymentV2(command);
+        } else {
+            featureFlagMetrics.recordDisabled("payment-v2");
+            log.info("Feature Flag [payment-v2] DISABLED. Using Payment V1.");
+            processPaymentV1(command);
+        }
+    }
+
+    private void processPaymentV1(ProcessPaymentCommand command) {
         log.info("[{}] Processing payment for order: {}", command.correlationId(), command.orderId());
         try{
             boolean paymentSuccessful = true;
@@ -50,35 +68,49 @@ public class PaymentService {
                 log.warn("Payment failed for order {}", command.orderId());
                 return;
             }
-        Payment payment = new Payment();
+            Payment payment = new Payment();
 
-        payment.setOrderId(command.orderId());
-        payment.setAmount(command.amount());
-        payment.setStatus(PaymentStatus.SUCCESS);
-        payment.setPaidAt(LocalDateTime.now());
+            payment.setOrderId(command.orderId());
+            payment.setAmount(command.amount());
+            payment.setStatus(PaymentStatus.SUCCESS);
+            payment.setPaidAt(LocalDateTime.now());
 
-        paymentRepository.save(payment);
+            paymentRepository.save(payment);
 
-        log.info("Payment saved successfully for order: {}",
-                command.orderId());
+            log.info("Payment saved successfully for order: {}",
+                    command.orderId());
 
-        PaymentCompletedEvent paymentCompletedEvent =
-                new PaymentCompletedEvent(
-                        UUID.randomUUID(),
-                        payment.getOrderId(),
-                        payment.getAmount(),
-                        true,
-                        payment.getPaidAt(),
-                        command.correlationId()
-                );
+            PaymentCompletedEvent paymentCompletedEvent =
+                    new PaymentCompletedEvent(
+                            UUID.randomUUID(),
+                            payment.getOrderId(),
+                            payment.getAmount(),
+                            true,
+                            payment.getPaidAt(),
+                            command.correlationId()
+                    );
 
-        paymentEventProducer.publishCompleted(paymentCompletedEvent);
+            paymentEventProducer.publishCompleted(paymentCompletedEvent);
 
-        log.info("PaymentCompletedEvent published for order: {}",
-                payment.getOrderId());
+            log.info("PaymentCompletedEvent published for order: {}",
+                    payment.getOrderId());
         } catch (Exception ex){
             log.error("Payment Processing failed for order: {}", command.orderId(), ex);
             throw  ex;
         }
+    }
+
+    private void processPaymentV2(ProcessPaymentCommand command) {
+
+        log.info("Executing Payment V2 workflow.");
+
+        // TODO:
+        // Future implementation:
+        // - Fraud Detection
+        // - Multiple Payment Providers
+        // - Enhanced Audit Logging
+        // - Improved Idempotency
+        // - add metrics to grafana and prometheus
+        processPaymentV1(command);
     }
 }
