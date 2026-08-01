@@ -7,6 +7,7 @@ import com.example.eventstream.payment.entity.Payment;
 import com.example.eventstream.common.enums.PaymentStatus;
 import com.example.eventstream.payment.kafka.producer.PaymentEventProducer;
 import com.example.eventstream.payment.repository.PaymentRepository;
+import com.example.infrastructure.audit.annotation.AuditLog;
 import com.example.infrastructure.featureflag.metrics.FeatureFlagMetrics;
 import com.example.infrastructure.featureflag.service.FeatureFlagService;
 import jakarta.transaction.Transactional;
@@ -49,7 +50,10 @@ public class PaymentService {
             processPaymentV1(command);
         }
     }
-
+    @AuditLog(
+            action = "PROCESS_PAYMENT",
+            resource = "PAYMENT"
+    )
     private void processPaymentV1(ProcessPaymentCommand command) {
         log.info("[{}] Processing payment for order: {}", command.correlationId(), command.orderId());
         try{
