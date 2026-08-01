@@ -1,5 +1,6 @@
 package com.example.eventstream.gateway.filter;
 
+import com.example.eventstream.gateway.util.ErrorResponseWriter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
@@ -16,6 +17,7 @@ import reactor.core.publisher.Mono;
 public class RateLimitGlobalFilter implements GlobalFilter, Ordered {
     private final RedisRateLimiter redisRateLimiter;
     private final KeyResolver keyResolver;
+    private final ErrorResponseWriter errorResponseWriter;
     @Override
     public Mono<Void> filter(ServerWebExchange exchange,
                              GatewayFilterChain chain){
@@ -29,10 +31,7 @@ public class RateLimitGlobalFilter implements GlobalFilter, Ordered {
                     if(response.isAllowed()){
                         return chain.filter(exchange);
                     }
-                    exchange.getResponse()
-                            .setStatusCode(HttpStatus.TOO_MANY_REQUESTS);
-
-                    return exchange.getResponse().setComplete();
+                    return errorResponseWriter.writeRateLimitExceeded(exchange);
                 });
     }
     @Override
