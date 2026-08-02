@@ -58,6 +58,7 @@ public class AuditAspect {
                         contextExtractor.getTraceId(),
                         contextExtractor.getIpAddress()
                 );
-        auditPublisher.publish(event);
+        auditPublisher.publish(event).exceptionally(ex -> { return null;
+        });
     }
 }
