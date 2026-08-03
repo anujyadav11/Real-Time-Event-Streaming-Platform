@@ -2,6 +2,7 @@ package com.example.eventstream.authservice.service;
 
 import com.example.eventstream.authservice.dto.request.LoginRequest;
 import com.example.eventstream.authservice.dto.response.LoginResponse;
+import com.example.eventstream.authservice.entity.RefreshToken;
 import com.example.eventstream.authservice.entity.User;
 import com.example.eventstream.authservice.repository.UserRepository;
 import io.micrometer.core.instrument.Counter;
@@ -20,14 +21,17 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final Counter loginSuccessful;
     private final Counter loginFailure;
+    private final RefreshTokenService refreshTokenService;
 
     public AuthenticationService(AuthenticationManager authenticationManager,
-                                 JwtService jwtService, UserRepository userRepository, MeterRegistry meterRegistry) {
+                                 JwtService jwtService, UserRepository userRepository, MeterRegistry meterRegistry,
+                                 RefreshTokenService refreshTokenService) {
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.userRepository = userRepository;
         this.loginSuccessful = meterRegistry.counter("jwt.login.success.total");
         this.loginFailure = meterRegistry.counter("jwt.login.fail.total");
+        this.refreshTokenService = refreshTokenService;
     }
 
     public LoginResponse login(LoginRequest request) {
@@ -46,9 +50,15 @@ public class AuthenticationService {
                     .orElseThrow(() ->
                             new IllegalStateException("Authenticated user not found"));
 
-            String token = jwtService.generateToken(user);
+            String accessToken = jwtService.generateToken(user);
 
-            return new LoginResponse(token, "Bearer");
+            RefreshToken refreshToken = refreshTokenService.create(user);
+            return new LoginResponse(
+                    accessToken,
+                    refreshToken.getToken().toString(),
+                    "Bearer",
+                    jwtService.getExpiration()
+            );
 
         } catch (AuthenticationException ex) {
             loginFailure.increment();
