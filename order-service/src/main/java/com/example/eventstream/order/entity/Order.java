@@ -34,6 +34,8 @@ public class Order {
     private OrderStatus status;
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    @Column(name = "user_id")
+    private UUID userId;
     @PrePersist
     private void prePersist() {
         if (id == null) {
@@ -46,4 +48,5 @@ public class Order {
             status = OrderStatus.CREATED;
         }
     }
+
 }

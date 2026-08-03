@@ -33,6 +33,13 @@ public class JwtService {
         return Jwts.builder()
                 .subject(user.getUsername())
                 .claim("role", user.getRole().name())
+                .claim("permissions",
+                                user.getRole()
+                                .getPermissions()
+                                .stream()
+                                .map(Enum::name)
+                                .toList()
+                )
                 .claim("userId", user.getId().toString())
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + expiration))
@@ -51,7 +58,7 @@ public class JwtService {
                 .getExpiration()
                 .before(new Date());
     }
-    private Claims getClaims(String token){
+    public Claims getClaims(String token){
         return Jwts.parser()
                 .verifyWith(key)
                 .build()

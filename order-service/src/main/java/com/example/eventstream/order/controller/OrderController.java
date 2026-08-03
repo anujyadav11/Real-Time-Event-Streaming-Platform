@@ -1,5 +1,6 @@
 package com.example.eventstream.order.controller;
 
+import com.example.eventstream.common.security.annotation.*;
 import com.example.eventstream.order.dto.request.CreateOrderRequest;
 import com.example.eventstream.order.dto.response.OrderResponse;
 import com.example.eventstream.order.entity.Order;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,6 +32,7 @@ public class OrderController {
         this.orderMapper = orderMapper;
     }
 
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create an order", description = "Creates a new order and starts order processing.")
@@ -37,6 +40,7 @@ public class OrderController {
             @ApiResponse(responseCode = "201", description = "Order created"),
             @ApiResponse(responseCode = "400", description = "Invalid order request")
     })
+    @CanCreateOrder
     public OrderResponse createOrder(@Valid @RequestBody CreateOrderRequest request) {
         Order savedOrder = orderService.createOrder(request);
         return orderMapper.toResponse(savedOrder);
@@ -48,6 +52,7 @@ public class OrderController {
             @ApiResponse(responseCode = "200", description = "Order found"),
             @ApiResponse(responseCode = "404", description = "Order not found")
     })
+    @PreAuthorize("hasAuthority('ORDER_READ') and @orderSecurityService.canReadOrder(#id, authentication)")
     public OrderResponse getOrder(@PathVariable UUID id) {
         Order order = orderService.getOrder(id);
         return orderMapper.toResponse(order);
@@ -56,6 +61,7 @@ public class OrderController {
     @GetMapping
     @Operation(summary = "List orders", description = "Returns all orders.")
     @ApiResponse(responseCode = "200", description = "Orders returned")
+    @CanReadOrder
     public List<OrderResponse> getAllOrders() {
         return orderService.getAllOrders()
                 .stream()
@@ -70,6 +76,7 @@ public class OrderController {
             @ApiResponse(responseCode = "204", description = "Order deleted"),
             @ApiResponse(responseCode = "404", description = "Order not found")
     })
+    @PreAuthorize("hasAuthority('ORDER_DELETE') and @orderSecurityService.canReadOrder(#id, authentication)")
     public void deleteOrder(@PathVariable UUID id) {
         orderService.deleteOrder(id);
     }

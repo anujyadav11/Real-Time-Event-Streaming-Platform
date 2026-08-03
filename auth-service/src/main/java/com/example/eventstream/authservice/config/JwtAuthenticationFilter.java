@@ -2,12 +2,15 @@ package com.example.eventstream.authservice.config;
 
 import com.example.eventstream.authservice.security.CustomUserDetailsService;
 import com.example.eventstream.authservice.service.JwtService;
+import com.example.eventstream.authservice.metrics.SecurityMetrics;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
@@ -15,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import io.jsonwebtoken.JwtException;
 
@@ -23,12 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final SecurityMetrics securityMetrics;
 
     public JwtAuthenticationFilter(
             JwtService jwtService,
-            CustomUserDetailsService userDetailsService) {
+            CustomUserDetailsService userDetailsService, SecurityMetrics securityMetrics) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
+        this.securityMetrics = securityMetrics;
     }
 
     @Override
@@ -48,6 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         try {
             username = jwtService.extractUsername(token);
         } catch (JwtException | IllegalArgumentException ex) {
+            securityMetrics.invalidJwt();
             SecurityContextHolder.clearContext();
             filterChain.doFilter(request, response);
             return;
@@ -69,22 +77,42 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             try {
                 valid = jwtService.isTokenValid(token, userDetails);
             } catch (JwtException | IllegalArgumentException ex) {
+                securityMetrics.invalidJwt();
                 valid = false;
             }
             if (valid) {
+                String role = jwtService.getClaims(token).get("role", String.class);
+
+                List<String> permissions = jwtService.getClaims(token)
+                        .get("permissions", List.class);
+
+                List<GrantedAuthority> authorities = new ArrayList<>();
+
+                authorities.add(
+                        new SimpleGrantedAuthority("ROLE_" + role)
+                );
+
+                if (permissions != null) {
+                    permissions.forEach(permission ->
+                            authorities.add(
+                                    new SimpleGrantedAuthority(permission)
+                            )
+                    );
+                }
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
-                                userDetails.getAuthorities());
+                                authorities
+                        );
 
                 authentication.setDetails(
                         new WebAuthenticationDetailsSource()
-                                .buildDetails(request));
+                                .buildDetails(request)
+                );
 
-                SecurityContextHolder
-                        .getContext()
-                        .setAuthentication(authentication);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
         filterChain.doFilter(request, response);
