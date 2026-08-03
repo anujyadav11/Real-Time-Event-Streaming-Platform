@@ -12,9 +12,14 @@ public class SessionContext {
         this.request = request;
     }
     public String getIpAddress() {
-        return request.getRemoteAddr();
+        String forwardedFor = request.getHeader("X-Forwarded-For");
+        if (forwardedFor != null && !forwardedFor.isBlank()) {
+            return forwardedFor.split(",")[0].trim();
+        }
+        return request.getRemoteAddr() == null ? "unknown" : request.getRemoteAddr();
     }
     public String getUserAgent() {
-        return request.getHeader("User-Agent");
+        String userAgent = request.getHeader("User-Agent");
+        return userAgent == null || userAgent.isBlank() ? "Unknown Device" : userAgent;
     }
 }

@@ -2,6 +2,7 @@ package com.example.eventstream.authservice.service;
 
 import com.example.eventstream.authservice.entity.RefreshToken;
 import com.example.eventstream.authservice.entity.User;
+import com.example.eventstream.authservice.exception.InvalidRefreshTokenException;
 import com.example.eventstream.authservice.repository.RefreshTokenRepository;
 import com.example.eventstream.authservice.security.SessionContext;
 import jakarta.transaction.Transactional;
@@ -45,17 +46,17 @@ public class RefreshTokenService {
         try {
             refreshTokenId = UUID.fromString(token);
         } catch (IllegalArgumentException ex) {
-            throw new IllegalArgumentException("Invalid refresh token format");
+            throw new InvalidRefreshTokenException("Invalid refresh token");
         }
         RefreshToken refreshToken =
                 refreshTokenRepository.findByToken(refreshTokenId)
-                        .orElseThrow(() -> new IllegalArgumentException("RefreshToken Not found"));
+                        .orElseThrow(() -> new InvalidRefreshTokenException("Invalid refresh token"));
 
         if(refreshToken.isRevoked()) {
-            throw new IllegalArgumentException("Refresh Token is revoked");
+            throw new InvalidRefreshTokenException("Invalid refresh token");
         }
         if(refreshToken.getExpiry().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Refresh Token is expired");
+            throw new InvalidRefreshTokenException("Invalid refresh token");
         }
         return refreshToken;
     }

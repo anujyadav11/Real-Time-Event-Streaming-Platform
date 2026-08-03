@@ -39,6 +39,10 @@ public class PaymentService {
     }
 
     @Transactional
+    @AuditLog(
+            action = "PROCESS_PAYMENT",
+            resource = "PAYMENT"
+    )
     public void processPayment(ProcessPaymentCommand command) {
         if (featureFlagService.isEnabled("payment-v2")) {
             featureFlagMetrics.recordEnabled("payment-v2");
@@ -50,10 +54,6 @@ public class PaymentService {
             processPaymentV1(command);
         }
     }
-    @AuditLog(
-            action = "PROCESS_PAYMENT",
-            resource = "PAYMENT"
-    )
     private void processPaymentV1(ProcessPaymentCommand command) {
         log.info("[{}] Processing payment for order: {}", command.correlationId(), command.orderId());
         try{

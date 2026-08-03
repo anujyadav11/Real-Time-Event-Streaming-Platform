@@ -17,10 +17,14 @@ public class AuditPipeline {
     private final AuditStorage storage;
     private final AuditMetrics metrics;
     public void process(AuditEvent event) {
-        validator.validate(event);
-        AuditEvent enriched =
-                enricher.enrich(event);
-        storage.save(enriched);
-        metrics.recordSuccess();
+        try {
+            validator.validate(event);
+            AuditEvent enriched = enricher.enrich(event);
+            storage.save(enriched);
+            metrics.recordSuccess();
+        } catch (RuntimeException ex) {
+            metrics.recordFailure();
+            throw ex;
+        }
     }
 }

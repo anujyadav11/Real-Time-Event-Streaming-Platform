@@ -4,7 +4,6 @@ import com.example.infrastructure.audit.annotation.AuditLog;
 import com.example.infrastructure.audit.context.AuditContextExtractor;
 import com.example.infrastructure.audit.model.AuditEvent;
 import com.example.infrastructure.audit.publisher.AuditPublisher;
-import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -21,7 +20,6 @@ public class AuditAspect {
 
     private final AuditPublisher auditPublisher;
     private final AuditContextExtractor contextExtractor;
-    private final Tracer tracer;
 
     @Value("${spring.application.name}")
     private String serviceName;
@@ -48,7 +46,7 @@ public class AuditAspect {
                 new AuditEvent(
                         Instant.now(),
                         serviceName,
-                        null,
+                        com.example.infrastructure.observability.correlation.CorrelationIdHolder.get(),
                         null,
                         auditLog.action(),
                         auditLog.resource(),

@@ -3,6 +3,9 @@
 `gateway-dashboard.json` visualizes rate limiting at the API Gateway using the
 Prometheus metric `gateway_rate_limit_rejected_total`.
 
+`security-audit-dashboard.json` monitors refresh-token success and failures,
+active sessions, and audit processing outcomes.
+
 Panels include:
 
 - Total rejected requests

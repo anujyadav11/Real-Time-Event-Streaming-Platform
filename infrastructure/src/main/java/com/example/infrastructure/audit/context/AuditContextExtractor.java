@@ -1,6 +1,7 @@
 package com.example.infrastructure.audit.context;
 
 import io.micrometer.tracing.Tracer;
+import org.springframework.beans.factory.ObjectProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -8,12 +9,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 @Component
 public class AuditContextExtractor {
-    private final Tracer tracer;
-    public AuditContextExtractor(Tracer tracer) {
-        this.tracer = tracer;
+    private final ObjectProvider<Tracer> tracerProvider;
+    public AuditContextExtractor(ObjectProvider<Tracer> tracerProvider) {
+        this.tracerProvider = tracerProvider;
     }
     public String getTraceId() {
-        if (tracer.currentSpan() == null) {
+        Tracer tracer = tracerProvider.getIfAvailable();
+        if (tracer == null || tracer.currentSpan() == null) {
             return null;
         }
         return tracer.currentSpan().context().traceId();
