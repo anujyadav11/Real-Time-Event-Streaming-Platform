@@ -3,6 +3,7 @@ package com.example.infrastructure.security.internal.filter;
 import com.example.infrastructure.security.internal.constants.SecurityHeaders;
 import com.example.infrastructure.security.internal.context.InternalRequestContext;
 import com.example.infrastructure.security.internal.identity.ServiceIdentity;
+import com.example.infrastructure.security.internal.metrics.InternalSecurityMetrics;
 import com.example.infrastructure.security.internal.properties.InternalSecurityProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,8 +20,12 @@ public class InternalApiKeyFilter
 
     private final InternalSecurityProperties properties;
     private final Logger log = LoggerFactory.getLogger(getClass());
-    public InternalApiKeyFilter(InternalSecurityProperties properties) {
+    private final InternalSecurityMetrics metrics;
+    public InternalApiKeyFilter(InternalSecurityProperties properties,
+                                InternalSecurityMetrics metrics) {
+
         this.properties = properties;
+        this.metrics = metrics;
     }
 
     @Override
@@ -32,6 +37,7 @@ public class InternalApiKeyFilter
         String path = request.getRequestURI();
         // Only protect internal endpoints
         if (!path.startsWith("/internal")) {
+            metrics.authenticated();
             filterChain.doFilter(request, response);
             log.debug(
                     "Validated internal request for {}",
@@ -50,6 +56,7 @@ public class InternalApiKeyFilter
             }
         }
         if(!valid){
+            metrics.rejected();
             response.sendError(
                     HttpServletResponse.SC_UNAUTHORIZED, "Invalid Internal API Key"
             );
@@ -60,10 +67,19 @@ public class InternalApiKeyFilter
             return;
         }
 
-        ServiceIdentity service =
-                ServiceIdentity.valueOf(serviceHeader.toUpperCase()
-                                .replace("-", "_")
-                );
+        String serviceHeader = request.getHeader(SecurityHeaders.INTERNAL_SERVICE);
+
+        if (serviceHeader == null || serviceHeader.isBlank()) {
+            response.sendError(
+                    HttpServletResponse.SC_UNAUTHORIZED,
+                    "Missing Internal Service Identity"
+            );
+            metrics.unknownService();
+            return;
+        }
+        ServiceIdentity service = ServiceIdentity.valueOf(
+                serviceHeader.toUpperCase().replace("-", "_")
+        );
 
         InternalRequestContext.setService(service);
 
