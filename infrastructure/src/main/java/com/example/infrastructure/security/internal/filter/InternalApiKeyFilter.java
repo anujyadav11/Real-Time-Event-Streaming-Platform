@@ -2,6 +2,7 @@ package com.example.infrastructure.security.internal.filter;
 
 import com.example.infrastructure.security.internal.constants.SecurityHeaders;
 import com.example.infrastructure.security.internal.context.InternalRequestContext;
+import com.example.infrastructure.security.internal.identity.ServiceIdentity;
 import com.example.infrastructure.security.internal.properties.InternalSecurityProperties;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -59,9 +60,10 @@ public class InternalApiKeyFilter
             return;
         }
 
-        String service = request.getHeader(
-                SecurityHeaders.INTERNAL_SERVICE
-        );
+        ServiceIdentity service =
+                ServiceIdentity.valueOf(serviceHeader.toUpperCase()
+                                .replace("-", "_")
+                );
 
         InternalRequestContext.setService(service);
 
