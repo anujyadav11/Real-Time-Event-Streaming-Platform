@@ -38,14 +38,19 @@ public class InternalApiKeyFilter
             );
             return;
         }
-        String apiKey =
-                request.getHeader(
-                        SecurityHeaders.INTERNAL_API_KEY);
-        if (apiKey == null ||
-                !apiKey.equals(properties.getApiKey())) {
+
+        String apiKey = request.getHeader(SecurityHeaders.INTERNAL_API_KEY);
+        boolean valid = false;
+        if(apiKey != null){
+            valid = apiKey.equals(properties.getCurrentKey()) || apiKey.equals(properties.getPreviousKey());
+
+            if(apiKey.equals(properties.getPreviousKey())){
+                log.warn("Internal request authenticated using previous key.");
+            }
+        }
+        if(!valid){
             response.sendError(
-                    HttpServletResponse.SC_UNAUTHORIZED,
-                    "Invalid Internal API Key"
+                    HttpServletResponse.SC_UNAUTHORIZED, "Invalid Internal API Key"
             );
             log.warn(
                     "Rejected internal request from {}",

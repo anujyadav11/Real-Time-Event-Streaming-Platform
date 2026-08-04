@@ -26,7 +26,7 @@ public class InternalAuthenticationFilter
                 exchange.getRequest()
                         .mutate()
                         .header(SecurityHeaders.INTERNAL_SERVICE, properties.getServiceName())
-                        .header(SecurityHeaders.INTERNAL_API_KEY, properties.getApiKey())
+                        .header(SecurityHeaders.INTERNAL_API_KEY, properties.getCurrentKey())
                         .header(SecurityHeaders.USER_ID)
                         .header(SecurityHeaders.USERNAME)
                         .header(SecurityHeaders.USER_ROLE)
