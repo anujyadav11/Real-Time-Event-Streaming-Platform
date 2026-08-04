@@ -10,6 +10,7 @@ import com.example.eventstream.order.exception.OrderNotFoundException;
 import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.order.mapper.OrderMapper;
 import com.example.eventstream.order.repository.OrderRepository;
+import com.example.infrastructure.security.internal.context.InternalRequestContext;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import jakarta.transaction.Transactional;
@@ -63,6 +64,7 @@ public class OrderService {
             // Save
             Order savedOrder = orderRepository.save(order);
             log.info("Order created successfully with id: {}", savedOrder.getId());
+            log.info("Request received from {}", InternalRequestContext.getService());
             // Publish event
             OrderCreatedEvent event = new OrderCreatedEvent(
                     UUID.randomUUID(),
