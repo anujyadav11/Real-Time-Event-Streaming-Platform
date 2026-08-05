@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -23,34 +24,66 @@ public class InboxService {
     private final InboxEventRepository repository;
 
     @Transactional
-    public void process(
+    public InboxEvent createInbox(
             UUID eventId,
-            String eventType,
-            Runnable businessLogic
+            String eventType
     ) {
-        InboxEvent inboxEvent = InboxEvent.builder()
+        InboxEvent event = InboxEvent.builder()
                 .eventId(eventId)
                 .eventType(eventType)
                 .status(InboxStatus.PROCESSING)
                 .processedAt(LocalDateTime.now())
                 .build();
+        return repository.saveAndFlush(event);
+    }
+    @Transactional
+    public void complete(InboxEvent event) {
+        event.setStatus(InboxStatus.COMPLETED);
+        repository.save(event);
+    }
+    @Transactional
+    public void fail(InboxEvent event) {
+        event.setStatus(InboxStatus.FAILED);
+        repository.save(event);
+    }
+
+    public void process(
+            UUID eventId,
+            String eventType,
+            Runnable businessLogic
+    ) {
+        InboxEvent event;
         try {
-            // Persist first so duplicate events are rejected by the DB
-            repository.saveAndFlush(inboxEvent);
-        } catch (DataIntegrityViolationException ex) {
+            event = createInbox(
+                    eventId,
+                    eventType
+            );
+        }
+        catch (DataIntegrityViolationException ex){
             log.info(
                     "Duplicate event {} ignored.",
-                    eventId
-            );
+                    eventId);
             return;
         }
         try {
             businessLogic.run();
-            inboxEvent.setStatus(InboxStatus.COMPLETED);
-        } catch (Exception ex) {
-            inboxEvent.setStatus(InboxStatus.FAILED);
-            log.error("Failed processing inbox event {}", eventId, ex);
+            complete(event);
+        }
+        catch (Exception ex){
+            fail(event);
             throw ex;
+        }
+    }
+    @Transactional
+    public void recoverStuckEvents(){
+        LocalDateTime threshold = LocalDateTime.now().minusMinutes(5);
+
+        List<InboxEvent> events =
+                repository.findByStatusAndReceivedAtBefore(InboxStatus.PROCESSING, threshold);
+
+        for(InboxEvent event : events){
+            log.warn("Recovering stuck inbox event {}", event.getEventId());
+            event.setStatus(InboxStatus.FAILED);
         }
     }
 }

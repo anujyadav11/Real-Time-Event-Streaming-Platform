@@ -44,13 +44,7 @@ public class SendNotificationCommandConsumer {
         inboxService.process(
                 command.commandId(),
                 SendNotificationCommand.class.getSimpleName(),
-                () -> {
-                    log.info(
-                            "Processing notification for order {}",
-                            command.orderId()
-                    );
-                    notificationService.sendNotification(command);
-                }
+                () -> notificationService.sendNotification(command)
         );
     }
 }
