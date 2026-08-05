@@ -1,5 +1,6 @@
 package com.example.eventstream.notification.entity;
 
+import com.example.eventstream.common.enums.InboxStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,10 @@ public class InboxEvent {
 
     @Column(name = "event_type", nullable = false)
     private String eventType;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private InboxStatus status;
 
     @Column(name = "processed_at", nullable = false)
     private LocalDateTime processedAt;
