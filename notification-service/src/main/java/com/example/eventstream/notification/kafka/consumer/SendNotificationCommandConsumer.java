@@ -43,7 +43,9 @@ public class SendNotificationCommandConsumer {
     ) {
         inboxService.process(
                 command.commandId(),
+                KafkaTopics.SEND_NOTIFICATION_COMMAND,
                 SendNotificationCommand.class.getSimpleName(),
+                command,
                 () -> notificationService.sendNotification(command)
         );
     }

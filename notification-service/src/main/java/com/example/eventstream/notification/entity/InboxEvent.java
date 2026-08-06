@@ -32,10 +32,22 @@ public class InboxEvent {
     private String eventType;
 
     @Column(nullable = false)
+    private String topic;
+
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String payload;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private InboxStatus status;
 
+    @Column(nullable = false)
+    private int replayCount;
+
+    @Column(name = "received_at", nullable = false)
+    private LocalDateTime receivedAt;
+
     @Column(name = "processed_at", nullable = false)
     private LocalDateTime processedAt;
-
 }
