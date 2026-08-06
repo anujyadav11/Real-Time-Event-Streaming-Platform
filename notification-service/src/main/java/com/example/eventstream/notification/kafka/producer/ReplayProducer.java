@@ -7,14 +7,16 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class ReplayProducer {
-    private final KafkaTemplate<String,Object> kafkaTemplate;
+
+    private final KafkaTemplate<String, Object> kafkaTemplate;
+
     public void replay(
             String topic,
-            Object event
-    ){
+            Object payload
+    ) {
         kafkaTemplate.send(
                 topic,
-                event
+                payload
         );
     }
 }
