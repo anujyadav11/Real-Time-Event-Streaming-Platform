@@ -1,5 +1,6 @@
 package com.example.eventstream.notification.controller;
 
+import com.example.eventstream.notification.dto.ReplayEventResponse;
 import com.example.eventstream.notification.dto.ReplayResponse;
 import com.example.eventstream.notification.service.ReplayService;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +12,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
+@Tag(
+        name = "Dead Letter Replay",
+        description = "Administrative APIs for replaying failed Kafka events."
+)
 @RestController
 @RequestMapping("/admin/replay")
 @RequiredArgsConstructor
@@ -38,5 +44,56 @@ public class ReplayController {
         ReplayResponse response =
                 replayService.replay(eventId);
         return ResponseEntity.ok(response);
+    }
+    @GetMapping("/failed")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Get all failed events",
+            description = "Returns all failed inbox events that are eligible for replay."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Failed events retrieved successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied. Admin role required."
+            )
+    })
+    public ResponseEntity<List<ReplayEventResponse>> failedEvents(){
+
+        return ResponseEntity.ok(replayService.getFailedEvents());
+    }
+
+    @PostMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
+    @Operation(
+            summary = "Replay all failed events",
+            description = "Republishes all failed inbox events back to their original Kafka topics."
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Replay request accepted"
+            ),
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Unauthorized"
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Access denied. Admin role required."
+            )
+    })
+    public ResponseEntity<String> replayAll(){
+        int replayed = replayService.replayAllFailedEvents();
+        return ResponseEntity.ok(
+                replayed + "failed events submitted for replay."
+        );
     }
 }

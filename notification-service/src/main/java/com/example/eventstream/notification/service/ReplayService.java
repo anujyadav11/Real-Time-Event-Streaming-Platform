@@ -2,16 +2,20 @@ package com.example.eventstream.notification.service;
 
 import com.example.eventstream.common.command.SendNotificationCommand;
 import com.example.eventstream.common.enums.InboxStatus;
+import com.example.eventstream.notification.dto.ReplayEventResponse;
 import com.example.eventstream.notification.dto.ReplayResponse;
 import com.example.eventstream.notification.entity.InboxEvent;
 import com.example.eventstream.notification.kafka.producer.ReplayProducer;
+import com.example.eventstream.notification.metrics.ReplayMetrics;
 import com.example.eventstream.notification.replay.EventTypeRegistry;
 import com.example.eventstream.notification.repository.InboxEventRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Gauge;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -22,6 +26,7 @@ public class ReplayService {
     private final ReplayProducer replayProducer;
     private final ObjectMapper objectMapper;
     private final EventTypeRegistry registry;
+    private final ReplayMetrics replayMetrics;
 
     public ReplayResponse replay(UUID eventId) {
         InboxEvent event =
@@ -52,7 +57,7 @@ public class ReplayService {
             );
             event.setStatus(InboxStatus.PROCESSING);
             repository.save(event);
-
+            replayMetrics.success();
             return new ReplayResponse(
                     event.getEventId(),
                     event.getStatus().name(),
@@ -60,10 +65,44 @@ public class ReplayService {
                     LocalDateTime.now()
             );
         } catch (Exception ex) {
+            replayMetrics.failure();
+
+            Gauge.builder(
+                    "replay_failed_events",
+                    repository,
+                    repo -> repo.countByStatus(InboxStatus.FAILED)
+            ).register(meterRegistry);
+
             throw new RuntimeException(
                     "Replay failed",
                     ex
             );
         }
+    }
+    public List<ReplayEventResponse> getFailedEvents(){
+        return repository
+                .findAllByStatusOrderByReceivedAtAsc(InboxStatus.FAILED)
+                .stream()
+                .map(event ->
+                        new ReplayEventResponse(
+                                event.getEventId(),
+                                event.getEventType(),
+                                event.getTopic(),
+                                event.getStatus().name(),
+                                event.getReplayCount(),
+                                event.getReceivedAt()
+                        )
+                        )
+                .toList();
+    }
+    public int replayAllFailedEvents(){
+        List<InboxEvent> failedEvents =
+                repository.findAllByStatusOrderByReceivedAtAsc(InboxStatus.FAILED);
+
+        for(InboxEvent event : failedEvents){
+            replay(event.getEventId());
+        }
+
+        return failedEvents.size();
     }
 }

@@ -21,4 +21,8 @@ public interface InboxEventRepository
             InboxStatus status,
             LocalDateTime time
     );
+    List<InboxEvent> findAllByStatusOrderByReceivedAtAsc(
+            InboxStatus status
+    );
+    long countByStatus(InboxStatus status);
 }
