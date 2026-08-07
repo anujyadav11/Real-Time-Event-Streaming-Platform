@@ -2,6 +2,7 @@ package com.example.eventstream.notification.service;
 
 import com.example.eventstream.common.enums.InboxStatus;
 import com.example.eventstream.notification.entity.InboxEvent;
+import com.example.eventstream.notification.metrics.ExactlyOnceMetrics;
 import com.example.eventstream.notification.repository.InboxEventRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +24,7 @@ public class InboxService {
             LoggerFactory.getLogger(InboxService.class);
     private final InboxEventRepository repository;
     private final ObjectMapper objectMapper;
+    private final ExactlyOnceMetrics metrics;
     @Transactional
     public InboxEvent createInbox(
             UUID eventId,
@@ -73,13 +75,15 @@ public class InboxService {
                     eventType,
                     payload
             );
-        } catch (DataIntegrityViolationException ex) {
-            log.info("Duplicate event {} ignored.", eventId);
+        } catch(DataIntegrityViolationException ex){
+            metrics.duplicate();
+            log.info("Duplicate inbox event {} ignored.", eventId);
             return;
         }
         try {
             businessLogic.run();
             complete(event);
+            metrics.processed();
         } catch (Exception ex) {
             fail(event);
             throw ex;
