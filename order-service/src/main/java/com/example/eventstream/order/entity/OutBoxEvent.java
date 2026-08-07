@@ -45,9 +45,16 @@ public class OutBoxEvent {
     private LocalDateTime createdAt;
     private LocalDateTime publishedAt;
 
-    @PrePersist
-    public void prePersist(){
-        createdAt = LocalDateTime.now();
-    }
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
 
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+        updatedAt = createdAt;
+    }
+    @PreUpdate
+    public void preUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
