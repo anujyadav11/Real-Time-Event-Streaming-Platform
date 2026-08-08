@@ -5,6 +5,7 @@ import com.example.eventstream.pricingservice.exception.ProductNotFoundException
 import com.example.infrastructure.redis.DistributedLockService;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -48,6 +49,8 @@ public class PricingService {
     private final Duration lockTtl;
     private final Duration retryDelay;
     private final int maxRetries;
+
+    private final Timer priceLoadTimer;
 
     public PricingService(
             PricingCacheService pricingCacheService,
@@ -95,6 +98,10 @@ public class PricingService {
         this.lockWaitCounter =
                 meterRegistry.counter(
                         "pricing.cache.lock.wait"
+                );
+        this.priceLoadTimer =
+                meterRegistry.timer(
+                        "pricing.cache.load"
                 );
     }
     /**
@@ -218,8 +225,7 @@ public class PricingService {
                  * Load data from the underlying source.
                  * --------------------------------------------------
                  */
-                ProductPriceResponse response =
-                        loadPrice(productId);
+                ProductPriceResponse response = priceLoadTimer.record(() -> loadPrice(productId));
                 /*
                  * --------------------------------------------------
                  * STEP 7

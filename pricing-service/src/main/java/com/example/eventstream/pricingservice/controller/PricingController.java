@@ -1,7 +1,5 @@
 package com.example.eventstream.pricingservice.controller;
 
-
-
 import com.example.eventstream.common.dto.ProductPriceResponse;
 import com.example.eventstream.pricingservice.service.PricingService;
 import io.swagger.v3.oas.annotations.Operation;
