@@ -8,8 +8,6 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.Cache;
-import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,29 +18,39 @@ import java.util.Map;
 public class PricingService {
     private static final Logger log =
             LoggerFactory.getLogger(PricingService.class);
-    private static final String CACHE_NAME =
-            "product-prices";
+
     private static final String LOCK_KEY_PREFIX =
             "lock:pricing:";
-    private static final Map<Long, BigDecimal> PRODUCT_PRICES = Map.of(
-            1L, BigDecimal.valueOf(299.99),
-            2L, BigDecimal.valueOf(149.50),
-            3L, BigDecimal.valueOf(799.00),
-            4L, BigDecimal.valueOf(59.99)
-    );
-    private final CacheManager cacheManager;
+    /*
+     * Current pricing data source.
+     * In the future this can be replaced with a
+     * PricingRepository without changing the cache
+     * architecture.
+     */
+    private static final Map<Long, BigDecimal> PRODUCT_PRICES =
+            Map.of(
+                    1L, BigDecimal.valueOf(299.99),
+                    2L, BigDecimal.valueOf(149.50),
+                    3L, BigDecimal.valueOf(799.00),
+                    4L, BigDecimal.valueOf(59.99)
+            );
+
+    private final PricingCacheService pricingCacheService;
     private final DistributedLockService distributedLockService;
 
     private final Counter cacheHitCounter;
     private final Counter cacheMissCounter;
+    private final Counter negativeCacheHitCounter;
     private final Counter productNotFoundCounter;
     private final Counter lockAcquiredCounter;
     private final Counter lockWaitCounter;
+
     private final Duration lockTtl;
     private final Duration retryDelay;
     private final int maxRetries;
+
     public PricingService(
-            CacheManager cacheManager,
+            PricingCacheService pricingCacheService,
             DistributedLockService distributedLockService,
             MeterRegistry meterRegistry,
             @Value("${pricing.cache.lock.ttl:5s}")
@@ -52,11 +60,16 @@ public class PricingService {
             @Value("${pricing.cache.lock.max-retries:20}")
             int maxRetries
     ) {
-        this.cacheManager = cacheManager;
-        this.distributedLockService = distributedLockService;
+        this.pricingCacheService =
+                pricingCacheService;
+
+        this.distributedLockService =
+                distributedLockService;
+
         this.lockTtl = lockTtl;
         this.retryDelay = retryDelay;
         this.maxRetries = maxRetries;
+
         this.cacheHitCounter =
                 meterRegistry.counter(
                         "pricing.cache.hit"
@@ -65,10 +78,16 @@ public class PricingService {
                 meterRegistry.counter(
                         "pricing.cache.miss"
                 );
+
+        this.negativeCacheHitCounter =
+                meterRegistry.counter(
+                        "pricing.cache.negative.hit"
+                );
         this.productNotFoundCounter =
                 meterRegistry.counter(
                         "pricing.product.not_found"
                 );
+
         this.lockAcquiredCounter =
                 meterRegistry.counter(
                         "pricing.cache.lock.acquired"
@@ -78,21 +97,28 @@ public class PricingService {
                         "pricing.cache.lock.wait"
                 );
     }
+    /**
+     * Gets the price for a product.
+     * Cache strategy
+     * 1. Check positive cache.
+     * 2. Check negative cache.
+     * 3. Acquire distributed lock.
+     * 4. Double-check both caches.
+     * 5. Load from source.
+     * 6. Populate appropriate cache.
+     * 7. Release distributed lock.
+     */
     public ProductPriceResponse getPrice(
             Long productId
     ) {
-        Cache cache =
-                getCache();
         /*
-         * First cache check.
-         *
-         * Most requests should return from here.
+         * --------------------------------------------------
+         * STEP 1
+         * Check positive cache.
+         * --------------------------------------------------
          */
         ProductPriceResponse cached =
-                cache.get(
-                        productId,
-                        ProductPriceResponse.class
-                );
+                pricingCacheService.get(productId);
         if (cached != null) {
             cacheHitCounter.increment();
             log.debug(
@@ -102,54 +128,108 @@ public class PricingService {
             return cached;
         }
         cacheMissCounter.increment();
+        /*
+         * --------------------------------------------------
+         * STEP 2
+         * Check negative cache.
+         * This prevents repeated source lookups for
+         * nonexistent product IDs.
+         * --------------------------------------------------
+         */
+        if (pricingCacheService.isMissing(productId)) {
+            negativeCacheHitCounter.increment();
+            log.debug(
+                    "Pricing negative cache HIT for product {}",
+                    productId
+            );
+            throw new ProductNotFoundException(
+                    productId
+            );
+        }
         log.info(
                 "Pricing cache MISS for product {}",
                 productId
         );
+        /*
+         * --------------------------------------------------
+         * STEP 3
+         * Try to acquire distributed Redis lock.
+         * The lock is per product, so:
+         * product 1 → lock:pricing:1
+         * product 2 → lock:pricing:2
+         * Requests for different products don't block
+         * each other.
+         * --------------------------------------------------
+         */
         String lockKey =
                 LOCK_KEY_PREFIX + productId;
-        /*
-         * Try to become the single request responsible
-         * for rebuilding the cache.
-         */
         String lockValue =
                 distributedLockService.tryLock(
                         lockKey,
                         lockTtl
                 );
+        /*
+         * --------------------------------------------------
+         * We successfully acquired the lock.
+         * --------------------------------------------------
+         */
         if (lockValue != null) {
             lockAcquiredCounter.increment();
             try {
                 /*
-                 * IMPORTANT:
+                 * --------------------------------------------------
+                 * STEP 4
+                 * Double-check positive cache.
                  *
-                 * Another instance may have populated the
-                 * cache between our first cache check and
-                 * acquiring the lock.
-                 *
-                 * Therefore we MUST check Redis again.
+                 * Another request may have populated Redis
+                 * before we acquired the lock.
+                 * --------------------------------------------------
                  */
                 cached =
-                        cache.get(
-                                productId,
-                                ProductPriceResponse.class
+                        pricingCacheService.get(
+                                productId
                         );
                 if (cached != null) {
                     cacheHitCounter.increment();
                     log.debug(
-                            "Pricing cache populated while waiting for lock. "
-                                    + "productId={}",
+                            "Pricing cache populated before lock "
+                                    + "acquisition for product {}",
                             productId
                     );
                     return cached;
                 }
                 /*
-                 * We are the only instance allowed to
-                 * rebuild this cache entry.
+                 * --------------------------------------------------
+                 * STEP 5
+                 * Double-check negative cache.
+                 * --------------------------------------------------
+                 */
+                if (pricingCacheService.isMissing(
+                        productId
+                )) {
+                    negativeCacheHitCounter.increment();
+                    throw new ProductNotFoundException(
+                            productId
+                    );
+                }
+                /*
+                 * --------------------------------------------------
+                 * STEP 6
+                 * Load data from the underlying source.
+                 * --------------------------------------------------
                  */
                 ProductPriceResponse response =
                         loadPrice(productId);
-                cache.put(
+                /*
+                 * --------------------------------------------------
+                 * STEP 7
+                 * Store fresh data in Redis.
+                 *
+                 * PricingCacheService also removes any
+                 * negative-cache entry.
+                 * --------------------------------------------------
+                 */
+                pricingCacheService.put(
                         productId,
                         response
                 );
@@ -158,7 +238,25 @@ public class PricingService {
                         productId
                 );
                 return response;
+            } catch (ProductNotFoundException ex) {
+                /*
+                 * --------------------------------------------------
+                 * Product doesn't exist.
+                 *
+                 * Store a short-lived negative-cache marker.
+                 * --------------------------------------------------
+                 */
+                pricingCacheService.markMissing(
+                        productId
+                );
+                throw ex;
             } finally {
+                /*
+                 * Always release the lock.
+                 *
+                 * DistributedLockService verifies ownership
+                 * before deleting the Redis lock.
+                 */
                 distributedLockService.unlock(
                         lockKey,
                         lockValue
@@ -166,21 +264,26 @@ public class PricingService {
             }
         }
         /*
-         * Another instance is currently rebuilding
-         * the cache.
+         * --------------------------------------------------
+         * Another instance/thread owns the lock.
          *
-         * Wait briefly and check Redis again instead
-         * of hitting the underlying data source.
+         * Don't hit the underlying source.
+         * Wait for the lock owner to populate Redis.
+         * --------------------------------------------------
          */
         lockWaitCounter.increment();
-        for (int attempt = 1;
-             attempt <= maxRetries;
-             attempt++) {
+        for (
+                int attempt = 1;
+                attempt <= maxRetries;
+                attempt++
+        ) {
             sleep();
+            /*
+             * Check positive cache.
+             */
             cached =
-                    cache.get(
-                            productId,
-                            ProductPriceResponse.class
+                    pricingCacheService.get(
+                            productId
                     );
             if (cached != null) {
                 cacheHitCounter.increment();
@@ -192,12 +295,33 @@ public class PricingService {
                 );
                 return cached;
             }
+            /*
+             * Check negative cache.
+             */
+            if (pricingCacheService.isMissing(
+                    productId
+            )) {
+                negativeCacheHitCounter.increment();
+                log.debug(
+                        "Pricing negative cache HIT after waiting. "
+                                + "productId={}, attempt={}",
+                        productId,
+                        attempt
+                );
+                throw new ProductNotFoundException(
+                        productId
+                );
+            }
         }
         /*
-         * The lock holder may have failed or taken longer
-         * than expected.
-         * Do NOT blindly hit the underlying data source here.
-         * Failing is safer than creating a cache stampede.
+         * --------------------------------------------------
+         * The lock owner didn't populate either cache
+         * within our allowed waiting period.
+         *
+         * We deliberately DON'T bypass the protection and
+         * hit the source here because that could recreate
+         * the cache stampede we're trying to prevent.
+         * --------------------------------------------------
          */
         throw new IllegalStateException(
                 "Unable to load pricing data because "
@@ -206,10 +330,11 @@ public class PricingService {
         );
     }
     /**
-     * Loads the price from the underlying data source.
-     * In the current project this is the in-memory product
-     * price map. The same method can later call PostgreSQL
-     * without changing the cache/lock flow.
+     * Loads pricing data from the underlying source.
+     * Currently the project uses an in-memory map.
+     * If this later becomes:
+     * pricingRepository.findByProductId(productId)
+     * the cache architecture does not need to change.
      */
     private ProductPriceResponse loadPrice(
             Long productId
@@ -232,19 +357,10 @@ public class PricingService {
                 "INR"
         );
     }
-    private Cache getCache() {
-        Cache cache =
-                cacheManager.getCache(
-                        CACHE_NAME
-                );
-        if (cache == null) {
-            throw new IllegalStateException(
-                    "Redis cache '" + CACHE_NAME
-                            + "' is not configured"
-            );
-        }
-        return cache;
-    }
+    /**
+     * Prevents a waiting request from consuming CPU
+     * while another instance rebuilds the cache.
+     */
     private void sleep() {
         try {
             Thread.sleep(
