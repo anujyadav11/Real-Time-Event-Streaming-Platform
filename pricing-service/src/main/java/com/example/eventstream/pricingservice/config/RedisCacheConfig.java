@@ -1,5 +1,6 @@
 package com.example.eventstream.pricingservice.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,18 +13,19 @@ import java.time.Duration;
 @Configuration
 @EnableCaching
 public class RedisCacheConfig {
-
     @Bean
-    RedisCacheConfiguration redisCacheConfiguration() {
-
+    public RedisCacheConfiguration redisCacheConfiguration(
+            @Value("${pricing.cache.ttl:10m}") Duration cacheTtl
+    ) {
         GenericJackson2JsonRedisSerializer serializer =
                 new GenericJackson2JsonRedisSerializer();
-
-        return RedisCacheConfiguration.defaultCacheConfig()
+        return RedisCacheConfiguration
+                .defaultCacheConfig()
+                .entryTtl(cacheTtl)
+                .disableCachingNullValues()
                 .serializeValuesWith(
                         RedisSerializationContext.SerializationPair
-                                .fromSerializer(serializer))
-                .entryTtl(Duration.ofMinutes(10))
-                .disableCachingNullValues();
+                                .fromSerializer(serializer)
+                );
     }
 }
