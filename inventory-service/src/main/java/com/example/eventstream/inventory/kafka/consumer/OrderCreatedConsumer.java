@@ -45,7 +45,8 @@ public class OrderCreatedConsumer {
     )
     @KafkaListener(
             topics = KafkaTopics.ORDER_CREATED,
-            groupId = "inventory-group"
+            groupId = "inventory-group",
+            concurrency = "${kafka.consumer.order-created.concurrency:3}"
     )
     public void consume(OrderCreatedEvent event){
         log.info("Received OrderCreatedEvent: {}", event.orderId());

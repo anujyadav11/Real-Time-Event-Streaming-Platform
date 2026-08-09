@@ -10,11 +10,11 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 @EnableKafkaRetryTopic
 public class KafkaConfig {
+    private static final int EVENT_PARTITIONS = 6;
     @Bean
     public NewTopic orderCreatedTopic() {
-
         return TopicBuilder.name(KafkaTopics.PAYMENT_COMPLETED)
-                .partitions(3)
+                .partitions(EVENT_PARTITIONS)
                 .replicas(1)
                 .build();
     }
