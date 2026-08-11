@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 public class PriceCacheInvalidationConsumer {
     private final PricingCacheService pricingCacheService;
     @KafkaListener(
-            topics = "${kafka.topics.price-updated}",
-            groupId = "pricing-cache-invalidation"
+            topics = "${spring.kafka.topics.price-updated}",
+            groupId = "pricing-service"
     )
     public void handle(
             PriceUpdatedEvent event

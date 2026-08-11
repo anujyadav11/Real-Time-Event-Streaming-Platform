@@ -9,7 +9,8 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties(RateLimitProperties.class)
 public class RateLimitConfiguration {
     @Bean
-    public RedisRateLimiter redisRateLimiter(RateLimitProperties rateLimitProperties) {
+    public RedisRateLimiter redisRateLimiter(
+            RateLimitProperties rateLimitProperties) {
         return new RedisRateLimiter(
                 rateLimitProperties.getReplenishRate(),
                 rateLimitProperties.getBurstCapacity(),

@@ -9,7 +9,6 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.UUID;
 
-@Service
 @RequiredArgsConstructor
 public class DistributedLockService {
 

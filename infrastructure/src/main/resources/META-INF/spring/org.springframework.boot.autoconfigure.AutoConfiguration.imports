@@ -1,1 +1,3 @@
 com.example.infrastructure.autoconfigure.ObservabilityAutoConfiguration
+com.example.infrastructure.autoconfigure.RedisAutoConfiguration
+com.example.infrastructure.security.internal.config.InternalSecurityConfiguration
