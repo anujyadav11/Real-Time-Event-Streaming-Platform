@@ -77,9 +77,16 @@ public class InternalApiKeyFilter
             metrics.unknownService();
             return;
         }
-        ServiceIdentity service = ServiceIdentity.valueOf(
-                serviceHeader.toUpperCase().replace("-", "_")
-        );
+        ServiceIdentity service;
+        try {
+            service = ServiceIdentity.valueOf(
+                    serviceHeader.toUpperCase().replace("-", "_"));
+        } catch (IllegalArgumentException ex) {
+            metrics.unknownService();
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
+                    "Unknown Internal Service Identity");
+            return;
+        }
 
         InternalRequestContext.setService(service);
 

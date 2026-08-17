@@ -9,10 +9,10 @@ spring:
       ddl-auto: create-drop
   flyway:
     enabled: false
-  jwt:
-    secret: MyVerySecretKeyForJwtAuthentication123456789
-    expiration: 3600000
 eureka:
   client:
     enabled: false
 
+jwt:
+  secret: MyVerySecretKeyForJwtAuthentication123456789
+  expiration: 3600000

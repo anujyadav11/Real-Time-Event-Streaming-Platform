@@ -196,7 +196,9 @@ services:
     restart: unless-stopped
 
     ports:
-      - "8888:8888"
+      # Keep the container port stable for service-to-service config imports.
+      # 8888 is commonly occupied by a locally run Config Server.
+      - "18888:8888"
 
     environment:
       JAVA_OPTS: "-Xms256m -Xmx512m"
@@ -225,7 +227,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "8761:8761"
+      - "18761:8761"
 
     environment:
       <<: *common-env
@@ -258,7 +260,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "8080:8080"
+      - "18080:8080"
 
     environment:
       <<: *common-env
@@ -294,7 +296,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "8087:8087"
+      - "18087:8087"
 
     environment:
       <<: *common-env
@@ -325,7 +327,7 @@ services:
     restart: unless-stopped
 
     ports:
-      - "8081:8081"
+      - "18081:8081"
 
     environment:
       <<: *common-env
@@ -355,7 +357,7 @@ services:
     container_name: pricing-service
     restart: unless-stopped
     ports:
-      - "8089:8089"
+      - "18089:8089"
     environment:
       <<: *common-env
       SERVER_PORT: 8089
@@ -373,7 +375,7 @@ services:
     container_name: inventory-service
     restart: unless-stopped
     ports:
-      - "8082:8082"
+      - "18082:8082"
     environment:
       <<: *common-env
       SERVER_PORT: 8082
@@ -400,7 +402,7 @@ services:
     container_name: payment-service
     restart: unless-stopped
     ports:
-      - "8083:8083"
+      - "18083:8083"
     environment:
       <<: *common-env
       SERVER_PORT: 8083
@@ -427,7 +429,7 @@ services:
     container_name: saga-orchestrator
     restart: unless-stopped
     ports:
-      - "8090:8085"
+      - "18090:8085"
     environment:
       <<: *common-env
       SERVER_PORT: 8085
@@ -454,7 +456,7 @@ services:
     container_name: delivery-service
     restart: unless-stopped
     ports:
-      - "8086:8086"
+      - "18086:8086"
     environment:
       <<: *common-env
       SERVER_PORT: 8086
@@ -481,7 +483,7 @@ services:
     container_name: notification-service
     restart: unless-stopped
     ports:
-      - "8084:8084"
+      - "18084:8084"
     environment:
       <<: *common-env
       SERVER_PORT: 8084
@@ -509,7 +511,7 @@ services:
     container_name: websocket-service
     restart: unless-stopped
     ports:
-      - "8088:8088"
+      - "18088:8088"
     environment:
       <<: *common-env
       SERVER_PORT: 8088

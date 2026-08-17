@@ -56,11 +56,11 @@ public class PricingService {
             PricingCacheService pricingCacheService,
             DistributedLockService distributedLockService,
             MeterRegistry meterRegistry,
-            @Value("${pricing.cache.lock.ttl:5s}")
+            @Value("${spring.cache.lock.ttl:5s}")
             Duration lockTtl,
-            @Value("${pricing.cache.lock.retry-delay:50ms}")
+            @Value("${spring.cache.lock.retry-delay:50ms}")
             Duration retryDelay,
-            @Value("${pricing.cache.lock.max-retries:20}")
+            @Value("${spring.cache.lock.max-retries:20}")
             int maxRetries
     ) {
         this.pricingCacheService =

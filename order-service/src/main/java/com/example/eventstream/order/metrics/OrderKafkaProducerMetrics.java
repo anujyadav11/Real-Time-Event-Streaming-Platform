@@ -5,10 +5,10 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.stereotype.Component;
 
 @Component
-public class KafkaProducerMetrics {
+public class OrderKafkaProducerMetrics {
     private final Counter success;
     private final Counter failure;
-    public KafkaProducerMetrics(MeterRegistry registry) {
+    public OrderKafkaProducerMetrics(MeterRegistry registry) {
         success = registry.counter(
                 "kafka_producer_success_total"
         );

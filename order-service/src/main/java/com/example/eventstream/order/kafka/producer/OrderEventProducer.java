@@ -3,7 +3,7 @@ package com.example.eventstream.order.kafka.producer;
 
 import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.common.constants.KafkaTopics;
-import com.example.eventstream.order.metrics.KafkaProducerMetrics;
+import com.example.eventstream.order.metrics.OrderKafkaProducerMetrics;
 import com.example.infrastructure.messaging.kafka.CorrelationAwareKafkaTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,10 +18,10 @@ public class OrderEventProducer {
             LoggerFactory.getLogger(OrderEventProducer.class);
 
     private final CorrelationAwareKafkaTemplate<String, OrderCreatedEvent> kafkaTemplate;
-    private final KafkaProducerMetrics metrics;
+    private final OrderKafkaProducerMetrics metrics;
 
     public OrderEventProducer(CorrelationAwareKafkaTemplate<String, OrderCreatedEvent> kafkaTemplate,
-                              KafkaProducerMetrics metrics) {
+                              OrderKafkaProducerMetrics metrics) {
         this.kafkaTemplate = kafkaTemplate;
         this.metrics = metrics;
     }

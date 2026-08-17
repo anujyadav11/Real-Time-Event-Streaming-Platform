@@ -40,7 +40,7 @@ public class OutboxPublisher {
         this.metrics = metrics;
     }
     @Scheduled(fixedDelayString = "${outbox.publisher.fixed-delay:5000}")
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public void publishPendingEvents() {
         List<OutBoxEvent> events =
                 outBoxRepository.findByStatusOrderByCreatedAtAsc(

@@ -5,10 +5,12 @@ import com.example.infrastructure.security.internal.metrics.InternalSecurityMetr
 import com.example.infrastructure.security.internal.properties.InternalSecurityProperties;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnBean(MeterRegistry.class)
 @EnableConfigurationProperties(InternalSecurityProperties.class)
 public class InternalSecurityConfiguration {
 

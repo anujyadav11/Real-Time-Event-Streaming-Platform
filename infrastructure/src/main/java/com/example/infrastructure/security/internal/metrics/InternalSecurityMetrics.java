@@ -2,9 +2,6 @@ package com.example.infrastructure.security.internal.metrics;
 
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import org.springframework.stereotype.Component;
-
-@Component
 public class InternalSecurityMetrics {
 
     private final Counter authenticatedRequests;

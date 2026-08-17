@@ -6,6 +6,9 @@ Prometheus metric `gateway_rate_limit_rejected_total`.
 `security-audit-dashboard.json` monitors refresh-token success and failures,
 active sessions, and audit processing outcomes.
 
+`replay-dashboard.json` shows notification replay throughput, failures, and
+the current failed-event backlog.
+
 Panels include:
 
 - Total rejected requests

@@ -10,10 +10,13 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 @EnableKafkaRetryTopic
 public class KafkaConfig {
+
     private static final int EVENT_PARTITIONS = 6;
+
     @Bean
     public NewTopic inventoryReservedTopic() {
-        return TopicBuilder.name(KafkaTopics.INVENTORY_RESERVED)
+        return TopicBuilder
+                .name(KafkaTopics.INVENTORY_RESERVED)
                 .partitions(EVENT_PARTITIONS)
                 .replicas(1)
                 .build();
@@ -23,6 +26,14 @@ public class KafkaConfig {
         return TopicBuilder
                 .name(KafkaTopics.INVENTORY_RELEASED)
                 .partitions(3)
+                .replicas(1)
+                .build();
+    }
+    @Bean
+    public NewTopic inventoryReservationFailedTopic() {
+        return TopicBuilder
+                .name(KafkaTopics.INVENTORY_RESERVATION_FAILED)
+                .partitions(EVENT_PARTITIONS)
                 .replicas(1)
                 .build();
     }

@@ -8,12 +8,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class OrderCreatedDLTConsumer {
-    private static final Logger log = LoggerFactory.getLogger(OrderCreatedDLTConsumer.class);
+    private static final Logger log =
+            LoggerFactory.getLogger(OrderCreatedDLTConsumer.class);
     @KafkaListener(
             topics = "order-created-dlt",
-            groupId = "inventory-group"
+            groupId = "inventory-order-created-dlt"
     )
     public void consume(OrderCreatedEvent event) {
-        log.error("DLT Message -> OrderId: {}",event.orderId());
+        log.error(
+                "DLT Message -> OrderId: {}",
+                event.orderId()
+        );
     }
 }

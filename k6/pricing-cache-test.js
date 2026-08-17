@@ -9,7 +9,7 @@ import { check } from 'k6';
  * BASE_URL=http://localhost:8083 k6 run pricing-cache-test.js
  */
 const BASE_URL =
-    __ENV.BASE_URL || 'http://localhost:<gateway-port>';
+    __ENV.BASE_URL || 'http://localhost:8080';
 /*
  * Product to test.
  *

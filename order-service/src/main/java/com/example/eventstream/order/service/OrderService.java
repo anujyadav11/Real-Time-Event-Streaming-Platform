@@ -11,10 +11,13 @@ import com.example.eventstream.common.event.OrderCreatedEvent;
 import com.example.eventstream.order.mapper.OrderMapper;
 import com.example.eventstream.order.repository.OrderRepository;
 import com.example.infrastructure.security.internal.context.InternalRequestContext;
+
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
-import jakarta.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,18 +27,25 @@ import java.util.Set;
 import java.util.UUID;
 
 @Service
-@Transactional
+@Transactional(transactionManager = "transactionManager")
 public class OrderService {
+
     private final OrderRepository orderRepository;
     private final PricingClient pricingClient;
     private final OrderMapper orderMapper;
     private final MeterRegistry meterRegistry;
     private final OutboxService outboxService;
 
-    private static final Logger log = LoggerFactory.getLogger(OrderService.class);
+    private static final Logger log =
+            LoggerFactory.getLogger(OrderService.class);
 
-    public OrderService(OrderRepository orderRepository,
-                        PricingClient pricingClient, OrderMapper orderMapper, MeterRegistry meterRegistry, OutboxService outboxService) {
+    public OrderService(
+            OrderRepository orderRepository,
+            PricingClient pricingClient,
+            OrderMapper orderMapper,
+            MeterRegistry meterRegistry,
+            OutboxService outboxService) {
+
         this.orderRepository = orderRepository;
         this.pricingClient = pricingClient;
         this.orderMapper = orderMapper;
@@ -47,37 +57,51 @@ public class OrderService {
         try {
             String correlationId = UUID.randomUUID().toString();
             log.info("Creating new order for customer: {}", request.customerName());
-            // Fetch product price
+            // Fetch product price from Pricing Service.
             ProductPriceResponse priceResponse =
                     pricingClient.getPrice(request.productId());
-            log.info("Fetched unit price {} {} for product {}",
+            log.info(
+                    "Fetched unit price {} {} for product {}",
                     priceResponse.unitPrice(),
                     priceResponse.currency(),
-                    request.productId());
-            // Calculate total amount
-            BigDecimal totalAmount = priceResponse.unitPrice()
-                    .multiply(BigDecimal.valueOf(request.quantity()));
-            // Map request to entity
+                    request.productId()
+            );
+            // Calculate the total order amount.
+            BigDecimal totalAmount =
+                    priceResponse.unitPrice()
+                            .multiply(
+                                    BigDecimal.valueOf(
+                                            request.quantity()
+                                    )
+                            );
+            // Convert request DTO into Order entity.
             Order order = orderMapper.toEntity(request);
             order.setTotalAmount(totalAmount);
             order.setStatus(OrderStatus.CREATED);
-            // Save
+            // Persist the order inside the DB transaction.
             Order savedOrder = orderRepository.save(order);
             log.info("Order created successfully with id: {}", savedOrder.getId());
             log.info("Request received from {}", InternalRequestContext.getService());
-            // Publish event
-            OrderCreatedEvent event = new OrderCreatedEvent(
-                    UUID.randomUUID(),
-                    savedOrder.getId(),
-                    savedOrder.getCustomerName(),
-                    savedOrder.getRestaurantName(),
-                    savedOrder.getProductId(),
-                    savedOrder.getQuantity(),
-                    savedOrder.getTotalAmount(),
-                    savedOrder.getStatus().name(),
-                    savedOrder.getCreatedAt(),
-                    correlationId
-            );
+            // Create the OrderCreated event.
+            OrderCreatedEvent event =
+                    new OrderCreatedEvent(
+                            UUID.randomUUID(),
+                            savedOrder.getId(),
+                            savedOrder.getCustomerName(),
+                            savedOrder.getRestaurantName(),
+                            savedOrder.getProductId(),
+                            savedOrder.getQuantity(),
+                            savedOrder.getTotalAmount(),
+                            savedOrder.getStatus().name(),
+                            savedOrder.getCreatedAt(),
+                            correlationId
+                    );
+            /*
+             * Save the event to the outbox table.
+             *
+             * This happens inside the SAME database transaction
+             * as the order insert.
+             */
             outboxService.saveEvent(
                     savedOrder.getId(),
                     "ORDER",
@@ -85,76 +109,84 @@ public class OrderService {
                     event
             );
             log.info("OrderCreatedEvent saved to outbox for order {}", savedOrder.getId());
-            meterRegistry.counter("orders.creation.success.total").increment();
+            meterRegistry
+                    .counter("orders.creation.success.total")
+                    .increment();
             return savedOrder;
         } catch (Exception ex) {
-            meterRegistry.counter("orders.creation.failed.total").increment();
+            meterRegistry
+                    .counter("orders.creation.failed.total")
+                    .increment();
             throw ex;
         } finally {
-            sample.stop(
-                    meterRegistry.timer("orders.creation.duration")
-            );
+            sample.stop(meterRegistry.timer("orders.creation.duration"));
         }
     }
     public Order getOrder(UUID id) {
         log.info("Fetching order with id: {}", id);
-        Order order = orderRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.warn("Order with id {} not found", id);
-                    return new OrderNotFoundException(id);
-        });
-        log.info("Order {} fetched successfully",id);
+        Order order =
+                orderRepository.findById(id)
+                        .orElseThrow(() -> {
+                            log.warn("Order with id {} not found", id);
+                            return new OrderNotFoundException(id);
+                        });
+        log.info("Order {} fetched successfully", id);
         return order;
     }
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
     }
     public void deleteOrder(UUID id) {
-        log.info("Deleting order with id: {}", id);
-        if(!orderRepository.existsById(id)) {
-            log.warn("Delete failed. Order {} does not exist", id);
+        log.info("Deleting order with id: {}",id);
+        if (!orderRepository.existsById(id)) {
+            log.warn("Delete failed. Order {} does not exist",id);
             throw new OrderNotFoundException(id);
         }
         orderRepository.deleteById(id);
-        log.info("Order deleted successfully with id: {}", id);
+        log.info("Order deleted successfully with id: {}",id);
     }
     public void markInventoryReserved(UUID orderId) {
-        int updated = orderRepository.updateStatusIfCurrentIn(
-                orderId,
-                OrderStatus.INVENTORY_RESERVED,
-                Set.of(OrderStatus.CREATED));
-
+        int updated =
+                orderRepository.updateStatusIfCurrentIn(
+                        orderId,
+                        OrderStatus.INVENTORY_RESERVED,
+                        Set.of(OrderStatus.CREATED)
+                );
         if (updated == 0) {
             Order order = getOrder(orderId);
             log.info(
-                    "Ignoring stale inventory-reserved event for order {} because its status is already {}",
+                    "Ignoring stale inventory-reserved event for order {} " +
+                            "because its status is already {}",
                     orderId,
-                    order.getStatus());
+                    order.getStatus()
+            );
             return;
         }
-
-        log.info("Inventory reserved for order : {}", orderId);
+        log.info("Inventory reserved for order : {}",orderId);
     }
-    public void markPaymentCompleted(PaymentCompletedEvent event) {
-        log.info("Updating payment status for order {}", event.orderId());
-
-        int updated = orderRepository.updateStatusIfCurrentIn(
-                event.orderId(),
-                OrderStatus.PAYMENT_COMPLETED,
-                Set.of(
-                        OrderStatus.CREATED,
-                        OrderStatus.INVENTORY_RESERVED,
-                        OrderStatus.PAYMENT_PENDING));
-
+    public void markPaymentCompleted(
+            PaymentCompletedEvent event) {
+        log.info("Updating payment status for order {}",event.orderId());
+        int updated =
+                orderRepository.updateStatusIfCurrentIn(
+                        event.orderId(),
+                        OrderStatus.PAYMENT_COMPLETED,
+                        Set.of(
+                                OrderStatus.CREATED,
+                                OrderStatus.INVENTORY_RESERVED,
+                                OrderStatus.PAYMENT_PENDING
+                        )
+                );
         if (updated == 0) {
             Order order = getOrder(event.orderId());
             log.info(
-                    "Ignoring duplicate or stale payment-completed event for order {} because its status is already {}",
+                    "Ignoring duplicate or stale payment-completed " +
+                            "event for order {} because its status is already {}",
                     event.orderId(),
-                    order.getStatus());
+                    order.getStatus()
+            );
             return;
         }
-
-        log.info("Order {} marked as PAID", event.orderId());
+        log.info("Order {} marked as PAID",event.orderId());
     }
 }

@@ -18,7 +18,6 @@ public final class KafkaTopics {
     public static final String SEND_NOTIFICATION_COMMAND = "send-notification-command";
     public static final String NOTIFICATION_SENT ="notification-sent";
     public static final String NOTIFICATION_FAILED = "notification-failed";
-
     private KafkaTopics() {
     }
 }

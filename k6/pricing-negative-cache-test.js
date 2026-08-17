@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 const BASE_URL =
-    __ENV.BASE_URL || 'http://localhost:<gateway-port>';
+    __ENV.BASE_URL || 'http://localhost:8080';
 /*
  * Deliberately nonexistent product.
  */

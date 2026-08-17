@@ -17,6 +17,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
 import java.util.List;
 
@@ -72,6 +73,7 @@ public class AuthenticationService {
             throw ex;
         }
     }
+    @Transactional
     public RefreshTokenResponse refresh(
             RefreshTokenRequest request ){
         try {

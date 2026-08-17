@@ -10,7 +10,6 @@ import com.example.eventstream.notification.metrics.ReplayMetrics;
 import com.example.eventstream.notification.replay.EventTypeRegistry;
 import com.example.eventstream.notification.repository.InboxEventRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.micrometer.core.instrument.Gauge;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,12 +65,6 @@ public class ReplayService {
             );
         } catch (Exception ex) {
             replayMetrics.failure();
-
-            Gauge.builder(
-                    "replay_failed_events",
-                    repository,
-                    repo -> repo.countByStatus(InboxStatus.FAILED)
-            ).register(meterRegistry);
 
             throw new RuntimeException(
                     "Replay failed",

@@ -20,7 +20,7 @@ public class OutboxRecoveryScheduler {
     private final OutBoxRepository repository;
 
     @Scheduled(fixedDelayString = "${outbox.recovery.fixed-delay:60000}")
-    @Transactional
+    @Transactional(transactionManager = "transactionManager")
     public void recoverProcessingEvents() {
         LocalDateTime threshold =
                 LocalDateTime.now()
