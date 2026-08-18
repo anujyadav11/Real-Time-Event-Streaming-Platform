@@ -7,15 +7,17 @@ RUN apt-get update \
 LABEL maintainer="Anuj Yadav"
 LABEL project="Real-Time-Event-Streaming-Platform"
 LABEL service="config-server"
-LABEL version="1.0.0"
+LABEL version="1.0.1"
 LABEL description="Config Server"
 
 WORKDIR /app
 
 COPY config-server/target/config-server-0.0.1-SNAPSHOT.jar app.jar
 
+USER 10001
+
 EXPOSE 8888
 
-ENV JAVA_OPTS="-XX:+UseContainerSupport"
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
 
 ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -jar app.jar"]
