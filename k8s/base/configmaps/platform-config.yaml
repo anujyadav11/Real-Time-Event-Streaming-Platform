@@ -30,6 +30,10 @@ data:
 
   MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: "http://zipkin:9411/api/v2/spans"
 
+  AUTH_DB_URL: "jdbc:postgresql://postgres:5432/auth"
+  AUTH_DB_USERNAME: "postgres"
+  AUTH_DB_PASSWORD: "postgres"
+
   ORDER_DB_URL: "jdbc:postgresql://postgres:5432/orders"
   ORDER_DB_USERNAME: "postgres"
   ORDER_DB_PASSWORD: "postgres"

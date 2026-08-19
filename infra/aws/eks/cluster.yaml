@@ -1,0 +1,42 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: eventstream-prod
+  region: ap-south-1
+
+availabilityZones:
+  - ap-south-1a
+  - ap-south-1b
+  - ap-south-1c
+
+autoModeConfig:
+  enabled: false
+
+iam:
+  withOIDC: true
+  vpcResourceControllerPolicy: true
+
+vpc:
+  nat:
+    gateway: Single
+
+managedNodeGroups:
+  - name: eventstream-workers
+    instanceType: t3.medium
+    desiredCapacity: 2
+    minSize: 1
+    maxSize: 3
+
+    volumeSize: 30
+    volumeType: gp3
+
+    privateNetworking: true
+
+    labels:
+      workload: eventstream
+
+    tags:
+      Project: Real-Time-Event-Streaming-Platform
+      Environment: production
+      ManagedBy: eksctl
