@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server
+  namespace: eventstream
+  labels:
+    app: config-server
+    app.kubernetes.io/name: config-server
+    app.kubernetes.io/part-of: eventstream
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: config-server
+
+  template:
+    metadata:
+      labels:
+        app: config-server
+        app.kubernetes.io/name: config-server
+        app.kubernetes.io/part-of: eventstream
+
+    spec:
+      containers:
+        - name: config-server
+          image: 226932643820.dkr.ecr.ap-south-1.amazonaws.com/eventstream/config-server:1.0.1
+
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8888
+              protocol: TCP
+
+          env:
+            - name: SERVER_PORT
+              value: "8888"
+
+            - name: JAVA_OPTS
+              value: "-XX:+UseContainerSupport -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
