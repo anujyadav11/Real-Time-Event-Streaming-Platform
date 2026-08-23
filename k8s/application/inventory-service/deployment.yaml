@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: inventory-service
+  namespace: eventstream
+
+  labels:
+    app: inventory-service
+    app.kubernetes.io/name: inventory-service
+    app.kubernetes.io/part-of: eventstream
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: inventory-service
+
+  template:
+    metadata:
+      labels:
+        app: inventory-service
+        app.kubernetes.io/name: inventory-service
+        app.kubernetes.io/part-of: eventstream
+
+    spec:
+      containers:
+        - name: inventory-service
+
+          image: 226932643820.dkr.ecr.ap-south-1.amazonaws.com/eventstream/inventory-service:1.0.1
+
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8082
+              protocol: TCP
+
+          env:
+
+            # Spring Boot
+            - name: SERVER_PORT
+              value: "8082"
+
+            # Config Server
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-server:8888"
+
+            # Eureka
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-server:8761/eureka/"
+
+            # PostgreSQL
+            - name: INVENTORY_DB_URL
+              value: "jdbc:postgresql://postgres.eventstream-infra:5432/inventory"
+
+            - name: INVENTORY_DB_USERNAME
+              value: "postgres"
+
+            - name: INVENTORY_DB_PASSWORD
+              value: "postgres"
+
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres.eventstream-infra:5432/inventory"
+
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "postgres"
+
+            # Kafka
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka.eventstream-infra:29092"
+
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka.eventstream-infra:29092"
+
+            - name: SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES
+              value: "com.example.eventstream.common.*"
+
+            # JVM
+            - name: JAVA_OPTS
+              value: "-XX:+UseContainerSupport -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
+
+          resources:
+            requests:
+              cpu: "200m"
+              memory: "512Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+
+            initialDelaySeconds: 50
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+
+            initialDelaySeconds: 90
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          securityContext:
+            allowPrivilegeEscalation: false
+
+            capabilities:
+              drop:
+                - ALL

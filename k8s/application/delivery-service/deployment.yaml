@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: delivery-service
+  namespace: eventstream
+  labels:
+    app: delivery-service
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: delivery-service
+
+  template:
+    metadata:
+      labels:
+        app: delivery-service
+
+    spec:
+      containers:
+        - name: delivery-service
+          image: 226932643820.dkr.ecr.ap-south-1.amazonaws.com/eventstream/delivery-service:1.0.1
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8085
+              protocol: TCP
+
+          env:
+            - name: SERVER_PORT
+              value: "8085"
+
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-server:8888"
+
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-server:8761/eureka/"
+
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka.eventstream-infra:29092"
+
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka.eventstream-infra:29092"
+
+            - name: SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES
+              value: "com.example.eventstream.common.*"
+
+            - name: JAVA_OPTS
+              value: "-XX:+UseContainerSupport -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"

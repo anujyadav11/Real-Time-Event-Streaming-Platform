@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: discovery-server
+  namespace: eventstream
+
+  labels:
+    app: discovery-server
+    app.kubernetes.io/name: discovery-server
+    app.kubernetes.io/part-of: eventstream
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: discovery-server
+
+  template:
+    metadata:
+      labels:
+        app: discovery-server
+        app.kubernetes.io/name: discovery-server
+        app.kubernetes.io/part-of: eventstream
+
+    spec:
+      containers:
+        - name: discovery-server
+
+          image: 226932643820.dkr.ecr.ap-south-1.amazonaws.com/eventstream/discovery-server:1.0.1
+
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - name: http
+              containerPort: 8761
+              protocol: TCP
+
+          env:
+            - name: SERVER_PORT
+              value: "8761"
+
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-server:8888"
+
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-server:8761/eureka/"
+
+            - name: JAVA_OPTS
+              value: "-XX:+UseContainerSupport -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
+
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "512Mi"
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 40
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: http
+            initialDelaySeconds: 70
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
