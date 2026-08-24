@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-service
+  namespace: eventstream
+  labels:
+    app: payment-service
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: payment-service
+
+  template:
+    metadata:
+      labels:
+        app: payment-service
+
+    spec:
+      containers:
+        - name: payment-service
+          image: 226932643820.dkr.ecr.ap-south-1.amazonaws.com/eventstream/payment-service:1.0.1
+
+          imagePullPolicy: Always
+
+          ports:
+            - name: http
+              containerPort: 8083
+              protocol: TCP
+
+          env:
+            - name: SERVER_PORT
+              value: "8083"
+
+            # Spring Config Server
+            - name: SPRING_CONFIG_IMPORT
+              value: "optional:configserver:http://config-server:8888"
+
+            # Eureka
+            - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
+              value: "http://discovery-server:8761/eureka/"
+
+            # PostgreSQL
+            - name: PAYMENT_DB_URL
+              value: "jdbc:postgresql://postgres.eventstream-infra:5432/payment"
+
+            - name: PAYMENT_DB_USERNAME
+              value: "postgres"
+
+            - name: PAYMENT_DB_PASSWORD
+              value: "postgres"
+
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres.eventstream-infra:5432/payment"
+
+            - name: SPRING_DATASOURCE_USERNAME
+              value: "postgres"
+
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: "postgres"
+
+            # Kafka
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka.eventstream-infra:29092"
+
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "kafka.eventstream-infra:29092"
+
+            # Kafka JSON deserialization
+            - name: SPRING_KAFKA_CONSUMER_PROPERTIES_SPRING_JSON_TRUSTED_PACKAGES
+              value: "com.example.eventstream.common.*"
+
+            # Container-aware JVM configuration
+            - name: JAVA_OPTS
+              value: "-XX:+UseContainerSupport -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
+
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+
+            limits:
+              cpu: "500m"
+              memory: "768Mi"
+
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 20
+            timeoutSeconds: 5
+            failureThreshold: 3

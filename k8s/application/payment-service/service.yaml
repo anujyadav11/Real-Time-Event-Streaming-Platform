@@ -1,16 +1,19 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: delivery-service
+  name: payment-service
   namespace: eventstream
+  labels:
+    app: payment-service
+
 spec:
   type: ClusterIP
 
   selector:
-    app: delivery-service
+    app: payment-service
 
   ports:
     - name: http
-      port: 8086
-      targetPort: 8086
+      port: 8083
+      targetPort: 8083
       protocol: TCP
