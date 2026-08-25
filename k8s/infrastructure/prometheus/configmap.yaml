@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: eventstream-infra
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+
+    scrape_configs:
+
+      # Prometheus itself
+      - job_name: prometheus
+        static_configs:
+          - targets:
+              - localhost:9090
+
+      # API Gateway
+      - job_name: api-gateway
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - api-gateway.eventstream:8080
+
+      # Auth Service
+      - job_name: auth-service
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - auth-service.eventstream:8087
+
+      # Order Service
+      - job_name: order-service
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - order-service.eventstream:8081
+
+      # Inventory Service
+      - job_name: inventory-service
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - inventory-service.eventstream:8082
+
+      # Payment Service
+      - job_name: payment-service
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - payment-service.eventstream:8083
+
+      # Notification Service
+      - job_name: notification-service
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - notification-service.eventstream:8084
+
+      # Delivery Service
+      - job_name: delivery-service
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - delivery-service.eventstream:8086
+
+      # Pricing Service
+      - job_name: pricing-service
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - pricing-service.eventstream:8089
+
+      # Saga Orchestrator
+      - job_name: saga-orchestrator
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - saga-orchestrator.eventstream:8095
+
+      # Config Server
+      - job_name: config-server
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - config-server.eventstream:8888
+
+      # Discovery Server
+      - job_name: discovery-server
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets:
+              - discovery-server.eventstream:8761
