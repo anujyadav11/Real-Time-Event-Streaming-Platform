@@ -11,7 +11,7 @@ echo "Starting EKS worker node..."
 aws eks update-nodegroup-config \
   --cluster-name "$CLUSTER_NAME" \
   --nodegroup-name "$NODEGROUP_NAME" \
-  --scaling-config minSize=1,maxSize=3,desiredSize=3 \
+  --scaling-config minSize=2,maxSize=4,desiredSize=4 \
   --region "$REGION"
 
 echo "Waiting for node..."

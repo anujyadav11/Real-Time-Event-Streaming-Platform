@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: notification-service
-          image: 226932643820.dkr.ecr.ap-south-1.amazonaws.com/eventstream/notification-service:1.0.1
+          image: 226932643820.dkr.ecr.ap-south-1.amazonaws.com/eventstream/notification-service:1.0.2
           imagePullPolicy: Always
           ports:
             - name: http
@@ -30,6 +30,31 @@ spec:
               value: "optional:configserver:http://config-server:8888"
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: "http://discovery-server:8761/eureka/"
+            # PostgreSQL
+            - name: NOTIFICATION_DB_URL
+              value: "jdbc:postgresql://postgres.eventstream-infra:5432/notification"
+            - name: NOTIFICATION_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_USER
+            - name: NOTIFICATION_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
+            - name: SPRING_DATASOURCE_URL
+              value: "jdbc:postgresql://postgres.eventstream-infra:5432/notification"
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_USER
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: "kafka.eventstream-infra:29092"
             - name: SPRING_KAFKA_BOOTSTRAP_SERVERS

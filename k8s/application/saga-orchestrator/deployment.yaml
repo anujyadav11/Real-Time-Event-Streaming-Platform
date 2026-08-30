@@ -58,19 +58,31 @@ spec:
               value: "jdbc:postgresql://postgres.eventstream-infra:5432/saga"
 
             - name: SAGA_DB_USERNAME
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_USER
 
             - name: SAGA_DB_PASSWORD
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
 
             - name: SPRING_DATASOURCE_URL
               value: "jdbc:postgresql://postgres.eventstream-infra:5432/saga"
 
             - name: SPRING_DATASOURCE_USERNAME
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_USER
 
             - name: SPRING_DATASOURCE_PASSWORD
-              value: "postgres"
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-credentials
+                  key: POSTGRES_PASSWORD
 
             # JVM
             - name: JAVA_OPTS
