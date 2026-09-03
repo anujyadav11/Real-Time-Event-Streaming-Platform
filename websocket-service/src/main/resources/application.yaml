@@ -3,4 +3,4 @@ spring:
     name: websocket-service
 
   config:
-    import: "optional:configserver:${CONFIG_SERVER_URL:http://localhost:8888}"
+    import: ${SPRING_CONFIG_IMPORT:optional:configserver:http://localhost:8888}

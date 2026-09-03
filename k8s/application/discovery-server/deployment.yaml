@@ -44,6 +44,10 @@ spec:
             - name: SPRING_CONFIG_IMPORT
               value: "optional:configserver:http://config-server:8888"
 
+            # Zipkin is intentionally not deployed in AWS.
+            - name: MANAGEMENT_TRACING_ENABLED
+              value: "false"
+
             - name: JAVA_OPTS
               value: "-XX:+UseContainerSupport -XX:InitialRAMPercentage=25.0 -XX:MaxRAMPercentage=75.0 -XX:+ExitOnOutOfMemoryError"
 

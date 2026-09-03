@@ -37,6 +37,10 @@ spec:
             - name: SPRING_CONFIG_IMPORT
               value: "optional:configserver:http://config-server:8888"
 
+            # Zipkin is intentionally not deployed in AWS.
+            - name: MANAGEMENT_TRACING_ENABLED
+              value: "false"
+
             # Eureka
             - name: EUREKA_CLIENT_SERVICEURL_DEFAULTZONE
               value: "http://discovery-server:8761/eureka/"
